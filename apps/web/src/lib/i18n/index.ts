@@ -8,6 +8,7 @@ import {
 import i18n from "i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next";
+import { brand } from "@/brand";
 
 function getLanguageCode(locale: string) {
   return locale.toLowerCase().split("-")[0];
@@ -142,6 +143,7 @@ void i18n
     defaultNS: "common",
     interpolation: {
       escapeValue: false,
+      defaultVariables: { appName: brand.name },
     },
   })
   .then(() => preloadNamespaces(initialLocale));
