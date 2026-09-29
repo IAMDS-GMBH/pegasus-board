@@ -1,11 +1,13 @@
 # Backing services for host-native development (API and web run via pnpm).
 # Usage: docker compose -f compose.dev.yml up -d
+# See ENVIRONMENT_SETUP.md for the matching .env values.
 name: kaneo-dev
+
+x-minio-image: &minio-image ${MINIO_IMAGE:-quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e}
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: kaneo-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-kaneo}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
@@ -22,7 +24,9 @@ services:
       retries: 5
 
   minio:
-    image: quay.io/minio/minio:latest
+    # MinIO no longer publishes public images, so this digest may only exist in
+    # your local image cache. Set MINIO_IMAGE to use a mirror or your own build.
+    image: *minio-image
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
@@ -37,7 +41,8 @@ services:
     restart: unless-stopped
 
   minio-init:
-    image: quay.io/minio/mc:latest
+    # The server image ships mc, so bucket setup needs no second image.
+    image: *minio-image
     depends_on:
       - minio
     environment:
@@ -53,6 +58,4 @@ services:
 
 volumes:
   postgres_data:
-    # Reuses the volume of the previously hand-started kaneo-postgres container.
-    name: kaneo_postgres_data
   minio_data:
