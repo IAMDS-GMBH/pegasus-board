@@ -30,7 +30,7 @@ git clone https://github.com/yourusername/kaneo.git
 cd kaneo
 ```
 
-Follow the [local development setup guide](ENVIRONMENT_SETUP.md) for prerequisites, database and environment configuration, installation, startup, and troubleshooting.
+Follow the [local development setup guide](ENVIRONMENT_SETUP.md) for prerequisites, database and environment configuration, installation, startup, and troubleshooting. Without a local PostgreSQL, `compose.dev.yml` can [run it and MinIO for you](ENVIRONMENT_SETUP.md#run-postgresql-and-minio-with-docker).
 
 ## Making Your First Contribution
 

@@ -21,6 +21,47 @@ An explicit `DATABASE_URL` takes precedence over `POSTGRES_*`. You do not need b
 
 The bundled Docker image derives `KANEO_API_URL` from `KANEO_CLIENT_URL`. Host-native development does not run that entrypoint, so set the two URLs explicitly as above.
 
+## Run PostgreSQL and MinIO with Docker
+
+If you do not have PostgreSQL locally, `compose.dev.yml` runs it, plus MinIO for uploads. The API and web app still run on your host with `pnpm dev`.
+
+| Service | Address | Purpose |
+| --- | --- | --- |
+| `postgres` | `127.0.0.1:5432` | PostgreSQL 16 database |
+| `minio` | `127.0.0.1:9000` (S3 API), `127.0.0.1:9001` (console) | S3-compatible storage for uploads |
+| `minio-init` | none | Creates the `S3_BUCKET` bucket, then exits |
+
+Add these values to the root `.env`. Compose refuses to start while a password or the MinIO root user is missing.
+
+```env
+POSTGRES_DB=kaneo
+POSTGRES_USER=kaneo
+POSTGRES_PASSWORD=YOUR_LOCAL_PASSWORD
+DATABASE_URL=postgresql://kaneo:YOUR_LOCAL_PASSWORD@localhost:5432/kaneo
+
+MINIO_ROOT_USER=kaneo-local
+MINIO_ROOT_PASSWORD=YOUR_LOCAL_MINIO_PASSWORD
+S3_ENDPOINT=http://localhost:9000
+S3_BUCKET=kaneo-uploads
+S3_ACCESS_KEY_ID=kaneo-local
+S3_SECRET_ACCESS_KEY=YOUR_LOCAL_MINIO_PASSWORD
+S3_REGION=us-east-1
+S3_FORCE_PATH_STYLE=true
+```
+
+Then start the services:
+
+```bash
+docker compose -f compose.dev.yml up -d
+```
+
+Skip MinIO with `docker compose -f compose.dev.yml up -d postgres` if you do not need uploads. The container creates the database and user from `POSTGRES_*` on its first start.
+
+- Use `localhost`, not `postgres` or `minio`: the API runs on your host. The browser uploads straight to MinIO through presigned URLs, and MinIO accepts cross-origin requests from `KANEO_CLIENT_URL`.
+- If port 5432 is already in use, set `POSTGRES_PORT` to a free port and use the same port in `DATABASE_URL`.
+- The MinIO image is the one CI uses. `MINIO_IMAGE` overrides it; the replacement must provide `minio`, `mc`, and `/bin/sh`.
+- `docker compose -f compose.dev.yml down` stops the services. Add `-v` to also delete the database and uploaded files.
+
 ## Configure the browser
 
 The API reads the root `.env`. Vite reads frontend overrides from `apps/web/.env.local`.
@@ -57,7 +98,7 @@ The first non-guest account completes instance setup. Keep this local instance p
 
 Use the [environment reference](https://kaneo.app/docs/core/installation/environment-variables) for server settings and defaults.
 
-- **Uploads:** configure S3-compatible storage. [Silo](https://kaneo.app/docs/core/installation/silo) is the documented self-hosted option. The API and browser must both reach its endpoint.
+- **Uploads:** configure S3-compatible storage. [Silo](https://kaneo.app/docs/core/installation/silo) is the documented self-hosted option; for local development, the MinIO service [above](#run-postgresql-and-minio-with-docker) is enough. The API and browser must both reach its endpoint.
 - **Email:** configure SMTP. Email verification codes become the default sign-in method; `DISABLE_EMAIL_OTP_SIGN_IN=true` keeps password sign-in. Invitations and password resets still use SMTP.
 - **Sign-in providers:** configure OAuth credentials on the API and register the local callback URL with the provider.
 - **MCP:** the built-in endpoint uses `KANEO_INTERNAL_API_URL`, defaulting to `http://127.0.0.1:1337`, for internal tool requests. Device authorization allows `kaneo-cli` and `kaneo-mcp` by default.
