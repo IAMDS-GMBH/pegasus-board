@@ -3,7 +3,9 @@
 # See ENVIRONMENT_SETUP.md for the matching .env values.
 name: kaneo-dev
 
-x-minio-image: &minio-image ${MINIO_IMAGE:-quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e}
+# Same MinIO build as the CI and storage contract tests. MINIO_IMAGE overrides it;
+# the image must provide minio, mc and /bin/sh on its PATH.
+x-minio-image: &minio-image ${MINIO_IMAGE:-bitnamilegacy/minio@sha256:8935e75fa5d11295c17171e4aa49efe390a1193cd7f12e4d21b92af9ffef09d7}
 
 services:
   postgres:
@@ -13,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-kaneo}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -24,10 +26,10 @@ services:
       retries: 5
 
   minio:
-    # MinIO no longer publishes public images, so this digest may only exist in
-    # your local image cache. Set MINIO_IMAGE to use a mirror or your own build.
     image: *minio-image
-    command: server /data --console-address ":9001"
+    # Skip the Bitnami entrypoint and run the server directly, as CI does.
+    entrypoint: ["minio"]
+    command: ["server", "/bitnami/minio/data", "--console-address", ":9001"]
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
@@ -37,7 +39,7 @@ services:
       - "127.0.0.1:9000:9000"
       - "127.0.0.1:9001:9001"
     volumes:
-      - minio_data:/data
+      - minio_data:/bitnami/minio/data
     restart: unless-stopped
 
   minio-init:
@@ -46,6 +48,8 @@ services:
     depends_on:
       - minio
     environment:
+      # mc keeps its config under $HOME, which is not writable for the image user.
+      HOME: /tmp
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       S3_BUCKET: ${S3_BUCKET:-kaneo-uploads}

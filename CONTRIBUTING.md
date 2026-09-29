@@ -30,25 +30,7 @@ git clone https://github.com/yourusername/kaneo.git
 cd kaneo
 ```
 
-2. **Install dependencies**:
-```bash
-pnpm install
-```
-
-3. **Set up environment variables**:
-   Create a `.env` file in the repository root for server configuration. The web app includes localhost development defaults; put local Vite overrides such as `VITE_API_URL` in `apps/web/.env.local`. See [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) for the required variables and examples. If you don't have PostgreSQL locally, `docker compose -f compose.dev.yml up -d` starts it, along with MinIO for uploads (see [Backing services with Docker](ENVIRONMENT_SETUP.md#backing-services-with-docker)).
-
-4. **Start everything up**:
-```bash
-pnpm run dev
-```
-
-This starts both the API (port 1337) and web app (port 5173). Both will automatically reload when you make changes.
-
-> **Tip**: The web app at http://localhost:5173 will automatically connect to the API at http://localhost:1337
-
-> **Need help with setup?** See our [Environment Setup Guide](ENVIRONMENT_SETUP.md) for detailed instructions and troubleshooting tips.
-Follow the [local development setup guide](ENVIRONMENT_SETUP.md) for prerequisites, database and environment configuration, installation, startup, and troubleshooting.
+Follow the [local development setup guide](ENVIRONMENT_SETUP.md) for prerequisites, database and environment configuration, installation, startup, and troubleshooting. Without a local PostgreSQL, `compose.dev.yml` can [run it and MinIO for you](ENVIRONMENT_SETUP.md#run-postgresql-and-minio-with-docker).
 
 ## Making Your First Contribution
 
