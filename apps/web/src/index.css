@@ -231,30 +231,49 @@ input:-webkit-autofill:active {
   --code-highlight: --alpha(var(--color-white) / 4%);
 }
 
-/* WWK brand theme (the default; VITE_BRAND=kaneo restores the base look). Token overrides only: the class sits on
-   <html> next to light/dark, so `.theme-wwk.dark` wins over `.dark`. Info and
-   destructive keep their semantic colors on purpose. */
+/* WWK brand theme (the default; VITE_BRAND=kaneo restores the base look).
+   Token overrides only: the class sits on <html> next to light/dark, so
+   `.theme-wwk.dark` wins over `.dark`. Values follow wwk.de: Ubuntu for all
+   text (the only font WWK supplied), #4a4a4a copy, green primary actions, orange
+   secondary actions, near-square corners. Info and destructive keep their
+   semantic colors on purpose. */
 .theme-wwk {
   --brand-green: #009036;
+  --brand-green-dark: #008237;
   --brand-orange: #ee7d00;
+  --brand-orange-cta: #ee6608;
+  --brand-orange-dark: #ba4e21;
+  --brand-text: #4a4a4a;
+  --brand-surface: #f2f2f2;
+  --brand-line: #e7e8e8;
+  --brand-line-strong: #d0d1d2;
   --font-sans:
     "Ubuntu",
     ui-sans-serif,
     system-ui,
     sans-serif;
-  --radius: 0.375rem;
+  --radius: 0.25rem;
+  --foreground: var(--brand-text);
+  --card-foreground: var(--brand-text);
+  --popover-foreground: var(--brand-text);
+  --accent-foreground: var(--brand-text);
+  --secondary-foreground: var(--brand-text);
+  --muted: var(--brand-surface);
+  --secondary: var(--brand-surface);
+  --border: var(--brand-line);
+  --input: var(--brand-line-strong);
   --primary: var(--brand-green);
   --primary-foreground: var(--color-white);
   --ring: var(--brand-green);
   --success: var(--brand-green);
-  --success-foreground: color-mix(in srgb, var(--brand-green) 80%, var(--color-black));
-  --warning: var(--brand-orange);
-  --warning-foreground: color-mix(in srgb, var(--brand-orange) 78%, var(--color-black));
+  --success-foreground: var(--brand-green-dark);
+  --warning: var(--brand-orange-cta);
+  --warning-foreground: var(--brand-orange-dark);
   --chart-1: var(--brand-green);
-  --chart-2: var(--brand-orange);
-  --chart-3: color-mix(in srgb, var(--brand-green) 60%, var(--color-black));
+  --chart-2: var(--brand-orange-cta);
+  --chart-3: var(--brand-green-dark);
   --chart-4: var(--color-neutral-400);
-  --chart-5: color-mix(in srgb, var(--brand-green) 55%, var(--color-white));
+  --chart-5: var(--brand-orange);
   --sidebar-primary: var(--brand-green);
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-ring: var(--brand-green);
@@ -267,13 +286,13 @@ input:-webkit-autofill:active {
   --ring: var(--brand-green-bright);
   --success: var(--brand-green-bright);
   --success-foreground: color-mix(in srgb, var(--brand-green) 70%, var(--color-white));
-  --warning: var(--brand-orange);
-  --warning-foreground: color-mix(in srgb, var(--brand-orange) 70%, var(--color-white));
+  --warning: var(--brand-orange-cta);
+  --warning-foreground: color-mix(in srgb, var(--brand-orange-cta) 70%, var(--color-white));
   --chart-1: var(--brand-green-bright);
-  --chart-2: var(--brand-orange);
+  --chart-2: var(--brand-orange-cta);
   --chart-3: color-mix(in srgb, var(--brand-green) 55%, var(--color-white));
   --chart-4: var(--color-neutral-500);
-  --chart-5: color-mix(in srgb, var(--brand-green) 35%, var(--color-white));
+  --chart-5: var(--brand-orange);
   --sidebar-primary: var(--brand-green-bright);
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-ring: var(--brand-green-bright);
