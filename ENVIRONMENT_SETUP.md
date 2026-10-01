@@ -75,6 +75,8 @@ VITE_API_URL=http://localhost:1337
 
 Only put public browser configuration in `VITE_*` variables. Never put database passwords, API keys, or provider secrets there. Restart Vite after changing the file.
 
+The web app ships in the WWK design by default. Set `VITE_BRAND=kaneo` in `apps/web/.env.local` to switch to the unbranded base look for comparison. Vite reads it at build or dev time, and the production image does not substitute it at runtime. See `docs/theming-wwk.md`.
+
 The production containers use different names: their startup script replaces `KANEO_API_URL`, `KANEO_CLIENT_URL`, and `KANEO_TURNSTILE_SITE_KEY` in the built assets. Editing `VITE_API_URL` in a running container does not change its API address.
 
 ## Install and start

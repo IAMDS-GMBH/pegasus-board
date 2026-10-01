@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { brand } from "@/brand";
 
 type PageTitleProps = {
   title: string;
@@ -8,7 +9,7 @@ type PageTitleProps = {
 
 export default function PageTitle({
   title,
-  suffix = "Kaneo",
+  suffix = brand.name,
   hideAppName = false,
 }: PageTitleProps) {
   useEffect(() => {
