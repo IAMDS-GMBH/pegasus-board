@@ -1326,6 +1326,10 @@
 					"assign": {
 						"label": "Ανάθεση",
 						"description": "Μπορεί να αναθέτει εργασίες σε μέλη"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

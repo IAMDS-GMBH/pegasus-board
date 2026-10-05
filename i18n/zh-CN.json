@@ -808,6 +808,10 @@
 					"assign": {
 						"label": "指派",
 						"description": "可以将任务指派给成员"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

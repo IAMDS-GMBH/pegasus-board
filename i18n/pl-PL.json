@@ -1838,6 +1838,10 @@
 					"update": {
 						"description": "Może edytować zadania",
 						"label": "Zaktualizuj"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"workspace": {

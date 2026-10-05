@@ -6,6 +6,8 @@ export type WorkspaceRole = {
   workspaceId: string;
   role: string;
   permission: Record<string, string[]>;
+  // `task:view_assigned_only`, stored outside `permission`.
+  assignedOnly: boolean;
   createdAt: Date | string;
   updatedAt?: Date | string | null;
 };
@@ -45,6 +47,7 @@ function useWorkspaceRoles(workspaceId: string | undefined) {
         workspaceId: r.organizationId,
         role: r.role,
         permission: parsePermission(r.permission),
+        assignedOnly: r.assignedOnly === true,
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,
       }));

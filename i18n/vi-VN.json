@@ -808,6 +808,10 @@
 					"assign": {
 						"label": "Giao việc",
 						"description": "Có thể giao công việc cho thành viên"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

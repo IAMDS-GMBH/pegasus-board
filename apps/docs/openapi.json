@@ -4893,7 +4893,12 @@
                   },
                   "additionalFields": {
                     "type": "object",
-                    "additionalProperties": {}
+                    "properties": {
+                      "assignedOnly": {
+                        "type": "boolean",
+                        "description": "Restrict members with this role to tasks assigned to them"
+                      }
+                    }
                   }
                 },
                 "required": [
@@ -6357,6 +6362,10 @@
                           },
                           "roleName": {
                             "type": "string"
+                          },
+                          "assignedOnly": {
+                            "type": "boolean",
+                            "description": "Restrict members with this role to tasks assigned to them"
                           }
                         }
                       }

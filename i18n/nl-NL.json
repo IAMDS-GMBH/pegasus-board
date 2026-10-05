@@ -1204,6 +1204,10 @@
 					"assign": {
 						"label": "Toewijzen",
 						"description": "Kan taken toewijzen aan leden"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

@@ -297,6 +297,11 @@ export const workspaceRoleTable = pgTable(
       }),
     role: text("role").notNull(),
     permission: text("permission").notNull(),
+    // Pegasus fork, Baustein 4: members with this role only see tasks
+    // assigned to them. Kept outside `permission` because better-auth only
+    // lets a member grant permissions they hold themselves, and no one may
+    // hold a restriction without being restricted by it.
+    assignedOnly: boolean("assigned_only").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()

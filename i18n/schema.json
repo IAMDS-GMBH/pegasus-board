@@ -3496,9 +3496,29 @@
 												}
 											},
 											"required": ["label", "description"]
+										},
+										"view_assigned_only": {
+											"type": "object",
+											"additionalProperties": false,
+											"properties": {
+												"label": {
+													"type": "string"
+												},
+												"description": {
+													"type": "string"
+												}
+											},
+											"required": ["label", "description"]
 										}
 									},
-									"required": ["create", "read", "update", "delete", "assign"]
+									"required": [
+										"create",
+										"read",
+										"update",
+										"delete",
+										"assign",
+										"view_assigned_only"
+									]
 								},
 								"label": {
 									"type": "object",

@@ -23,6 +23,7 @@ import {
   validateTaskAssetUploadInput,
   verifyTaskAssetUpload,
 } from "../storage/s3";
+import { resolveAssignedOnlyUserId } from "../utils/assigned-only-scope";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
 import {
   hasWorkspacePermission,
@@ -628,7 +629,10 @@ const descriptionMatchesRoute = createRoute({
 const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(descriptionPageRoute, async (c) =>
     c.json(
-      await getDescriptionPage(c.req.valid("param").id, c.req.valid("query")),
+      await getDescriptionPage(c.req.valid("param").id, {
+        ...c.req.valid("query"),
+        restrictToUserId: await resolveAssignedOnlyUserId(c),
+      }),
       200,
     ),
   )
@@ -639,6 +643,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
         c.req.valid("param").projectId,
         query,
         after,
+        await resolveAssignedOnlyUserId(c),
       ),
       200,
     );
@@ -647,7 +652,10 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
     const { projectId } = c.req.valid("param");
     const filters = c.req.valid("query") || {};
 
-    const tasks = await getTasks(projectId, filters);
+    const tasks = await getTasks(projectId, {
+      ...filters,
+      restrictToUserId: await resolveAssignedOnlyUserId(c),
+    });
 
     return c.json(tasks, 200);
   })
@@ -797,7 +805,10 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(exportTasksRoute, async (c) => {
     const { projectId } = c.req.valid("param");
 
-    const exportData = await exportTasks(projectId);
+    const exportData = await exportTasks(
+      projectId,
+      await resolveAssignedOnlyUserId(c),
+    );
 
     return c.json(exportData, 200);
   })

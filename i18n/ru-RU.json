@@ -1338,6 +1338,10 @@
 					"assign": {
 						"label": "Назначение",
 						"description": "Может назначать задачи участникам"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

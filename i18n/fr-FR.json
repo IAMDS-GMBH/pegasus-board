@@ -1327,6 +1327,10 @@
 					"assign": {
 						"label": "Assigner",
 						"description": "Peut assigner des tâches aux membres"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

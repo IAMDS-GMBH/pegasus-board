@@ -223,7 +223,14 @@ export function organizationRoutes(registry: OpenAPIHono["openAPIRegistry"]) {
               permission: z.record(z.string(), z.array(z.string())).openapi({
                 description: "The permission to assign to the role",
               }),
-              additionalFields: z.record(z.string(), z.unknown()).optional(),
+              additionalFields: z
+                .object({
+                  assignedOnly: z.boolean().optional().openapi({
+                    description:
+                      "Restrict members with this role to tasks assigned to them",
+                  }),
+                })
+                .optional(),
             }),
           },
         },
@@ -1105,6 +1112,10 @@ export function organizationRoutes(registry: OpenAPIHono["openAPIRegistry"]) {
                     .record(z.string(), z.array(z.string()))
                     .optional(),
                   roleName: z.string().optional(),
+                  assignedOnly: z.boolean().optional().openapi({
+                    description:
+                      "Restrict members with this role to tasks assigned to them",
+                  }),
                 }),
               }),
               z.union([

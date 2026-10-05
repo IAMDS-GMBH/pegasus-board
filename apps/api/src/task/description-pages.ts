@@ -17,10 +17,17 @@ export const boardDescription = sql<
 
 export async function getDescriptionPage(
   taskId: string,
-  options: { offset: number; version?: string; publicProjectId?: string },
+  options: {
+    offset: number;
+    version?: string;
+    publicProjectId?: string;
+    restrictToUserId?: string | null;
+  },
 ) {
   return boundedTaskRead(async (tx) => {
     const conditions = [eq(taskTable.id, taskId)];
+    if (options.restrictToUserId)
+      conditions.push(eq(taskTable.userId, options.restrictToUserId));
     if (options.publicProjectId)
       conditions.push(
         eq(taskTable.projectId, options.publicProjectId),
@@ -59,6 +66,7 @@ export async function getDeferredDescriptionMatches(
   projectId: string,
   query: string,
   after?: string,
+  restrictToUserId?: string | null,
 ) {
   return boundedTaskRead(async (tx) => {
     const rows = await tx
@@ -67,6 +75,7 @@ export async function getDeferredDescriptionMatches(
       .where(
         and(
           eq(taskTable.projectId, projectId),
+          restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
           descriptionDeferred,
           sql`strpos(lower(${taskTable.description}), lower(${query})) > 0`,
           after ? gt(taskTable.id, after) : undefined,

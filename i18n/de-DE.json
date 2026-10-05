@@ -1406,6 +1406,10 @@
 					"assign": {
 						"label": "Zuweisen",
 						"description": "Kann Aufgaben Mitgliedern zuweisen"
+					},
+					"view_assigned_only": {
+						"label": "Nur zugewiesene",
+						"description": "Sieht nur Aufgaben, die der Person zugewiesen sind"
 					}
 				},
 				"label": {

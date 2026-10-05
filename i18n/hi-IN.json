@@ -810,6 +810,10 @@
 					"assign": {
 						"label": "सौंपें",
 						"description": "सदस्यों को कार्य सौंप सकते हैं"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

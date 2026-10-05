@@ -399,6 +399,17 @@ export const auth = betterAuth({
           fields: {
             organizationId: "workspaceId",
           },
+          additionalFields: {
+            // `task:view_assigned_only` restriction (see
+            // utils/assigned-only-scope.ts). Saved through create-role /
+            // update-role, which only require `ac:create` / `ac:update`.
+            assignedOnly: {
+              type: "boolean",
+              required: false,
+              defaultValue: false,
+              input: true,
+            },
+          },
         },
         team: {
           modelName: "team",

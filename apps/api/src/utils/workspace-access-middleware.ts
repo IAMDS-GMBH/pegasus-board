@@ -2,6 +2,10 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
+import {
+  assertTasksVisible,
+  resolveAssignedOnlyUserId,
+} from "./assigned-only-scope";
 import { validateWorkspaceAccess } from "./validate-workspace-access";
 
 type WorkspaceIdSource =
@@ -53,6 +57,9 @@ export function workspaceAccessMiddleware(
     }
 
     let workspaceId: string | null = null;
+    // Assignees of the task(s) the request targets, when the workspace was
+    // resolved through a task. Checked after the role is known (below).
+    let taskAssignees: Array<string | null> | null = null;
 
     for (const source of config.sources) {
       if (source.type === "query") {
@@ -73,7 +80,11 @@ export function workspaceAccessMiddleware(
         // handler acted on another (`{"taskId": "<someone else's>"}`).
         const id = c.req.param(source.idKey) || idFromBody;
         if (id) {
-          workspaceId = await lookupWorkspaceId(source.resource, id);
+          const found = await lookupWorkspaceId(source.resource, id);
+          workspaceId = found?.workspaceId ?? null;
+          if (found && found.assigneeId !== undefined) {
+            taskAssignees = [found.assigneeId];
+          }
         }
       } else if (source.type === "lookupMany") {
         const body = await readJsonObjectBody(c);
@@ -84,7 +95,10 @@ export function workspaceAccessMiddleware(
           );
           if (taskIds.length > 0) {
             const tasks = await db
-              .select({ workspaceId: schema.projectTable.workspaceId })
+              .select({
+                workspaceId: schema.projectTable.workspaceId,
+                assigneeId: schema.taskTable.userId,
+              })
               .from(schema.taskTable)
               .innerJoin(
                 schema.projectTable,
@@ -103,6 +117,7 @@ export function workspaceAccessMiddleware(
               });
             }
             workspaceId = workspaceIds[0] ?? null;
+            taskAssignees = tasks.map((task) => task.assigneeId);
           }
         }
       }
@@ -125,9 +140,24 @@ export function workspaceAccessMiddleware(
 
     c.set("workspaceId", workspaceId);
 
+    // A role restricted to assigned tasks must not reach a task it is not
+    // assigned to. This runs here, after the workspace is known, and throws
+    // instead of returning null so the `?workspaceId=` fallback source above
+    // can never be used to slip past it.
+    if (taskAssignees) {
+      assertTasksVisible(taskAssignees, await resolveAssignedOnlyUserId(c));
+    }
+
     return next();
   };
 }
+
+type WorkspaceLookup = {
+  workspaceId: string;
+  // Set only when the resource resolves through a task (undefined otherwise);
+  // `null` means the task exists but has no assignee.
+  assigneeId?: string | null;
+};
 
 async function lookupWorkspaceId(
   resource:
@@ -141,7 +171,7 @@ async function lookupWorkspaceId(
     | "workflowRule"
     | "customField",
   id: string,
-): Promise<string | null> {
+): Promise<WorkspaceLookup | null> {
   try {
     switch (resource) {
       case "project": {
@@ -150,13 +180,16 @@ async function lookupWorkspaceId(
           .from(schema.projectTable)
           .where(eq(schema.projectTable.id, id))
           .limit(1);
-        return project?.workspaceId || null;
+        return project?.workspaceId
+          ? { workspaceId: project.workspaceId }
+          : null;
       }
 
       case "task": {
         const [task] = await db
           .select({
             workspaceId: schema.projectTable.workspaceId,
+            assigneeId: schema.taskTable.userId,
           })
           .from(schema.taskTable)
           .innerJoin(
@@ -165,7 +198,12 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.taskTable.id, id))
           .limit(1);
-        return task?.workspaceId || null;
+        return task?.workspaceId
+          ? {
+              workspaceId: task.workspaceId,
+              assigneeId: task.assigneeId,
+            }
+          : null;
       }
 
       case "label": {
@@ -174,6 +212,7 @@ async function lookupWorkspaceId(
             workspaceId: schema.labelTable.workspaceId,
             taskId: schema.labelTable.taskId,
             taskWorkspaceId: schema.projectTable.workspaceId,
+            assigneeId: schema.taskTable.userId,
           })
           .from(schema.labelTable)
           .leftJoin(
@@ -191,13 +230,21 @@ async function lookupWorkspaceId(
         if (label?.taskId && label.taskWorkspaceId !== label.workspaceId) {
           return null;
         }
-        return label?.workspaceId || null;
+        if (!label?.workspaceId) return null;
+        // Workspace-level label definitions (no task) are not assignee-scoped.
+        return label.taskId
+          ? {
+              workspaceId: label.workspaceId,
+              assigneeId: label.assigneeId,
+            }
+          : { workspaceId: label.workspaceId };
       }
 
       case "timeEntry": {
         const [timeEntry] = await db
           .select({
             workspaceId: schema.projectTable.workspaceId,
+            assigneeId: schema.taskTable.userId,
           })
           .from(schema.timeEntryTable)
           .innerJoin(
@@ -210,13 +257,19 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.timeEntryTable.id, id))
           .limit(1);
-        return timeEntry?.workspaceId || null;
+        return timeEntry?.workspaceId
+          ? {
+              workspaceId: timeEntry.workspaceId,
+              assigneeId: timeEntry.assigneeId,
+            }
+          : null;
       }
 
       case "activity": {
         const [activity] = await db
           .select({
             workspaceId: schema.projectTable.workspaceId,
+            assigneeId: schema.taskTable.userId,
           })
           .from(schema.activityTable)
           .innerJoin(
@@ -229,13 +282,19 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.activityTable.id, id))
           .limit(1);
-        return activity?.workspaceId || null;
+        return activity?.workspaceId
+          ? {
+              workspaceId: activity.workspaceId,
+              assigneeId: activity.assigneeId,
+            }
+          : null;
       }
 
       case "comment": {
         const [comment] = await db
           .select({
             workspaceId: schema.projectTable.workspaceId,
+            assigneeId: schema.taskTable.userId,
           })
           .from(schema.activityTable)
           .innerJoin(
@@ -253,7 +312,12 @@ async function lookupWorkspaceId(
             ),
           )
           .limit(1);
-        return comment?.workspaceId || null;
+        return comment?.workspaceId
+          ? {
+              workspaceId: comment.workspaceId,
+              assigneeId: comment.assigneeId,
+            }
+          : null;
       }
 
       case "column": {
@@ -268,7 +332,7 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.columnTable.id, id))
           .limit(1);
-        return column?.workspaceId || null;
+        return column?.workspaceId ? { workspaceId: column.workspaceId } : null;
       }
 
       case "workflowRule": {
@@ -283,7 +347,9 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.workflowRuleTable.id, id))
           .limit(1);
-        return workflowRule?.workspaceId || null;
+        return workflowRule?.workspaceId
+          ? { workspaceId: workflowRule.workspaceId }
+          : null;
       }
 
       case "customField": {
@@ -301,7 +367,7 @@ async function lookupWorkspaceId(
           )
           .where(eq(schema.customFieldDefinitionTable.id, id))
           .limit(1);
-        return field?.workspaceId || null;
+        return field?.workspaceId ? { workspaceId: field.workspaceId } : null;
       }
 
       default:

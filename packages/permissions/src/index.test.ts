@@ -7,6 +7,7 @@ import {
   defaultRolePayloads,
   member,
   owner,
+  roleRestrictions,
   statement,
   viewer,
 } from "./index";
@@ -48,6 +49,13 @@ describe("@kaneo/permissions statement surface", () => {
 });
 
 describe("built-in role privileges", () => {
+  it("keeps role restrictions out of the grantable statement", () => {
+    expect(roleRestrictions).toEqual({
+      task: { view_assigned_only: "assignedOnly" },
+    });
+    expect(statement.task).not.toContain("view_assigned_only");
+  });
+
   it("viewer can read but cannot create or modify", () => {
     expect(viewer.statements.project).toEqual(["read"]);
     expect(viewer.statements.task).toEqual(["read"]);
