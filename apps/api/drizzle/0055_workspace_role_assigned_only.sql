@@ -1,1 +1,0 @@
-ALTER TABLE "workspace_role" ADD COLUMN "assigned_only" boolean DEFAULT false NOT NULL;

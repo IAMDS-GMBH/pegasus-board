@@ -503,6 +503,68 @@ describe("API integration: task:view_assigned_only row filter", () => {
     });
   });
 
+  describe("ticket-id links, workspace activity and integration sync", () => {
+    it("resolves only the own task by ticket id", async () => {
+      const f = await fixture();
+      const app = asUser(f.restricted.user);
+
+      const own = await app.request("/api/task/by-ticket-id/POOL-1");
+      expect(own.status).toBe(200);
+      expect(((await own.json()) as { id: string }).id).toBe(f.mine.id);
+
+      for (const ticketId of ["POOL-2", "POOL-3"]) {
+        const hidden = await app.request(`/api/task/by-ticket-id/${ticketId}`);
+        expect(hidden.status).toBe(404);
+      }
+
+      const colleague = await asUser(f.colleague).request(
+        "/api/task/by-ticket-id/POOL-2",
+      );
+      expect(colleague.status).toBe(200);
+    });
+
+    it("lists only activity on the own tasks", async () => {
+      const f = await fixture();
+      await seedComment(f.theirs.id, f.colleague.id, "Rückruf vereinbart");
+      await seedComment(f.unassigned.id, f.colleague.id, "Pool gesichtet");
+      await seedComment(f.mine.id, f.colleague.id, "Rückruf erledigt");
+
+      const feed = async (user: typeof schema.userTable.$inferSelect) => {
+        const response = await asUser(user).request(
+          `/api/activity/workspace/${f.workspace.id}`,
+        );
+        expect(response.status).toBe(200);
+        return ((await response.json()) as Array<{ taskId: string }>).map(
+          (event) => event.taskId,
+        );
+      };
+
+      expect(await feed(f.restricted.user)).toEqual([f.mine.id]);
+      expect((await feed(f.colleague)).sort()).toEqual(
+        [f.mine.id, f.theirs.id, f.unassigned.id].sort(),
+      );
+    });
+
+    it("denies the project-wide integration sync scope", async () => {
+      const f = await fixture();
+      await db.insert(schema.integrationTable).values({
+        projectId: f.project.id,
+        type: "gitea",
+        isActive: true,
+        config: JSON.stringify({
+          baseUrl: "https://git.example",
+          accessToken: "test-only",
+          repositoryOwner: "team",
+          repositoryName: "repo",
+        }),
+      });
+      const path = `/api/integration-sync/project/${f.project.id}/gitea`;
+
+      expect((await asUser(f.restricted.user).request(path)).status).toBe(403);
+      expect((await asUser(f.colleague).request(path)).status).toBe(200);
+    });
+  });
+
   describe("exemptions", () => {
     it("does not restrict an instance admin who holds the restricted role", async () => {
       const f = await fixture();
