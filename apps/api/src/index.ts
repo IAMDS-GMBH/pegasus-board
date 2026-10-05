@@ -79,6 +79,7 @@ import { getInvitationDetails } from "./utils/check-registration-allowed";
 import { clientIpMiddleware } from "./utils/client-ip";
 import { migrateApiKeyReferenceId } from "./utils/migrate-apikey-reference-id";
 import { migrateNotificationPreferencesSchema } from "./utils/migrate-notification-preferences-schema";
+import { forgetRenumberedForkMigration } from "./utils/migrate-renumbered-fork-migration";
 import { migrateSessionColumn } from "./utils/migrate-session-column";
 import { migrateWorkspaceUserEmail } from "./utils/migrate-workspace-user-email";
 import { normalizeApiServerUrl } from "./utils/openapi-spec";
@@ -928,6 +929,7 @@ export async function runStartupTasks() {
     runStartupMigrations: async () => {
       await migrateWorkspaceUserEmail();
       await migrateSessionColumn();
+      await forgetRenumberedForkMigration();
 
       console.log("🔄 Migrating database...");
       await migrate(getDatabase(), {
