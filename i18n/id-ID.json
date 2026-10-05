@@ -1324,6 +1324,10 @@
 					"assign": {
 						"label": "Tugaskan tugas",
 						"description": "Tugaskan tugas kepada anggota ruang kerja lain."
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

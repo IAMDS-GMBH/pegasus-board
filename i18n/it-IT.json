@@ -811,6 +811,10 @@
 					"assign": {
 						"label": "Assegnare",
 						"description": "Può assegnare attività ai membri"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

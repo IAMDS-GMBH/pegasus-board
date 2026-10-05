@@ -808,6 +808,10 @@
 					"assign": {
 						"label": "割り当て",
 						"description": "メンバーにタスクを割り当てることができます"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

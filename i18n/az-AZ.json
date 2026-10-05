@@ -810,6 +810,10 @@
 					"assign": {
 						"label": "Təyin et",
 						"description": "Tapşırıqları üzvlərə təyin edə bilər"
+					},
+					"view_assigned_only": {
+						"description": "Can only see tasks assigned to them",
+						"label": "Only assigned"
 					}
 				},
 				"label": {

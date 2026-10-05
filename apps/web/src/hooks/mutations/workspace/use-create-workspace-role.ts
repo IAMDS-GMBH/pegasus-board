@@ -5,6 +5,7 @@ type CreateWorkspaceRoleRequest = {
   workspaceId: string;
   role: string;
   permission: Record<string, string[]>;
+  assignedOnly: boolean;
 };
 
 function useCreateWorkspaceRole() {
@@ -14,11 +15,13 @@ function useCreateWorkspaceRole() {
       workspaceId,
       role,
       permission,
+      assignedOnly,
     }: CreateWorkspaceRoleRequest) => {
       const { data, error } = await authClient.organization.createRole({
         organizationId: workspaceId,
         role,
         permission,
+        additionalFields: { assignedOnly },
       });
       if (error) {
         throw new Error(error.message || "Failed to create role");

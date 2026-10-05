@@ -74,6 +74,7 @@ describe("workspace role permission editing", () => {
           workspaceId: "workspace",
           role: "admin",
           permission: defaultRolePayloads.admin,
+          assignedOnly: false,
           createdAt: new Date(),
         }}
         isDefault
@@ -92,8 +93,62 @@ describe("workspace role permission editing", () => {
         workspaceId: "workspace",
         roleName: "admin",
         permission: {},
+        assignedOnly: false,
       }),
     );
+  });
+  it("saves the assigned-only restriction as its own field, not as a permission", async () => {
+    render(
+      <CustomRoleEditor
+        workspaceId="workspace"
+        role={{
+          id: "role",
+          workspaceId: "workspace",
+          role: "fuehrungskraft",
+          permission: { task: ["read", "update"] },
+          assignedOnly: false,
+          createdAt: new Date(),
+        }}
+        onDelete={() => {}}
+      />,
+    );
+    const restriction = screen.getByRole("switch", {
+      name: "Only assigned tasks",
+    });
+    expect(restriction).not.toBeChecked();
+    fireEvent.click(restriction);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "settings:workspaceRoles.saveChanges",
+      }),
+    );
+    await waitFor(() =>
+      expect(m.update).toHaveBeenCalledWith({
+        workspaceId: "workspace",
+        roleName: "fuehrungskraft",
+        permission: { task: ["read", "update"] },
+        assignedOnly: true,
+      }),
+    );
+  });
+  it("shows a stored assigned-only restriction as switched on", () => {
+    render(
+      <CustomRoleEditor
+        workspaceId="workspace"
+        role={{
+          id: "role",
+          workspaceId: "workspace",
+          role: "fuehrungskraft",
+          permission: { task: ["read"] },
+          assignedOnly: true,
+          createdAt: new Date(),
+        }}
+        onDelete={() => {}}
+      />,
+    );
+    expect(
+      screen.getByRole("switch", { name: "Only assigned tasks" }),
+    ).toBeChecked();
   });
   it("also exposes unknown stored permission entries instead of silently retaining them", () => {
     render(

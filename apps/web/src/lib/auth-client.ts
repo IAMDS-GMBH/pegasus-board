@@ -46,6 +46,13 @@ export const authClient = createAuthClient({
       dynamicAccessControl: {
         enabled: true,
       },
+      schema: {
+        organizationRole: {
+          additionalFields: {
+            assignedOnly: { type: "boolean", required: false, input: true },
+          },
+        },
+      },
     }),
     genericOAuthClient(),
     deviceAuthorizationClient(),

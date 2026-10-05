@@ -31,6 +31,10 @@ import { getSubtaskCounts } from "../get-subtask-counts";
 export type GetTasksOptions = {
   publicOnly?: boolean;
   assigneeId?: string;
+  // Server-derived from the member's role (`task:view_assigned_only`), never
+  // from the request. Unlike the client filter `assigneeId` it cannot be
+  // widened or dropped by the caller.
+  restrictToUserId?: string | null;
   dueAfter?: string;
   dueBefore?: string;
   limit?: number;
@@ -111,6 +115,10 @@ async function getTasksPage(
 
   if (options.assigneeId) {
     conditions.push(eq(taskTable.userId, options.assigneeId));
+  }
+
+  if (options.restrictToUserId) {
+    conditions.push(eq(taskTable.userId, options.restrictToUserId));
   }
 
   if (options.dueBefore) {

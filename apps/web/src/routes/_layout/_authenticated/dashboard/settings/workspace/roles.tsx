@@ -1,4 +1,8 @@
-import { DEFAULT_ROLE_NAMES, statement } from "@kaneo/permissions";
+import {
+  DEFAULT_ROLE_NAMES,
+  roleRestrictions,
+  statement,
+} from "@kaneo/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Shield, Trash2, X } from "lucide-react";
 import { useId, useMemo, useState } from "react";
@@ -161,6 +165,11 @@ const PERMISSION_LABELS: Record<
     label: "Assign tasks",
     description: "Assign tasks to other workspace members.",
   },
+  "task:view_assigned_only": {
+    label: "Only assigned tasks",
+    description:
+      "Restricts this role to tasks assigned to the member. Other tasks respond as not found, including in search and export.",
+  },
   "label:create": {
     label: "Create labels",
     description: "Add new labels to tasks in this workspace.",
@@ -213,6 +222,48 @@ const DEFAULT_ROLE_DESCRIPTIONS: Record<string, string> = {
 
 function isDefaultRole(name: string) {
   return DEFAULT_ROLE_NAME_SET.has(name);
+}
+
+// `task:view_assigned_only` is toggled next to the task permissions but saved
+// as the role's `assignedOnly` field, not in `permission`: better-auth only
+// lets a member grant permissions they hold (see `roleRestrictions`).
+const ASSIGNED_ONLY_RESOURCE = "task";
+const ASSIGNED_ONLY_ACTION = "view_assigned_only";
+
+function toEditorSelection(
+  permission: Record<string, string[]>,
+  assignedOnly: boolean,
+): Record<string, Set<string>> {
+  const out: Record<string, Set<string>> = Object.create(null);
+  for (const [r, actions] of Object.entries(permission)) {
+    out[r] = new Set(actions);
+  }
+  if (assignedOnly) {
+    out[ASSIGNED_ONLY_RESOURCE] = new Set([
+      ...(out[ASSIGNED_ONLY_RESOURCE] ?? []),
+      ASSIGNED_ONLY_ACTION,
+    ]);
+  }
+  return out;
+}
+
+function fromEditorSelection(selected: Record<string, Set<string>>): {
+  permission: Record<string, string[]>;
+  assignedOnly: boolean;
+} {
+  const permission: Record<string, string[]> = Object.create(null);
+  let assignedOnly = false;
+  for (const [r, set] of Object.entries(selected)) {
+    const actions = Array.from(set).filter((action) => {
+      if (r === ASSIGNED_ONLY_RESOURCE && action === ASSIGNED_ONLY_ACTION) {
+        assignedOnly = true;
+        return false;
+      }
+      return true;
+    });
+    if (actions.length > 0) permission[r] = actions;
+  }
+  return { permission, assignedOnly };
 }
 
 function permissionsEqual(
@@ -507,7 +558,14 @@ export function PermissionList({
   const { t } = useTranslation();
   const id = useId();
   const groups = useMemo(() => {
-    const known = statement as Record<string, readonly string[]>;
+    const restrictions = roleRestrictions as Record<
+      string,
+      Record<string, string>
+    >;
+    const known: Record<string, readonly string[]> = { ...statement };
+    for (const [resource, actions] of Object.entries(restrictions)) {
+      known[resource] = [...(known[resource] ?? []), ...Object.keys(actions)];
+    }
     const resources = new Set([
       ...Object.keys(known),
       ...Object.keys(permissions),
@@ -647,16 +705,18 @@ function DraftEditor({
       toast.error(t("settings:workspaceRoles.validation.nameExists"));
       return;
     }
-    const permission: Record<string, string[]> = {};
-    for (const [r, set] of Object.entries(permissions)) {
-      if (set.size > 0) permission[r] = Array.from(set);
-    }
+    const { permission, assignedOnly } = fromEditorSelection(permissions);
     if (Object.keys(permission).length === 0) {
       toast.error(t("settings:workspaceRoles.validation.permissionRequired"));
       return;
     }
     try {
-      await createRole({ workspaceId, role: trimmed, permission });
+      await createRole({
+        workspaceId,
+        role: trimmed,
+        permission,
+        assignedOnly,
+      });
       toast.success(t("settings:workspaceRoles.toast.created"));
       onCreated(trimmed);
     } catch (error) {
@@ -730,25 +790,18 @@ export function CustomRoleEditor({
 }) {
   const { t } = useTranslation();
   const [permissions, setPermissions] = useState<Record<string, Set<string>>>(
-    () => {
-      const out: Record<string, Set<string>> = Object.create(null);
-      for (const [r, actions] of Object.entries(role.permission)) {
-        out[r] = new Set(actions);
-      }
-      return out;
-    },
+    () => toEditorSelection(role.permission, role.assignedOnly),
   );
   const { mutateAsync: updateRole, isPending } = useUpdateWorkspaceRole();
 
-  const currentPermissions = useMemo(() => {
-    const out: Record<string, string[]> = Object.create(null);
-    for (const [r, set] of Object.entries(permissions)) {
-      if (set.size > 0) out[r] = Array.from(set);
-    }
-    return out;
-  }, [permissions]);
+  const current = useMemo(
+    () => fromEditorSelection(permissions),
+    [permissions],
+  );
 
-  const dirty = !permissionsEqual(currentPermissions, role.permission);
+  const dirty =
+    !permissionsEqual(current.permission, role.permission) ||
+    current.assignedOnly !== role.assignedOnly;
 
   const togglePermission = (resource: string, action: string) => {
     setPermissions((prev) => {
@@ -766,7 +819,8 @@ export function CustomRoleEditor({
       await updateRole({
         workspaceId,
         roleName: role.role,
-        permission: currentPermissions,
+        permission: current.permission,
+        assignedOnly: current.assignedOnly,
       });
       toast.success(t("settings:workspaceRoles.toast.updated"));
     } catch (error) {

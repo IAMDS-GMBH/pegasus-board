@@ -1,4 +1,13 @@
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  notInArray,
+  or,
+  sql,
+} from "drizzle-orm";
 import db from "../../database";
 import {
   activityTable,
@@ -25,6 +34,10 @@ type SearchParams = {
   workspaceId?: string;
   projectId?: string;
   limit?: number;
+  // Workspaces in which the user may only see tasks assigned to them
+  // (`task:view_assigned_only`). Task, comment and activity hits from these
+  // workspaces are limited to the user's own tasks.
+  assignedOnlyWorkspaceIds?: string[];
 };
 
 type SearchResult = {
@@ -109,6 +122,7 @@ async function globalSearch(params: SearchParams): Promise<{
     workspaceId,
     projectId,
     limit = 20,
+    assignedOnlyWorkspaceIds,
   } = params;
 
   let resolvedUserId = userId;
@@ -147,6 +161,16 @@ async function globalSearch(params: SearchParams): Promise<{
   const workspaceFilter = workspaceId
     ? eq(projectTable.workspaceId, workspaceId)
     : inArray(projectTable.workspaceId, accessibleWorkspaceIds);
+
+  // Rows from a workspace where the user is restricted to assigned tasks must
+  // be the user's own; rows from other workspaces pass unchanged.
+  const assigneeScope =
+    assignedOnlyWorkspaceIds && assignedOnlyWorkspaceIds.length > 0
+      ? or(
+          notInArray(projectTable.workspaceId, assignedOnlyWorkspaceIds),
+          eq(taskTable.userId, resolvedUserId),
+        )
+      : undefined;
 
   // Check if query matches short-id pattern (e.g. "DEP-23"). `generateProjectSlug`
   // normalizes to NFKC before it stores a key, so the query is normalized too,
@@ -195,6 +219,7 @@ async function globalSearch(params: SearchParams): Promise<{
         .where(
           and(
             workspaceFilter,
+            assigneeScope,
             projectId ? eq(taskTable.projectId, projectId) : undefined,
             // A project key may hold `_`, which `ilike` reads as "any one
             // character", so `DE_-23` would also match a task in `DEP` and the
@@ -263,6 +288,7 @@ async function globalSearch(params: SearchParams): Promise<{
       .where(
         and(
           workspaceFilter,
+          assigneeScope,
           projectId ? eq(taskTable.projectId, projectId) : undefined,
           or(
             ilike(taskTable.title, searchPattern),
@@ -437,6 +463,7 @@ async function globalSearch(params: SearchParams): Promise<{
       .where(
         and(
           workspaceFilter,
+          assigneeScope,
           projectId ? eq(taskTable.projectId, projectId) : undefined,
           or(
             ilike(searchableActivityText, searchPattern),
