@@ -13874,7 +13874,7 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access or required permission",
+            "description": "No workspace access, missing permission, or role limited to assigned tasks",
             "content": {
               "text/plain": {
                 "schema": {
@@ -14095,7 +14095,7 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access or required permission",
+            "description": "No workspace access, missing permission, or role limited to assigned tasks",
             "content": {
               "text/plain": {
                 "schema": {
@@ -14312,7 +14312,7 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access or required permission",
+            "description": "No workspace access, missing permission, or role limited to assigned tasks",
             "content": {
               "text/plain": {
                 "schema": {
@@ -14409,7 +14409,7 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access or required permission",
+            "description": "No workspace access, missing permission, or role limited to assigned tasks",
             "content": {
               "text/plain": {
                 "schema": {
@@ -14553,7 +14553,7 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access or required permission",
+            "description": "No workspace access, missing permission, or role limited to assigned tasks",
             "content": {
               "text/plain": {
                 "schema": {

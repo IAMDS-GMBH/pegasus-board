@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import type { Context } from "hono";
+import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
 import { isInstanceAdmin } from "./is-instance-admin";
@@ -67,6 +67,20 @@ export async function resolveAssignedOnlyUserId(
 
   c.set(SCOPE_CONTEXT_KEY, { userId: restrictedUserId });
   return restrictedUserId;
+}
+
+/**
+ * Middleware for workspace-wide task views that cannot be narrowed to the
+ * user's own tasks, such as integration sync scope. Runs after
+ * `workspaceAccess`, which sets the workspace.
+ */
+export async function denyAssignedOnly(c: Context, next: Next) {
+  if (await resolveAssignedOnlyUserId(c)) {
+    throw new HTTPException(403, {
+      message: "Not available to roles limited to assigned tasks",
+    });
+  }
+  return next();
 }
 
 /**

@@ -25,7 +25,10 @@ import {
   validateTaskAssetUploadInput,
   verifyTaskAssetUpload,
 } from "../storage/s3";
-import { resolveAssignedOnlyUserId } from "../utils/assigned-only-scope";
+import {
+  listAssignedOnlyWorkspaceIds,
+  resolveAssignedOnlyUserId,
+} from "../utils/assigned-only-scope";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
 import {
   hasWorkspacePermission,
@@ -938,7 +941,10 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(getTaskByTicketIdRoute, async (c) => {
     const { ticketId } = c.req.valid("param");
     return c.json(
-      await getTaskByTicketId(ticketId, c.get("userId"), c.req.valid("query")),
+      await getTaskByTicketId(ticketId, c.get("userId"), {
+        ...c.req.valid("query"),
+        assignedOnlyWorkspaceIds: await listAssignedOnlyWorkspaceIds(c),
+      }),
       200,
     );
   })

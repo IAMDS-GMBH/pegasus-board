@@ -7,6 +7,7 @@ import {
   jsonResponse,
   z,
 } from "../openapi";
+import { resolveAssignedOnlyUserId } from "../utils/assigned-only-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createActivity from "./controllers/create-activity";
@@ -181,7 +182,13 @@ const deleteCommentRoute = createRoute({
 
 const activity = apiRouter()
   .openapi(getWorkspaceActivitiesRoute, async (c) =>
-    c.json(await getWorkspaceActivities(c.req.valid("param").workspaceId), 200),
+    c.json(
+      await getWorkspaceActivities(
+        c.req.valid("param").workspaceId,
+        await resolveAssignedOnlyUserId(c),
+      ),
+      200,
+    ),
   )
   .openapi(getActivitiesRoute, async (c) =>
     c.json(

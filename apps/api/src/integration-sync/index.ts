@@ -8,6 +8,7 @@ import {
 } from "../openapi";
 import { readSyncRules } from "../plugins/sync/rules";
 import db from "../database";
+import { denyAssignedOnly } from "../utils/assigned-only-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { getSyncIntegration } from "./controllers/get-integration";
@@ -29,6 +30,8 @@ import {
 const access = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ project: ["read"], task: ["read"] }),
+  // Sync scope lists tasks across the whole project.
+  denyAssignedOnly,
 ];
 const manage = [
   ...access,
@@ -36,7 +39,9 @@ const manage = [
 ];
 const errors = {
   400: errorResponse("Invalid rule or workspace label"),
-  403: errorResponse("No workspace access or required permission"),
+  403: errorResponse(
+    "No workspace access, missing permission, or role limited to assigned tasks",
+  ),
   404: errorResponse("Integration or linked task not found"),
   409: errorResponse(
     "Configuration, impact or comparison changed; review again",

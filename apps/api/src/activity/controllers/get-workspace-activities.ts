@@ -15,7 +15,10 @@ export const WORKSPACE_ACTIVITY_LIMIT = 20;
 // in workspaces with years of history.
 const WINDOW_DAYS = 30;
 
-async function getWorkspaceActivities(workspaceId: string) {
+async function getWorkspaceActivities(
+  workspaceId: string,
+  restrictToUserId: string | null = null,
+) {
   const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
   // Concrete project IDs let PostgreSQL estimate task selectivity before it
@@ -60,6 +63,7 @@ async function getWorkspaceActivities(workspaceId: string) {
         sql`${taskTable.projectId} = ANY(${sql.param(projects.map((project) => project.id))}::text[])`,
         isNull(projectTable.archivedAt),
         gte(activityTable.createdAt, since),
+        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
       ),
     )
     .orderBy(desc(activityTable.createdAt), desc(activityTable.id))

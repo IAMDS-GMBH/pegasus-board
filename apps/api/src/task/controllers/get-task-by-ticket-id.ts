@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, notInArray, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
@@ -23,7 +23,14 @@ export default async function getTaskByTicketId(
     workspaceId,
     workspaceSlug,
     projectId,
-  }: { workspaceId?: string; workspaceSlug?: string; projectId?: string } = {},
+    assignedOnlyWorkspaceIds = [],
+  }: {
+    workspaceId?: string;
+    workspaceSlug?: string;
+    projectId?: string;
+    // Workspaces where the user's role only sees tasks assigned to them.
+    assignedOnlyWorkspaceIds?: string[];
+  } = {},
 ) {
   const match = ticketId.normalize("NFKC").match(TICKET_ID_PATTERN);
   const projectKey = match?.[1];
@@ -86,6 +93,12 @@ export default async function getTaskByTicketId(
         hasInstanceAdminRole(user?.role)
           ? undefined
           : inArray(projectTable.workspaceId, memberWorkspaces),
+        assignedOnlyWorkspaceIds.length > 0
+          ? or(
+              notInArray(projectTable.workspaceId, assignedOnlyWorkspaceIds),
+              eq(taskTable.userId, userId),
+            )
+          : undefined,
       ),
     );
 
