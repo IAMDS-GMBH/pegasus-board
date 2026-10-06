@@ -116,6 +116,24 @@ async function seedLabel(workspaceId: string, taskId: string) {
   return row;
 }
 
+async function seedCustomField(projectId: string, name = "Region") {
+  const [row] = await db
+    .insert(schema.customFieldDefinitionTable)
+    .values({ projectId, name, type: "text", required: false, position: 0 })
+    .returning();
+  return row;
+}
+
+async function seedCustomFieldValue(
+  taskId: string,
+  fieldId: string,
+  value: string,
+) {
+  await db
+    .insert(schema.customFieldValueTable)
+    .values({ taskId, fieldId, value });
+}
+
 async function fixture() {
   // `createWorkspaceMember` is the restricted user; a second member (plain
   // `member` role) owns the "foreign" task.
@@ -562,6 +580,90 @@ describe("API integration: task:view_assigned_only row filter", () => {
 
       expect((await asUser(f.restricted.user).request(path)).status).toBe(403);
       expect((await asUser(f.colleague).request(path)).status).toBe(200);
+    });
+  });
+
+  // The board card and the filter toolbar read field values per project, not
+  // per task, so the shared task lookup never sees them. Both routes must
+  // apply the row filter themselves (Pegasus fork, Stufe 0 Baustein 3).
+  describe("custom field values", () => {
+    type ValueRow = { taskId: string; value: string | null };
+    type FilterRow = { fieldId: string; values: string[] };
+
+    async function seedRegionValues(f: Awaited<ReturnType<typeof fixture>>) {
+      const field = await seedCustomField(f.project.id);
+      await seedCustomFieldValue(f.mine.id, field.id, "Nord");
+      await seedCustomFieldValue(f.theirs.id, field.id, "Sued");
+      await seedCustomFieldValue(f.unassigned.id, field.id, "West");
+      return field;
+    }
+
+    it("returns only values of the own tasks from the project values route", async () => {
+      const f = await fixture();
+      await seedRegionValues(f);
+
+      const values = async (user: typeof schema.userTable.$inferSelect) => {
+        const response = await asUser(user).request(
+          `/api/custom-field/project/${f.project.id}/values`,
+        );
+        expect(response.status).toBe(200);
+        return (await response.json()) as ValueRow[];
+      };
+
+      expect((await values(f.restricted.user)).map((v) => v.taskId)).toEqual([
+        f.mine.id,
+      ]);
+      expect((await values(f.colleague)).map((v) => v.taskId).sort()).toEqual(
+        [f.mine.id, f.theirs.id, f.unassigned.id].sort(),
+      );
+    });
+
+    it("keeps the definitions but hides foreign values in the filter values", async () => {
+      const f = await fixture();
+      const field = await seedRegionValues(f);
+
+      const filterValues = async (
+        user: typeof schema.userTable.$inferSelect,
+      ) => {
+        const response = await asUser(user).request(
+          `/api/custom-field/project/${f.project.id}/filter-values`,
+        );
+        expect(response.status).toBe(200);
+        return (await response.json()) as FilterRow[];
+      };
+
+      const restricted = await filterValues(f.restricted.user);
+      expect(restricted.map((entry) => entry.fieldId)).toEqual([field.id]);
+      expect(restricted[0]?.values).toEqual(["Nord"]);
+
+      const colleague = await filterValues(f.colleague);
+      expect(colleague[0]?.values.sort()).toEqual(["Nord", "Sued", "West"]);
+    });
+
+    it("hides the task-level values and rejects writes on a foreign task", async () => {
+      const f = await fixture();
+      const field = await seedRegionValues(f);
+      const app = asUser(f.restricted.user);
+
+      expect(
+        (await app.request(`/api/custom-field/task/${f.theirs.id}`)).status,
+      ).toBe(404);
+      const put = await app.request("/api/custom-field/value", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          taskId: f.theirs.id,
+          fieldId: field.id,
+          value: "Ost",
+        }),
+      });
+      expect(put.status).toBe(404);
+
+      const own = await app.request(`/api/custom-field/task/${f.mine.id}`);
+      expect(own.status).toBe(200);
+      expect(((await own.json()) as ValueRow[]).map((v) => v.value)).toEqual([
+        "Nord",
+      ]);
     });
   });
 

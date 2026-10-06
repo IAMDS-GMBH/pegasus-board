@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import db from "../../database";
 import {
   customFieldDefinitionTable,
@@ -6,7 +6,12 @@ import {
   taskTable,
 } from "../../database/schema";
 
-async function getCustomFieldValuesByProject(projectId: string) {
+// Pegasus fork: `restrictToUserId` applies the assigned-only row filter
+// (task:view_assigned_only) so the board chip never leaks foreign task values.
+async function getCustomFieldValuesByProject(
+  projectId: string,
+  restrictToUserId: string | null = null,
+) {
   return db
     .select({
       id: customFieldValueTable.id,
@@ -24,7 +29,12 @@ async function getCustomFieldValuesByProject(projectId: string) {
       customFieldDefinitionTable,
       eq(customFieldValueTable.fieldId, customFieldDefinitionTable.id),
     )
-    .where(eq(taskTable.projectId, projectId));
+    .where(
+      and(
+        eq(taskTable.projectId, projectId),
+        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
+      ),
+    );
 }
 
 export default getCustomFieldValuesByProject;
