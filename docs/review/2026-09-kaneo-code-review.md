@@ -340,7 +340,7 @@ Bestätigt ohne Einschränkung: Workspace-Rollen frei konfigurierbar (bis 25), D
 | Hub: Massenimport CSV (statt Kaneo-CSV) | 0 | 0,5–1 | kein CSV in Kaneo |
 | Hub: Abgleich-Poll Kaneo-Ereignisse | 0 | 0,5–1 | Webhooks ohne Retry, ohne Feld-Ereignis |
 | Sicherheitsgrundlagen (2FA) | 1 (Konfiguration) | 1–2 | twoFactor-Plugin aktivieren und UI, oder SSO-Pflicht ohne Mehraufwand |
-| **Summe Stufe 1 (Entwicklung)** | **34–46** | **~35–48** | Netto etwa gleich; Verschiebung von Board-Feldern zu Rechten und Hub |
+| **Summe Stufe 1 (Entwicklung)** | **34–46** | **~35–50** | Netto etwa gleich; Verschiebung von Board-Feldern zu Rechten und Hub (Obergrenze korrigiert am 2026-10-06: 46 − 3 + 4 + 1 + 1 + 1 = 50, vorher 48) |
 
 Stufe 2: Push-Benachrichtigungen 2–3 → 3–5 PT. Stufe 0 bleibt bei 4–6 PT, sollte aber den Prototyp auf den **Zeilenfilter** statt auf Custom Fields konzentrieren.
 

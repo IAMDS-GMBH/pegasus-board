@@ -19,7 +19,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel.
 |---|---|
 | Testnutzer mit Rolle Führungskraft sieht in Board, Suche und API nur zugewiesene Karten | **Erfüllt auf API-Ebene**, nachgewiesen durch 14 Integrationstests (`tests/api-integration/task-view-assigned-only.test.ts`): Board-Liste, Einzelkarte, Kommentare, Aktivitäten, Zeiteinträge, Labels, Beschreibungsseiten, Bulk, Export und Suche liefern ausschließlich eigene Karten; fremde und unzugewiesene Karten antworten 404. Die Web-App hat keine eigene Sichtbarkeitslogik und rendert, was die API liefert; eine Browser-Sitzung wurde in dieser Stufe nicht aufgezeichnet. |
 | Umgehungsmöglichkeiten dokumentiert und bewertet | **Erfüllt**, Abschnitt 4: 40 Routen über den gemeinsamen Lookup und 7 Listen-Endpunkte sind gedeckt; 13 Flächen bleiben offen und sind mit Risiko und Stufe-1-Maßnahme bewertet. |
-| Restaufwand Stufe 1 inkl. Rückgabe und Ablage geschätzt | **Erfüllt**, Abschnitt 6: 2,5–4 PT im Fork, 0,5–1 PT im Hub. |
+| Restaufwand Stufe 1 inkl. Rückgabe und Ablage geschätzt | **Erfüllt**, Abschnitt 6: 4,25–5,75 PT im Fork, 0,75–1 PT im Hub (korrigiert am 2026-10-06, siehe Abschnitt 6). |
 
 **Kernaussage:** Der Zeilenfilter lässt sich als eigenständiges Modul plus eine Permission in Kaneo einbauen, ohne Built-in-Rollen oder Seeds anzufassen; nötig ist nur eine additive Spalte `workspace_role.assigned_only` (Migration 0055, Default `false`). Der Diff umfasst eine neue Datei mit der gesamten Fachlogik und punktuelle Einzeiler in neun Upstream-Dateien (271 Zeilen hinzu, 24 geändert, inkl. Tests und 21 Locale-Dateien). Die Rückfalloption PocketBase (Konzept Kap. 8) wird nicht gebraucht.
 
@@ -123,7 +123,7 @@ Status: **gedeckt** = im Prototyp geschlossen und getestet · **offen** = in Stu
 | 21 | **Detail-Sheet im Board** ohne Fehlerzustand bei 404 (Direktaufruf `?taskId=` fremder Karte zeigt leeres Sheet) | `apps/web/src/components/task/task-details-sheet.tsx` | offen (UX) | kein Datenabfluss | „Nicht gefunden“-Zustand wie auf der Detailseite | 0,25 |
 | 22 | **Import** legt Karten an | `POST /api/task/import/{projectId}` | akzeptiert durch Konfiguration | — | Rolle hat kein `task:create` | — |
 
-**Summe offene Pflichtmaßnahmen (#8, #9, #10, #11, #12, #14, #15, #17, #21, #7):** 3,25–3,75 PT inkl. Tests; davon mit hoher Dringlichkeit vor dem Pilot: #10 (Custom-Field-Werte), #12 (Benachrichtigungen), #14 (Assets).
+**Summe offene Pflichtmaßnahmen (#8, #9, #10, #11, #12, #14, #15, #17, #21, #7):** 3,75–4,25 PT inkl. Tests (korrigiert am 2026-10-06, vorher 3,25–3,75); davon mit hoher Dringlichkeit vor dem Pilot: #10 (Custom-Field-Werte), #12 (Benachrichtigungen), #14 (Assets).
 
 ---
 
@@ -154,12 +154,14 @@ Grundlage: Code-Review 7.1 schätzt Baustein 4 insgesamt mit 4–6 PT. Im Protot
 | **Rückgabe** | Spalten „Rückgabe an Pegasus“ und Custom Field „Rückgabegrund“ (Auswahl + Freitext) sind Konfiguration. Hub (Webhook `taskMoved` → Assignee entfernen, Label „Rückläufer“, Karte in „Pegasus-Pool“ ziehen, Innendienst erwähnen) liegt im Hub. Im Fork nur, wenn das Pflichtfeld beim Spaltenwechsel **erzwungen** werden soll: Prüfung „Feld X gesetzt, bevor Karte in Spalte Y“ in `update-task`/`move` plus Hinweis in der UI | Fork 0,5–1 (nur bei Pflichtfeld-Erzwingung) · Hub 0,5 |
 | **Ablage** | Spalte „Ablage“ + Custom Field „Absagegrund“: Konfiguration. Hub markiert erledigt, Löschkonzept greift (Kap. 14). Karte bleibt der Führungskraft sichtbar, solange sie zugewiesen ist; ob der Hub den Assignee bei Ablage entfernt, ist fachlich zu entscheiden (Konzept: „Karte erledigt, für Statistik erhalten“) | Hub 0,25–0,5 |
 | Tests und Doku nachziehen | Integrationstests für jede geschlossene Fläche, Betriebshandbuch (Rolle, Rechteumfang) | 0,5 |
-| **Summe Fork** | | **4,25–5,75 PT, davon ~1,5 erbracht → Rest 2,75–4,25 PT** |
+| **Summe Fork** | alle Positionen offen | **4,25–5,75 PT** |
 | **Summe Hub** (nicht Teil von Baustein 4, zur Einordnung) | Rückgabe- und Ablage-Logik | 0,75–1 PT |
+
+> **Korrektur vom 2026-10-06:** Die Tabelle enthält nur offene Positionen. Die ursprüngliche Angabe „davon ~1,5 erbracht → Rest 2,75–4,25 PT“ zog den Prototyp ab, der in keiner Zeile steht, und zählte ihn damit doppelt. #10 ist inzwischen mit PEGA-5 geschlossen; für Stufe 1 bleiben 3,75–5,25 PT im Fork ([Empfehlung zum Stufen-Review 0](2026-10-empfehlung-stufe-0.md), Abschnitte 2 und 4).
 
 Optional, nicht im Rest enthalten: WebSocket-Filter je Verbindung (#13, 0,5–1), 400/404 vereinheitlichen (#19, 0,25), Subtask-Zähler (#18, 0,25), Umgebungsschalter gegen öffentliche Projekte (#16, 0,25).
 
-Die Schätzung bestätigt die Spanne des Code-Reviews (4–6 PT) und liegt damit über den 1,5–2 PT des Konzepts (Kap. 20); die Differenz wird durch den Wegfall des Custom-Field-Baus gedeckt (Code-Review 7.1).
+Mit dem Prototyp (rund 1,5 PT in Stufe 0) ergibt sich für Baustein 4 insgesamt 5,75–7,25 PT. Das liegt über der Spanne des Code-Reviews (4–6 PT) und deutlich über den 1,5–2 PT des Konzepts (Kap. 20); der Wegfall des Custom-Field-Baus deckt die Differenz nur teilweise ([Empfehlung zum Stufen-Review 0](2026-10-empfehlung-stufe-0.md), Abschnitt 2).
 
 ---
 

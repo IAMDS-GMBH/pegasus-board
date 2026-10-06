@@ -13,7 +13,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel.
 
 ## 0. Ergebnis auf einer Seite
 
-**Die Prämisse der Story ist überholt: Kaneo bringt Custom Fields mit.** Upstream hat sie am 09.08.2026 eingeführt (`222a5bce feat: add custom fields support`, Migration `0045`) und am 26.09.2026 um Mehrfachauswahl erweitert (`e55bdc46`, PR #1735). Das Konzept v3.10 (Recherchestand 03.09.2026) hat das nicht erfasst; Kap. 8, 11, 20 und 21 gehen von einem vollständigen Eigenbau aus. Der „größte Fork-Eingriff“ ist damit keiner mehr. Baustein 3 wird überwiegend Konfiguration plus einige kleine Ergänzungen im Fork.
+**Die Prämisse der Story ist überholt: Kaneo bringt Custom Fields mit.** Upstream hat sie mit v2.24.0 am 11.09.2026 veröffentlicht (Commit `222a5bce feat: add custom fields support` vom 09.08.2026, Migration `0045`) und am 26.09.2026 um Mehrfachauswahl erweitert (`e55bdc46`, PR #1735). Das Konzept v3.10 (Recherchestand 03.09.2026) konnte das noch nicht erfassen; Kap. 8, 11, 20 und 21 gehen von einem vollständigen Eigenbau aus. Der „größte Fork-Eingriff“ ist damit keiner mehr. Baustein 3 wird überwiegend Konfiguration plus einige kleine Ergänzungen im Fork.
 
 | Abnahmekriterium | Befund |
 |---|---|
