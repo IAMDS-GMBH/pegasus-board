@@ -3,9 +3,16 @@ import db from "../../database";
 import {
   customFieldDefinitionTable,
   customFieldValueTable,
+  taskTable,
 } from "../../database/schema";
 
-export default async function getCustomFieldFilterValues(projectId: string) {
+// Pegasus fork: `restrictToUserId` applies the assigned-only row filter.
+// Definitions stay visible (project schema, not task data); only the
+// distinct values are limited to the caller's own tasks.
+export default async function getCustomFieldFilterValues(
+  projectId: string,
+  restrictToUserId: string | null = null,
+) {
   const fields = await db
     .select()
     .from(customFieldDefinitionTable)
@@ -20,6 +27,7 @@ export default async function getCustomFieldFilterValues(projectId: string) {
       value: customFieldValueTable.value,
     })
     .from(customFieldValueTable)
+    .innerJoin(taskTable, eq(customFieldValueTable.taskId, taskTable.id))
     .where(
       and(
         inArray(
@@ -28,6 +36,7 @@ export default async function getCustomFieldFilterValues(projectId: string) {
         ),
         isNotNull(customFieldValueTable.value),
         ne(customFieldValueTable.value, ""),
+        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
       ),
     );
   const valuesByField = new Map<string, string[]>();
