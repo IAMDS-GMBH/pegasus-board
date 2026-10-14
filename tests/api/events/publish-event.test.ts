@@ -131,6 +131,34 @@ describe("publishEvent / subscribeToEvent", () => {
     expect(received[0]).toBe("just a string");
   });
 
+  it("gives every subscriber of one event the same event ID", async () => {
+    const ids: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      await subscribeToEvent("test.event-id", async (_data, { eventId }) => {
+        ids.push(eventId);
+      });
+    }
+
+    await publishEvent("test.event-id", {}, { waitForHandlers: true });
+
+    expect(ids).toHaveLength(2);
+    expect(ids[0]).toMatch(/^[0-9a-f-]{36}$/);
+    expect(ids[1]).toBe(ids[0]);
+  });
+
+  it("gives separate events different event IDs", async () => {
+    const ids: string[] = [];
+    await subscribeToEvent("test.event-ids", async (_data, { eventId }) => {
+      ids.push(eventId);
+    });
+
+    await publishEvent("test.event-ids", { n: 1 }, { waitForHandlers: true });
+    await publishEvent("test.event-ids", { n: 2 }, { waitForHandlers: true });
+
+    expect(ids).toHaveLength(2);
+    expect(ids[0]).not.toBe(ids[1]);
+  });
+
   it("shutdownEventBus removes all listeners", async () => {
     const received: unknown[] = [];
 

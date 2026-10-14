@@ -11,6 +11,7 @@ import {
   normalizeGenericWebhookConfig,
 } from "../plugins/generic-webhook/config";
 import { sendDueDateReminder } from "../plugins/generic-webhook/events";
+import { reminderEventId } from "./reminder-event-id";
 import {
   DUE_DATE_DURATION_MS,
   REMINDER_WINDOW_MINUTES,
@@ -96,6 +97,12 @@ export async function checkProjectWebhookReminders(): Promise<{
           integration.projectId,
           leadTimeMinutes,
           task.dueDate,
+          reminderEventId({
+            reminderType,
+            taskId: task.id,
+            dueDate: task.dueDate,
+            leadTimeMinutes,
+          }),
         );
 
         if (!delivered) {

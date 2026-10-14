@@ -23,7 +23,7 @@ import type {
   TaskTitleChangedEvent,
   TaskUnassignedEvent,
 } from "../types";
-import { postToGenericWebhook } from "./client";
+import { type GenericWebhookPayload, postToGenericWebhook } from "./client";
 import type { GenericWebhookConfig, GenericWebhookEventKey } from "./config";
 import { normalizeGenericWebhookConfig } from "./config";
 
@@ -153,7 +153,7 @@ async function deliverWebhookEvent(
   eventName: string,
   taskId: string,
   projectId: string,
-  payload: Record<string, unknown>,
+  payload: GenericWebhookPayload,
 ): Promise<boolean> {
   const attempt = {
     eventName,
@@ -202,6 +202,7 @@ async function deliverWebhookEvent(
 
 async function sendEvent(
   config: GenericWebhookConfig,
+  eventId: string,
   eventName: string,
   taskId: string,
   projectId: string,
@@ -214,6 +215,7 @@ async function sendEvent(
   const actor = await getActor(userId);
 
   return deliverWebhookEvent(config, eventName, taskId, projectId, {
+    id: eventId,
     event: eventName,
     timestamp: new Date().toISOString(),
     integration: {
@@ -244,12 +246,14 @@ export async function sendDueDateReminder(
   projectId: string,
   leadTimeMinutes: number,
   dueDate: Date,
+  eventId: string,
 ): Promise<boolean> {
   const normalizedConfig = normalizeGenericWebhookConfig(config);
   if (!isEnabled(normalizedConfig, "dueDateReminder")) return false;
 
   return sendEvent(
     normalizedConfig,
+    eventId,
     "task.due_date_reminder",
     taskId,
     projectId,
@@ -272,6 +276,7 @@ export async function handleTaskCreated(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.created",
     event.taskId,
     event.projectId,
@@ -297,6 +302,7 @@ export async function handleTaskStatusChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.status_changed",
     event.taskId,
     event.projectId,
@@ -320,6 +326,7 @@ export async function handleTaskPriorityChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.priority_changed",
     event.taskId,
     event.projectId,
@@ -343,6 +350,7 @@ export async function handleTaskTitleChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.title_changed",
     event.taskId,
     event.projectId,
@@ -365,6 +373,7 @@ export async function handleTaskDescriptionChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.description_changed",
     event.taskId,
     event.projectId,
@@ -387,6 +396,7 @@ export async function handleTaskCommentCreated(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.comment_created",
     event.taskId,
     event.projectId,
@@ -421,6 +431,7 @@ async function sendTaskDeletedEvent(
     event.taskId,
     event.projectId,
     {
+      id: event.eventId,
       event: "task.deleted",
       timestamp: new Date().toISOString(),
       integration: {
@@ -464,6 +475,7 @@ export async function handleTaskMoved(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.moved",
     event.taskId,
     event.projectId,
@@ -490,6 +502,7 @@ export async function handleTaskDueDateChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.due_date_changed",
     event.taskId,
     event.projectId,
@@ -513,6 +526,7 @@ export async function handleTaskAssigneeChanged(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.assignee_changed",
     event.taskId,
     event.projectId,
@@ -537,6 +551,7 @@ export async function handleTaskUnassigned(
 
   await sendEvent(
     config,
+    event.eventId,
     "task.unassigned",
     event.taskId,
     event.projectId,

@@ -32,6 +32,17 @@ vi.mock("../../../../apps/api/src/database", () => ({
   },
 }));
 
+function taskSelectChain(rows: unknown[]) {
+  const chain = {
+    from: () => chain,
+    innerJoin: () => chain,
+    leftJoin: () => chain,
+    where: () => chain,
+    limit: () => Promise.resolve(rows),
+  };
+  return chain;
+}
+
 function selectChain(rows: unknown[]) {
   return {
     from: () => ({
@@ -59,6 +70,7 @@ const enabledContext = {
 };
 
 const deletedEvent = {
+  eventId: "event-deleted-1",
   taskId: "task-1",
   projectId: "project-1",
   userId: "user-1",
@@ -77,6 +89,7 @@ describe("generic webhook event handlers", () => {
   it("does not post task.unassigned when taskUnassigned is disabled", async () => {
     await handleTaskUnassigned(
       {
+        eventId: "event-unassigned-1",
         taskId: "task-1",
         projectId: "project-1",
         userId: "user-1",
@@ -111,12 +124,57 @@ describe("generic webhook event handlers", () => {
     const [url, payload] = vi.mocked(postToGenericWebhook).mock.calls[0] ?? [];
     expect(url).toBe("https://example.com/hooks/kaneo");
     expect(payload).toMatchObject({
+      id: "event-deleted-1",
       event: "task.deleted",
       integration: { type: "generic-webhook" },
       project: { id: "project-1", name: "Roadmap", workspaceId: "workspace-1" },
       task: { id: "task-1", title: "Ship the release" },
       actor: { id: "user-1", name: "Andrej" },
       data: {},
+    });
+  });
+
+  it("sends the published event ID as the payload id", async () => {
+    selectMock
+      .mockImplementationOnce(() =>
+        taskSelectChain([
+          {
+            id: "task-1",
+            title: "Ship the release",
+            number: 7,
+            status: "to-do",
+            priority: "high",
+            columnName: "To do",
+            projectId: "project-1",
+            projectName: "Roadmap",
+            workspaceId: "workspace-1",
+          },
+        ]),
+      )
+      .mockImplementationOnce(() =>
+        selectChain([{ id: "user-1", name: "Andrej" }]),
+      );
+
+    await handleTaskUnassigned(
+      {
+        eventId: "event-unassigned-2",
+        taskId: "task-1",
+        projectId: "project-1",
+        userId: "user-1",
+        title: "Ship the release",
+      },
+      {
+        ...context,
+        config: { ...context.config, events: { taskUnassigned: true } },
+      },
+    );
+
+    expect(postToGenericWebhook).toHaveBeenCalledTimes(1);
+    const [, payload] = vi.mocked(postToGenericWebhook).mock.calls[0] ?? [];
+    expect(payload).toMatchObject({
+      id: "event-unassigned-2",
+      event: "task.unassigned",
+      task: { id: "task-1", number: 7 },
     });
   });
 

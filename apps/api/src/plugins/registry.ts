@@ -44,8 +44,9 @@ export function initializeEventSubscriptions(): void {
     status: string;
     number: number;
     projectId: string;
-  }>("task.created", async (data) => {
+  }>("task.created", async (data, { eventId }) => {
     await broadcastTaskCreated({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -65,8 +66,9 @@ export function initializeEventSubscriptions(): void {
     sourceIntegrationId?: string;
     title: string;
     projectId: string;
-  }>("task.status_changed", async (data) => {
+  }>("task.status_changed", async (data, { eventId }) => {
     await broadcastTaskStatusChanged({
+      eventId,
       sourceIntegrationId: data.sourceIntegrationId,
       taskId: data.taskId,
       projectId: data.projectId,
@@ -84,8 +86,9 @@ export function initializeEventSubscriptions(): void {
     newPriority: string;
     title: string;
     projectId: string;
-  }>("task.priority_changed", async (data) => {
+  }>("task.priority_changed", async (data, { eventId }) => {
     await broadcastTaskPriorityChanged({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -97,8 +100,9 @@ export function initializeEventSubscriptions(): void {
 
   subscribeToEvent<TaskTitleChangedEvent>(
     "task.title_changed",
-    async (data) => {
+    async (data, { eventId }) => {
       await broadcastTaskTitleChanged({
+        eventId,
         sourceIntegrationId: data.sourceIntegrationId,
         taskId: data.taskId,
         projectId: data.projectId,
@@ -111,8 +115,9 @@ export function initializeEventSubscriptions(): void {
 
   subscribeToEvent<TaskDescriptionChangedEvent>(
     "task.description_changed",
-    async (data) => {
+    async (data, { eventId }) => {
       await broadcastTaskDescriptionChanged({
+        eventId,
         sourceIntegrationId: data.sourceIntegrationId,
         taskId: data.taskId,
         projectId: data.projectId,
@@ -128,8 +133,9 @@ export function initializeEventSubscriptions(): void {
     userId: string;
     comment: string;
     projectId: string;
-  }>("comment.created", async (data) => {
+  }>("comment.created", async (data, { eventId }) => {
     await broadcastTaskCommentCreated({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -142,8 +148,9 @@ export function initializeEventSubscriptions(): void {
     userId: string | null;
     title: string;
     projectId: string;
-  }>("task.deleted", async (data) => {
+  }>("task.deleted", async (data, { eventId }) => {
     await broadcastTaskDeleted({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -160,8 +167,9 @@ export function initializeEventSubscriptions(): void {
     toProjectName: string;
     oldStatus: string;
     newStatus: string;
-  }>("task.moved", async (data) => {
+  }>("task.moved", async (data, { eventId }) => {
     await broadcastTaskMoved({
+      eventId,
       taskId: data.taskId,
       projectId: data.toProjectId,
       userId: data.userId,
@@ -181,8 +189,9 @@ export function initializeEventSubscriptions(): void {
     newDueDate: Date | null;
     title: string;
     projectId: string;
-  }>("task.due_date_changed", async (data) => {
+  }>("task.due_date_changed", async (data, { eventId }) => {
     await broadcastTaskDueDateChanged({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -200,8 +209,9 @@ export function initializeEventSubscriptions(): void {
     newAssigneeId: string;
     title: string;
     projectId: string;
-  }>("task.assignee_changed", async (data) => {
+  }>("task.assignee_changed", async (data, { eventId }) => {
     await broadcastTaskAssigneeChanged({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,
@@ -217,8 +227,9 @@ export function initializeEventSubscriptions(): void {
     userId: string | null;
     title: string;
     projectId: string;
-  }>("task.unassigned", async (data) => {
+  }>("task.unassigned", async (data, { eventId }) => {
     await broadcastTaskUnassigned({
+      eventId,
       taskId: data.taskId,
       projectId: data.projectId,
       userId: data.userId,

@@ -97,10 +97,11 @@ After delivery attempts, Kaneo stores basic health metadata (for example last su
 
 ### Payload shape
 
-Each POST has `Content-Type: application/json`. Top-level fields:
+Each POST has `Content-Type: application/json` and an `X-Kaneo-Event-Id` header. Top-level fields:
 
+- `id`: unique ID of the event, the same value as the `X-Kaneo-Event-Id` header. It stays the same on every delivery of that event. See [Event IDs and deduplication](#event-ids-and-deduplication).
 - `event`: string, one of: `task.created`, `task.status_changed`, `task.priority_changed`, `task.title_changed`, `task.description_changed`, `task.comment_created`, or one of the additional generic webhook events above
-- `timestamp`: ISO 8601 time when Kaneo sent the request
+- `timestamp`: ISO 8601 time when Kaneo sent the request. It changes on every delivery, so do not use it to detect duplicates.
 - `integration`: `{ "type": "generic-webhook" }`
 - `project`: `id`, `name`, `workspaceId`
 - `task`: `id`, `number`, `title`, `status`, `statusName`, `priority`, `url` (link to the task in the web UI)
@@ -108,6 +109,14 @@ Each POST has `Content-Type: application/json`. Top-level fields:
 - `data`: event-specific fields (for example `oldStatus` / `newStatus` for status changes, `comment` text for comments)
 
 For `task.deleted`, the `task` object contains only `id` and `title`, and `data` is empty. Do not require the usual task URL or status fields when handling deletion. Move events include source and destination project IDs; reminders include `dueDate` and `leadTimeMinutes`.
+
+### Event IDs and deduplication
+
+Every event has one ID, generated when the event happens. Kaneo sends it in the body as `id` and in the `X-Kaneo-Event-Id` header. Both carry the same value, and `id` is covered by the signature.
+
+Store the IDs you have processed and skip any request whose ID you have already seen. This makes your receiver safe against duplicate deliveries, for example a request that reached you but that Kaneo recorded as failed.
+
+Kaneo currently makes a single delivery attempt per task event and does not retry. A due-date reminder whose delivery fails may be sent again on the next scheduler run, with the same `id`. Additional events for the same task get new IDs.
 
 ### Signature verification
 

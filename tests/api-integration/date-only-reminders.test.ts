@@ -146,6 +146,7 @@ describe("API integration: date-only reminders", () => {
         task.projectId,
         840,
         task.dueDate,
+        expect.any(String),
       );
 
       vi.setSystemTime(new Date(new Date(expected).getTime() + 5 * 60 * 1000));
