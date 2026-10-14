@@ -19,14 +19,17 @@ let server: Server;
 let base: string;
 let redirected = 0;
 let receivedSignature: string | string[] | undefined;
+let receivedEventId: string | string[] | undefined;
 let receivedBody = "";
 beforeEach(async () => {
   redirected = 0;
   receivedSignature = undefined;
+  receivedEventId = undefined;
   receivedBody = "";
   server = createServer((request, response) => {
     if (request.url === "/signed") {
       receivedSignature = request.headers["x-kaneo-signature"];
+      receivedEventId = request.headers["x-kaneo-event-id"];
       request.on("data", (chunk) => {
         receivedBody += chunk.toString();
       });
@@ -74,9 +77,15 @@ afterEach(async () => {
 describe("outbound notification transport", () => {
   it("accepts success and preserves HMAC-signed webhook payloads", async () => {
     await expect(
-      postToGenericWebhook(`${base}/signed`, { title: "test" }, "secret"),
+      postToGenericWebhook(
+        `${base}/signed`,
+        { id: "event-1", title: "test" },
+        "secret",
+      ),
     ).resolves.toBeUndefined();
-    expect(receivedBody).toBe(JSON.stringify({ title: "test" }));
+    expect(receivedBody).toBe(JSON.stringify({ id: "event-1", title: "test" }));
+    expect(receivedEventId).toBe("event-1");
+    expect(receivedEventId).toBe(JSON.parse(receivedBody).id);
     expect(receivedSignature).toBe(
       createHmac("sha256", "secret").update(receivedBody).digest("hex"),
     );
@@ -98,7 +107,9 @@ describe("outbound notification transport", () => {
   it("rejects private destinations by default before fetching", async () => {
     vi.stubEnv("KANEO_ALLOW_PRIVATE_WEBHOOK_DESTINATIONS", "false");
     const fetchSpy = vi.spyOn(globalThis, "fetch");
-    await expect(postToGenericWebhook(`${base}/ok`, {})).rejects.toMatchObject({
+    await expect(
+      postToGenericWebhook(`${base}/ok`, { id: "event-2" }),
+    ).rejects.toMatchObject({
       reason: "destination",
     });
     expect(fetchSpy).not.toHaveBeenCalled();

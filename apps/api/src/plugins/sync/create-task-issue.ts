@@ -46,6 +46,7 @@ async function createWithLease(
   });
   if (!task || task.number === null) return;
   await create({
+    eventId: event.eventId,
     taskId: task.id,
     projectId: task.projectId,
     userId: task.userId ?? "",

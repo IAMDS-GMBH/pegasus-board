@@ -5,6 +5,7 @@ export type PluginContext = {
 };
 
 export type TaskCreatedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string;
@@ -16,6 +17,7 @@ export type TaskCreatedEvent = {
 };
 
 export type TaskStatusChangedEvent = {
+  eventId: string;
   sourceIntegrationId?: string;
   taskId: string;
   projectId: string;
@@ -26,6 +28,7 @@ export type TaskStatusChangedEvent = {
 };
 
 export type TaskPriorityChangedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;
@@ -35,6 +38,7 @@ export type TaskPriorityChangedEvent = {
 };
 
 export type TaskTitleChangedEvent = {
+  eventId: string;
   sourceIntegrationId?: string;
   taskId: string;
   projectId: string;
@@ -44,6 +48,7 @@ export type TaskTitleChangedEvent = {
 };
 
 export type TaskDescriptionChangedEvent = {
+  eventId: string;
   sourceIntegrationId?: string;
   taskId: string;
   projectId: string;
@@ -53,6 +58,7 @@ export type TaskDescriptionChangedEvent = {
 };
 
 export type TaskCommentCreatedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string;
@@ -60,6 +66,7 @@ export type TaskCommentCreatedEvent = {
 };
 
 export type TaskDeletedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;
@@ -67,6 +74,7 @@ export type TaskDeletedEvent = {
 };
 
 export type TaskMovedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;
@@ -79,6 +87,7 @@ export type TaskMovedEvent = {
 };
 
 export type TaskDueDateChangedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;
@@ -88,6 +97,7 @@ export type TaskDueDateChangedEvent = {
 };
 
 export type TaskAssigneeChangedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;
@@ -98,6 +108,7 @@ export type TaskAssigneeChangedEvent = {
 };
 
 export type TaskUnassignedEvent = {
+  eventId: string;
   taskId: string;
   projectId: string;
   userId: string | null;

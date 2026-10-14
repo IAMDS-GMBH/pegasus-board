@@ -9,6 +9,7 @@ const { sendDueDateReminder } = vi.hoisted(() => ({
       projectId: string,
       leadTimeMinutes: number,
       dueDate: Date,
+      eventId: string,
     ) => Promise<boolean>
   >(async () => true),
 }));

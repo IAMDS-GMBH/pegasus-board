@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { and, asc, eq, gt } from "drizzle-orm";
 import db from "../../database";
 import {
@@ -62,6 +63,7 @@ async function reconcileTaskWithIntegrations(
       if (!task || task.number === null) continue;
       await plugin.onTaskCreated(
         {
+          eventId: randomUUID(),
           taskId: task.id,
           projectId,
           userId: task.userId ?? "",

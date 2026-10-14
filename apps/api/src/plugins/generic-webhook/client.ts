@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 import * as Sentry from "@sentry/node";
 import { sendOutboundRequest } from "../../utils/outbound-request";
 
-type GenericWebhookPayload = Record<string, unknown>;
+export type GenericWebhookPayload = { id: string } & Record<string, unknown>;
 
 export async function postToGenericWebhook(
   webhookUrl: string,
@@ -17,6 +17,7 @@ export async function postToGenericWebhook(
   const body = JSON.stringify(payload);
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "X-Kaneo-Event-Id": payload.id,
   };
 
   if (secret) {
