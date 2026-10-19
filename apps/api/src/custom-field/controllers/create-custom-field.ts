@@ -7,6 +7,7 @@ import {
 } from "../../database/schema";
 import { assertValidDefinition } from "../assert-valid-definition";
 import { insertMissingValues } from "../fill-default-values";
+import { toStoredCustomFieldValue } from "../url-value";
 
 async function createCustomField(
   projectId: string,
@@ -32,7 +33,9 @@ async function createCustomField(
   assertValidDefinition({ name, type, required, defaultValue, options });
 
   const storedDefaultValue =
-    type === "date" ? defaultValue?.trim() : defaultValue;
+    type === "date"
+      ? defaultValue?.trim()
+      : defaultValue && toStoredCustomFieldValue(type, defaultValue);
 
   const [maxPositionResult] = await db
     .select({ maxPosition: max(customFieldDefinitionTable.position) })

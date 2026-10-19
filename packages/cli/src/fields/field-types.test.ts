@@ -19,7 +19,7 @@ describe("parseFieldType", () => {
   it("lists the types when the input is unknown", () => {
     const result = parseFieldType("color");
     expect(Result.isFailure(result) && result.failure.hint).toBe(
-      "Use one of: text, number, date, dropdown, multiselect, boolean.",
+      "Use one of: text, number, date, dropdown, multiselect, boolean, url.",
     );
   });
 });

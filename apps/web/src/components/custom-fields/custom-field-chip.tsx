@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { cn } from "@/lib/cn";
 import { CheckboxMark } from "./checkbox-mark";
+import { CustomFieldOpenLink } from "./custom-field-open-link";
 import { CustomFieldPopover } from "./custom-field-popover";
 import { CustomFieldTypeIcon } from "./custom-field-type-icon";
 import { formatCustomFieldValue } from "./format-custom-field-value";
@@ -89,11 +90,20 @@ export function CustomFieldChip({
     </button>
   );
 
-  if (disabled) return chip;
-
-  return (
+  const editable = disabled ? (
+    chip
+  ) : (
     <CustomFieldPopover field={field} value={value} onChange={onChange}>
       {chip}
     </CustomFieldPopover>
+  );
+
+  if (field.type !== "url" || !value) return editable;
+
+  return (
+    <span className="inline-flex min-w-0 items-center gap-0.5">
+      {editable}
+      <CustomFieldOpenLink fieldName={field.name} value={value} />
+    </span>
   );
 }

@@ -23,6 +23,12 @@ describe("formatCustomFieldValue", () => {
     ).toMatch(/2026/);
   });
 
+  it("shows links without their scheme", () => {
+    expect(
+      formatCustomFieldValue("url", "https://linkedin.com/in/max", "short"),
+    ).toEqual({ text: "linkedin.com/in/max", more: 0 });
+  });
+
   it("keeps unparseable dates and plain values as typed", () => {
     expect(formatCustomFieldValue("date", "soon", "short")?.text).toBe("soon");
     expect(formatCustomFieldValue("number", "5", "short")).toEqual({

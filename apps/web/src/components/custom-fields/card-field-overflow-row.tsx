@@ -1,5 +1,6 @@
 import type { CardField } from "./card-fields";
 import { CheckboxMark } from "./checkbox-mark";
+import { CustomFieldLink } from "./custom-field-link";
 import { CustomFieldTypeIcon } from "./custom-field-type-icon";
 import { formatCustomFieldValue } from "./format-custom-field-value";
 
@@ -19,7 +20,13 @@ export function CardFieldOverflowRow({ field }: { field: CardField }) {
         <CheckboxMark checked />
       ) : (
         <span className="flex min-w-0 max-w-44 items-center gap-1.5 font-semibold text-foreground">
-          <span className="truncate">{display?.text}</span>
+          {field.type === "url" ? (
+            <CustomFieldLink value={field.value} className="truncate">
+              {display?.text}
+            </CustomFieldLink>
+          ) : (
+            <span className="truncate">{display?.text}</span>
+          )}
           {!!display?.more && (
             <span className="shrink-0 font-medium text-muted-foreground">
               +{display.more}

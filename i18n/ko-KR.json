@@ -1525,7 +1525,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "드롭다운(여러 개 선택)"
+				"multiselect": "드롭다운(여러 개 선택)",
+				"url": "Link"
 			},
 			"clearDefault": "기본값 지우기",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1552,7 +1553,8 @@
 			"issues": {
 				"defaultRequired": "필수 필드에는 기본값이 필요합니다.",
 				"moreOptionsRequired": "여러 개 선택을 허용하려면 옵션을 두 개 이상 추가하세요.",
-				"optionsRequired": "옵션을 하나 이상 추가하세요."
+				"optionsRequired": "옵션을 하나 이상 추가하세요.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "이름",
 			"newTitle": "새 필드",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "필수 필드 {{count}}개가 비어 있습니다",
 			"saveError": "{{field}}을(를) 저장하지 못했습니다",
 			"moreFields_other": "필드 {{count}}개 더 보기",
-			"manage": "필드 관리"
+			"manage": "필드 관리",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4240,7 +4244,8 @@
 			"defaultValue": "기본값",
 			"multiselectOptionsRequired": "서로 다른 옵션을 두 개 이상 추가하세요.",
 			"unchecked": "체크 안 됨",
-			"validDefaultRequired": "이 필수 필드에 유효한 기본값을 입력하세요."
+			"validDefaultRequired": "이 필수 필드에 유효한 기본값을 입력하세요.",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "지우기",
@@ -4332,7 +4337,8 @@
 			"fields": {
 				"empty": "비어 있음",
 				"none": "없음",
-				"title": "필드"
+				"title": "필드",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "링크 추가",

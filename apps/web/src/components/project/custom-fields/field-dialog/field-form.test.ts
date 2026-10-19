@@ -153,6 +153,15 @@ describe("getFormIssue", () => {
     ).toBe("defaultRequired");
     expect(getFormIssue({ ...dropdown, required: true })).toBeNull();
   });
+
+  it("needs a link as the default of a link field", () => {
+    const link = { ...EMPTY_FIELD_FORM, kind: "url" as const, name: "Profil" };
+    expect(getFormIssue({ ...link, defaultValue: "kein link" })).toBe(
+      "invalidUrl",
+    );
+    expect(getFormIssue({ ...link, defaultValue: "example.org" })).toBeNull();
+    expect(getFormIssue(link)).toBeNull();
+  });
 });
 
 describe("payloads", () => {
@@ -174,6 +183,27 @@ describe("payloads", () => {
       required: false,
       defaultValue: '["Small"]',
       options: ["Small", "Medium", "Large"],
+    });
+  });
+
+  it("sends a link default in its stored form", () => {
+    expect(
+      toCreatePayload(
+        {
+          ...EMPTY_FIELD_FORM,
+          kind: "url",
+          name: "Profil",
+          defaultValue: " linkedin.com/company/x ",
+        },
+        "p1",
+      ),
+    ).toEqual({
+      projectId: "p1",
+      name: "Profil",
+      type: "url",
+      required: false,
+      defaultValue: "https://linkedin.com/company/x",
+      options: undefined,
     });
   });
 

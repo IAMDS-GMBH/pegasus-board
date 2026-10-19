@@ -679,14 +679,19 @@ export default function NewTaskScreen() {
       />
       <TextInputSheet
         visible={
-          !!fieldEditing && ["text", "number"].includes(fieldEditing.type)
+          !!fieldEditing &&
+          ["text", "number", "url"].includes(fieldEditing.type)
         }
         onClose={() => setFieldEditing(null)}
         title={fieldEditing?.name ?? ""}
         initial={fieldEditing ? (fieldValues[fieldEditing.id] ?? "") : ""}
         multiline={fieldEditing?.type === "text"}
         keyboardType={
-          fieldEditing?.type === "number" ? "decimal-pad" : "default"
+          fieldEditing?.type === "number"
+            ? "decimal-pad"
+            : fieldEditing?.type === "url"
+              ? "url"
+              : "default"
         }
         validate={() => true}
         onSubmit={(v) => fieldEditing && setFieldValue(fieldEditing.id, v)}

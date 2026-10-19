@@ -3,6 +3,7 @@ import type { CustomFieldDefinition } from "@/components/project/custom-fields/t
 import { PropertyRow } from "@/components/task/properties/property-row";
 import { PropertyValue } from "@/components/task/properties/property-value";
 import { CheckboxMark } from "./checkbox-mark";
+import { CustomFieldOpenLink } from "./custom-field-open-link";
 import { CustomFieldPopover } from "./custom-field-popover";
 import { formatCustomFieldValue } from "./format-custom-field-value";
 
@@ -73,6 +74,9 @@ export function CustomFieldRow({
         >
           {button}
         </CustomFieldPopover>
+      )}
+      {field.type === "url" && (
+        <CustomFieldOpenLink fieldName={field.name} value={value} />
       )}
     </PropertyRow>
   );

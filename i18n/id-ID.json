@@ -1525,7 +1525,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Dropdown, pilih beberapa"
+				"multiselect": "Dropdown, pilih beberapa",
+				"url": "Link"
 			},
 			"clearDefault": "Hapus default",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1552,7 +1553,8 @@
 			"issues": {
 				"defaultRequired": "Bidang wajib memerlukan nilai default.",
 				"moreOptionsRequired": "Tambahkan minimal dua opsi untuk mengizinkan beberapa pilihan.",
-				"optionsRequired": "Tambahkan minimal satu opsi."
+				"optionsRequired": "Tambahkan minimal satu opsi.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Nama",
 			"newTitle": "Bidang baru",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "{{count}} kolom wajib masih kosong",
 			"saveError": "Gagal menyimpan {{field}}",
 			"moreFields_other": "{{count}} kolom lainnya",
-			"manage": "Kelola kolom"
+			"manage": "Kelola kolom",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3831,7 +3835,8 @@
 			"fields": {
 				"title": "Bidang",
 				"empty": "Kosong",
-				"none": "Tidak ada"
+				"none": "Tidak ada",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Subtugas",
@@ -4099,7 +4104,8 @@
 			"defaultValue": "Nilai default",
 			"multiselectOptionsRequired": "Tambahkan setidaknya dua opsi yang berbeda.",
 			"unchecked": "Tidak dicentang",
-			"validDefaultRequired": "Masukkan nilai default yang valid untuk bidang wajib ini."
+			"validDefaultRequired": "Masukkan nilai default yang valid untuk bidang wajib ini.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Proyek baru",

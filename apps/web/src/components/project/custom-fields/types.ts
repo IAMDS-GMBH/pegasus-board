@@ -4,7 +4,8 @@ export type CustomFieldType =
   | "date"
   | "dropdown"
   | "boolean"
-  | "multiselect";
+  | "multiselect"
+  | "url";
 
 export type CustomFieldDefinition = {
   id: string;

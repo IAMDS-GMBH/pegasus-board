@@ -8,6 +8,7 @@ export const FIELD_TYPES = [
   "dropdown",
   "multiselect",
   "boolean",
+  "url",
 ] as const;
 
 export type FieldType = (typeof FIELD_TYPES)[number];
@@ -19,6 +20,7 @@ export const FIELD_TYPE_LABELS: Readonly<Record<FieldType, string>> = {
   dropdown: "Dropdown",
   multiselect: "Multi-select",
   boolean: "Yes or no",
+  url: "Link",
 };
 
 const ALIASES: Readonly<Record<string, FieldType>> = {
@@ -28,6 +30,7 @@ const ALIASES: Readonly<Record<string, FieldType>> = {
   bool: "boolean",
   checkbox: "boolean",
   string: "text",
+  link: "url",
 };
 
 export function isFieldType(value: string): value is FieldType {

@@ -2,10 +2,20 @@ import { asc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../database";
 import { columnTable, customFieldDefinitionTable } from "../database/schema";
+import { normalizeUrlValue } from "../custom-field/url-value";
+
+// `text` is absent on purpose: it has no value rules.
+export type CustomFieldValueType =
+  | "number"
+  | "boolean"
+  | "date"
+  | "dropdown"
+  | "multiselect"
+  | "url";
 
 export function isCustomFieldValueEmpty(
   value: string,
-  type: "number" | "boolean" | "date" | "dropdown" | "multiselect",
+  type: CustomFieldValueType,
 ): boolean {
   if (value.trim() === "") return true;
 
@@ -23,7 +33,7 @@ export function isCustomFieldValueEmpty(
 
 export function validateCustomFieldValue(
   value: string,
-  type: "number" | "boolean" | "date" | "dropdown" | "multiselect",
+  type: CustomFieldValueType,
   fieldName: string,
   options?: unknown,
 ): string | null {
@@ -119,6 +129,10 @@ export function validateCustomFieldValue(
     }
   }
 
+  if (type === "url" && !normalizeUrlValue(value)) {
+    return `Custom field "${fieldName}" expects an http or https link, got "${value}".`;
+  }
+
   return null;
 }
 
@@ -152,12 +166,7 @@ export async function assertRequiredCustomFields(
     const def = allFields.find((f) => f.id === cf.fieldId);
     if (!def) continue;
 
-    const type = def.type as
-      | "number"
-      | "boolean"
-      | "date"
-      | "dropdown"
-      | "multiselect";
+    const type = def.type as CustomFieldValueType;
 
     if (isCustomFieldValueEmpty(cf.value, type)) {
       if (def.required) {
@@ -188,12 +197,7 @@ export async function assertRequiredCustomFields(
 
         return !isCustomFieldValueEmpty(
           cf.value,
-          def.type as
-            | "number"
-            | "boolean"
-            | "date"
-            | "dropdown"
-            | "multiselect",
+          def.type as CustomFieldValueType,
         );
       })
       .map((f) => f.fieldId),
@@ -205,12 +209,7 @@ export async function assertRequiredCustomFields(
       (field.defaultValue != null &&
         !isCustomFieldValueEmpty(
           field.defaultValue,
-          field.type as
-            | "number"
-            | "boolean"
-            | "date"
-            | "dropdown"
-            | "multiselect",
+          field.type as CustomFieldValueType,
         ));
 
     if (!isSatisfied) {

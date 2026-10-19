@@ -25,7 +25,7 @@ export function FieldTypePicker({
       disabled={disabled}
       aria-labelledby={labelledBy}
       onValueChange={(next) => onChange(next as FieldKind)}
-      className="grid grid-cols-3 gap-2 sm:grid-cols-5"
+      className="grid grid-cols-3 gap-2"
     >
       {FIELD_KINDS.map(({ kind, icon: Icon }) => (
         <RadioPrimitive.Root

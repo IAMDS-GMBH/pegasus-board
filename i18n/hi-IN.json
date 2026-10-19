@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "ड्रॉपडाउन, कई चुनें"
+				"multiselect": "ड्रॉपडाउन, कई चुनें",
+				"url": "Link"
 			},
 			"clearDefault": "डिफ़ॉल्ट हटाएँ",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "आवश्यक फ़ील्ड के लिए डिफ़ॉल्ट ज़रूरी है।",
 				"moreOptionsRequired": "कई की अनुमति देने के लिए कम से कम दो विकल्प जोड़ें।",
-				"optionsRequired": "कम से कम एक विकल्प जोड़ें।"
+				"optionsRequired": "कम से कम एक विकल्प जोड़ें।",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "नाम",
 			"newTitle": "नई फ़ील्ड",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} सहेजा नहीं जा सका",
 			"moreFields_one": "{{count}} और फ़ील्ड",
 			"moreFields_other": "{{count}} और फ़ील्ड",
-			"manage": "फ़ील्ड प्रबंधित करें"
+			"manage": "फ़ील्ड प्रबंधित करें",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3893,7 +3897,8 @@
 			"fields": {
 				"title": "फ़ील्ड",
 				"empty": "खाली",
-				"none": "कोई नहीं"
+				"none": "कोई नहीं",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "उप-कार्य",
@@ -4164,7 +4169,8 @@
 			"defaultValue": "डिफ़ॉल्ट मान",
 			"multiselectOptionsRequired": "कम से कम दो अलग-अलग विकल्प जोड़ें।",
 			"unchecked": "चेक नहीं किया हुआ",
-			"validDefaultRequired": "इस आवश्यक फ़ील्ड के लिए एक मान्य डिफ़ॉल्ट मान दर्ज करें।"
+			"validDefaultRequired": "इस आवश्यक फ़ील्ड के लिए एक मान्य डिफ़ॉल्ट मान दर्ज करें।",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "नया प्रोजेक्ट",

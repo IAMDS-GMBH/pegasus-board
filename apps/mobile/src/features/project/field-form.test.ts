@@ -61,6 +61,16 @@ describe("required custom field defaults", () => {
     expect(validFieldDefault("date", value, [])).toBe(valid);
   });
 
+  it.each([
+    ["linkedin.com/in/max", true],
+    ["https://example.org/karriere", true],
+    ["asdf", false],
+    ["javascript:alert(1)", false],
+    ["https://user:secret@example.org", false],
+  ])("checks link default %s", (value, valid) => {
+    expect(validFieldDefault("url", value, [])).toBe(valid);
+  });
+
   it("accepts both boolean states, including unchecked", () => {
     expect(validFieldDefault("boolean", "true", [])).toBe(true);
     expect(

@@ -9,5 +9,6 @@ export function useFieldTypes() {
     { value: "boolean", label: t("mobile:projectSettings.checkbox") },
     { value: "dropdown", label: t("mobile:projectSettings.dropdown") },
     { value: "multiselect", label: t("mobile:projectSettings.multiSelect") },
+    { value: "url", label: t("mobile:projectSettings.url") },
   ] as const;
 }

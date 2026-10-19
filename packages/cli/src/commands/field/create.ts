@@ -126,7 +126,7 @@ export const fieldCreate = Command.make(
     type: Flag.String("type").pipe(
       Flag.withAlias("t"),
       Flag.withDescription(
-        "text, number, date, dropdown (or select), multiselect, or boolean",
+        "text, number, date, dropdown (or select), multiselect, boolean, or url (or link)",
       ),
       Flag.optional,
     ),
