@@ -10009,7 +10009,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing project sharing permission",
+            "description": "No access to the project, missing project sharing permission, or role limited to assigned tasks",
             "content": {
               "application/json": {
                 "schema": {
@@ -10199,7 +10199,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing project sharing permission",
+            "description": "No access to the project, missing project sharing permission, or role limited to assigned tasks",
             "content": {
               "application/json": {
                 "schema": {

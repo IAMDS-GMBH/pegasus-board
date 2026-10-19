@@ -1,8 +1,10 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
+import { isOwnerRole } from "../project-access/is-owner-role";
 import { isInstanceAdmin } from "./is-instance-admin";
+import { splitRoles } from "./split-roles";
 
 // Pegasus fork, Baustein 4: a workspace role may carry the restriction
 // `task:view_assigned_only`, stored as `workspace_role.assigned_only`. Members
@@ -15,6 +17,10 @@ import { isInstanceAdmin } from "./is-instance-admin";
 // never restricted. The restriction is never read from API-key scopes (a key
 // cannot widen or narrow it) and never applies to instance admins, who also
 // bypass workspace membership.
+//
+// A member can hold several comma-separated roles (upstream `splitRoles`). The
+// restriction applies as soon as any of them is restricted, unless one of
+// them is `owner`.
 
 type AssignedOnlyScope = { userId: string | null };
 
@@ -42,16 +48,9 @@ export async function resolveAssignedOnlyUserId(
   let restrictedUserId: string | null = null;
 
   if (userId && !(await isInstanceAdmin(c))) {
-    const [row] = await db
-      .select({ assignedOnly: schema.workspaceRoleTable.assignedOnly })
+    const [member] = await db
+      .select({ role: schema.workspaceUserTable.role })
       .from(schema.workspaceUserTable)
-      .leftJoin(
-        schema.workspaceRoleTable,
-        and(
-          eq(schema.workspaceRoleTable.workspaceId, workspaceId),
-          eq(schema.workspaceRoleTable.role, schema.workspaceUserTable.role),
-        ),
-      )
       .where(
         and(
           eq(schema.workspaceUserTable.userId, userId),
@@ -60,7 +59,10 @@ export async function resolveAssignedOnlyUserId(
       )
       .limit(1);
 
-    if (row?.assignedOnly) {
+    const restricted = await findRestrictedWorkspaceIds([
+      { workspaceId, role: member?.role },
+    ]);
+    if (restricted.length > 0) {
       restrictedUserId = userId;
     }
   }
@@ -93,25 +95,62 @@ export async function listAssignedOnlyWorkspaceIds(
   const userId = c.get("userId") as string | undefined;
   if (!userId || (await isInstanceAdmin(c))) return [];
 
-  const rows = await db
+  const memberships = await db
     .select({
       workspaceId: schema.workspaceUserTable.workspaceId,
-      assignedOnly: schema.workspaceRoleTable.assignedOnly,
+      role: schema.workspaceUserTable.role,
     })
     .from(schema.workspaceUserTable)
-    .leftJoin(
-      schema.workspaceRoleTable,
-      and(
-        eq(
-          schema.workspaceRoleTable.workspaceId,
-          schema.workspaceUserTable.workspaceId,
-        ),
-        eq(schema.workspaceRoleTable.role, schema.workspaceUserTable.role),
-      ),
-    )
     .where(eq(schema.workspaceUserTable.userId, userId));
 
-  return rows.filter((row) => row.assignedOnly).map((row) => row.workspaceId);
+  return findRestrictedWorkspaceIds(memberships);
+}
+
+/**
+ * Workspaces among the given memberships where any of the member's roles is
+ * restricted. Duplicate role rows cannot lift the restriction: one restricted
+ * row is enough.
+ */
+async function findRestrictedWorkspaceIds(
+  memberships: ReadonlyArray<{
+    workspaceId: string;
+    role: string | null | undefined;
+  }>,
+): Promise<string[]> {
+  const candidates = memberships
+    .filter((membership) => !isOwnerRole(membership.role))
+    .map((membership) => ({
+      workspaceId: membership.workspaceId,
+      roles: splitRoles(membership.role),
+    }))
+    .filter((membership) => membership.roles.length > 0);
+  if (candidates.length === 0) return [];
+
+  const restrictedRoles = await db
+    .select({
+      workspaceId: schema.workspaceRoleTable.workspaceId,
+      role: schema.workspaceRoleTable.role,
+    })
+    .from(schema.workspaceRoleTable)
+    .where(
+      and(
+        inArray(
+          schema.workspaceRoleTable.workspaceId,
+          candidates.map((membership) => membership.workspaceId),
+        ),
+        eq(schema.workspaceRoleTable.assignedOnly, true),
+      ),
+    );
+
+  return candidates
+    .filter((membership) =>
+      restrictedRoles.some(
+        (row) =>
+          row.workspaceId === membership.workspaceId &&
+          membership.roles.includes(row.role),
+      ),
+    )
+    .map((membership) => membership.workspaceId);
 }
 
 /**

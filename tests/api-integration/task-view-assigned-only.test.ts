@@ -1,11 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import db, { schema } from "../../apps/api/src/database";
 import { createApp } from "../../apps/api/src/index";
 import globalSearch from "../../apps/api/src/search/controllers/global-search";
 import { mockAuthenticatedSession } from "./helpers/auth";
 import { resetTestDatabase } from "./helpers/database";
+import { readErrorBody } from "./helpers/error-body";
 import {
   createProjectFixture,
   createWorkspaceMember,
@@ -291,7 +292,7 @@ describe("API integration: task:view_assigned_only row filter", () => {
       for (const hidden of [f.theirs, f.unassigned]) {
         const response = await app.request(`/api/task/${hidden.id}`);
         expect(response.status).toBe(404);
-        expect(await response.text()).toBe("Task not found");
+        expect((await readErrorBody(response)).message).toBe("Task not found");
       }
     });
 
@@ -306,13 +307,14 @@ describe("API integration: task:view_assigned_only row filter", () => {
       expect(response.status).toBe(404);
     });
 
-    it("keeps the existing 400 for ids that do not exist", async () => {
+    it("answers ids that do not exist like hidden ones (404)", async () => {
       const f = await fixture();
       const app = asUser(f.restricted.user);
 
       const response = await app.request(`/api/task/${randomUUID()}`);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
+      expect((await readErrorBody(response)).message).toBe("Task not found");
     });
 
     it("covers activities, comments, time entries and labels of a hidden task", async () => {
@@ -405,7 +407,7 @@ describe("API integration: task:view_assigned_only row filter", () => {
 
       const mixed = await bulk([f.mine.id, f.theirs.id]);
       expect(mixed.status).toBe(404);
-      expect(await mixed.text()).toBe("No tasks found");
+      expect((await readErrorBody(mixed)).message).toBe("No tasks found");
 
       const rows = await db
         .select({
@@ -664,6 +666,91 @@ describe("API integration: task:view_assigned_only row filter", () => {
       expect(((await own.json()) as ValueRow[]).map((v) => v.value)).toEqual([
         "Nord",
       ]);
+    });
+  });
+
+  describe("multiple roles and sharing", () => {
+    async function setMemberRole(
+      workspaceId: string,
+      userId: string,
+      role: string,
+    ) {
+      await db
+        .update(schema.workspaceUserTable)
+        .set({ role })
+        .where(
+          and(
+            eq(schema.workspaceUserTable.workspaceId, workspaceId),
+            eq(schema.workspaceUserTable.userId, userId),
+          ),
+        );
+    }
+
+    it.each([`member,${ROLE}`, `${ROLE}, member`])(
+      "restricts a member holding the roles %s",
+      async (role) => {
+        const f = await fixture();
+        await setMemberRole(f.workspace.id, f.restricted.user.id, role);
+        const app = asUser(f.restricted.user);
+
+        expect((await listTasks(app, f.project.id)).ids).toEqual([f.mine.id]);
+        expect((await app.request(`/api/task/${f.theirs.id}`)).status).toBe(
+          404,
+        );
+        const results = await search(app, f.workspace.id, "Bewerber");
+        expect(results.map((result) => result.id)).toEqual([f.mine.id]);
+      },
+    );
+
+    it("does not restrict an owner who also holds the restricted role", async () => {
+      const f = await fixture();
+      await setMemberRole(
+        f.workspace.id,
+        f.restricted.user.id,
+        `owner,${ROLE}`,
+      );
+
+      const { ids } = await listTasks(asUser(f.restricted.user), f.project.id);
+
+      expect(ids).toHaveLength(3);
+    });
+
+    it("stays restricted when a duplicate unrestricted role row exists", async () => {
+      const f = await fixture();
+      await createRoleRow(f.workspace.id, ROLE, RESTRICTED_PERMISSION, false);
+
+      const { ids } = await listTasks(asUser(f.restricted.user), f.project.id);
+
+      expect(ids).toEqual([f.mine.id]);
+    });
+
+    it("denies project calendar feeds, which cover every dated task", async () => {
+      const f = await fixture();
+      await db
+        .update(schema.workspaceRoleTable)
+        .set({
+          permission: JSON.stringify({
+            ...RESTRICTED_PERMISSION,
+            project: ["read", "share"],
+          }),
+        })
+        .where(eq(schema.workspaceRoleTable.workspaceId, f.workspace.id));
+      const app = asUser(f.restricted.user);
+
+      const list = await app.request(
+        `/api/calendar-feed/project/${f.project.id}`,
+      );
+      expect(list.status).toBe(403);
+
+      const create = await app.request(
+        `/api/calendar-feed/project/${f.project.id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        },
+      );
+      expect(create.status).toBe(403);
     });
   });
 

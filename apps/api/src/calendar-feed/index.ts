@@ -10,6 +10,7 @@ import {
   hasWorkspacePermission,
   requireWorkspacePermission,
 } from "../utils/require-workspace-permission";
+import { denyAssignedOnly } from "../utils/assigned-only-scope";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { calendarFeedSchema } from "./response";
 import {
@@ -28,12 +29,14 @@ import {
 const sharingMiddleware = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ project: ["share"] }),
+  // Pegasus fork: a feed covers every dated task in the project.
+  denyAssignedOnly,
 ];
 const managementErrors = {
   400: errorResponse("Invalid request"),
   401: errorResponse("Authentication required"),
   403: errorResponse(
-    "No access to the project, or missing project sharing permission",
+    "No access to the project, missing project sharing permission, or role limited to assigned tasks",
   ),
   404: errorResponse("Project not found"),
 };
