@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { GitHub } from "./github.mjs";
 import { checkPublisher } from "./check-runs.mjs";
+import { draftComment } from "./draft-comment.mjs";
 import { assessIssues, authorExemption, validatePolicy } from "./policy.mjs";
 
 async function checkPullRequest(github, pull, policy, policyError) {
@@ -33,6 +34,13 @@ async function checkPullRequest(github, pull, policy, policyError) {
       state: "pending",
       description: "Pull request changed; waiting for a fresh check.",
     };
+  }
+  if (result.state === "failure" && !current.draft) {
+    await github.convertToDraft(current.node_id);
+    await github.request(
+      `repos/${github.repository}/issues/${current.number}/comments`,
+      { method: "POST", body: { body: draftComment } },
+    );
   }
   return result;
 }
@@ -70,7 +78,11 @@ export async function reconcile(github, loadPolicy) {
     try {
       result = await checkPullRequest(github, pull, policy, policyError);
     } catch (error) {
-      errors.push(error);
+      errors.push(
+        new Error(`PR #${pull.number}: Eligibility reconciliation failed.`, {
+          cause: error,
+        }),
+      );
       result = {
         state: "error",
         description:

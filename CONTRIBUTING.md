@@ -40,6 +40,7 @@ Follow the [local development setup guide](ENVIRONMENT_SETUP.md) for prerequisit
 - **Browse [issues ready for contribution](https://github.com/usekaneo/kaneo/issues?q=is%3Aissue%20is%3Aopen%20label%3Aready-for-contribution)** - the "good first issue" ones are a nice place to start
 - **Check our [Discord](https://discord.gg/rU4tSyhXXU)** - we often discuss features and bugs there
 - **Found a bug?** Open an issue first and wait for a maintainer to give the go-ahead before sending a PR (unless you're [exempt](#contribution-eligibility))
+- **Have a feature idea?** Submit it at [Kaneo Feedback](https://feedback.kaneo.app). Accepted requests become GitHub issues for implementation.
 
 ### Contribution Eligibility
 
@@ -60,8 +61,12 @@ account, can't be handed to someone else, and only skips the issue step.
 Everyone still goes through code review, CI, and the [AI policy](AI_POLICY.md).
 Past contributions or org membership don't earn a voucher automatically.
 
-The **Contribution eligibility** check on your PR tells you where you stand. If
-it fails, link an approved issue or ask a maintainer to vouch for you.
+The **Contribution eligibility** check on your PR tells you where you stand.
+If you're ineligible, the automation converts your PR to a draft. Link an
+approved issue or ask a maintainer to vouch for you, then mark the PR ready
+for review once the check passes. Eligible drafts stay drafts until you mark
+them ready. If eligibility cannot be checked because of an API or policy
+error, the check fails without changing the PR's draft status.
 
 The check reruns when you edit the PR description or push commits, when an
 issue gains or loses the label, and when the voucher list changes. It can't
@@ -70,8 +75,8 @@ those up (GitHub sometimes runs these late). Maintainers can also trigger the
 workflow by hand. Dependabot PRs are checked after their CI run finishes,
 because bot-triggered workflows may only get read-only tokens.
 
-Once the check is required, a failing result blocks merging. It won't stop
-anyone from opening a PR, and it never closes one.
+Once the check is required, a failing result blocks merging. Anyone can still
+open a PR; ineligible PRs become drafts and are never automatically closed.
 
 #### Managing Vouchers
 
@@ -277,7 +282,8 @@ Please read and follow our [AI Contribution Policy](AI_POLICY.md), which adopts 
 ## Need Help?
 
 - **Discord**: Join our [Discord server](https://discord.gg/rU4tSyhXXU) for real-time help
-- **Issues**: Open a [GitHub issue](https://github.com/usekaneo/kaneo/issues) for bugs or feature requests
+- **Bugs**: Open a [GitHub issue](https://github.com/usekaneo/kaneo/issues)
+- **Feature requests**: Submit and vote on ideas at [Kaneo Feedback](https://feedback.kaneo.app)
 - **Discussions**: Use GitHub Discussions for questions about contributing
 
 ## Types of Contributions We Love

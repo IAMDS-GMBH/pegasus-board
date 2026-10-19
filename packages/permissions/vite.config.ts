@@ -17,6 +17,8 @@ export default defineConfig({
             "tsconfig.json",
             ".env*",
             { pattern: ".env*", base: "workspace" },
+            "package.json",
+            { pattern: "pnpm-lock.yaml", base: "workspace" },
           ],
           output: ["dist/**"],
         },

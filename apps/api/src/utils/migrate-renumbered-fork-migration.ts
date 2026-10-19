@@ -3,9 +3,10 @@ import db from "../database";
 
 // The fork first shipped workspace_role.assigned_only as migration 0055. Upstream
 // later added its own 0055-0059 with earlier timestamps, so the fork migration
-// was renumbered to 0060. Drizzle only runs migrations newer than the latest
-// applied one, so a database that ran the old 0055 would skip upstream's
-// 0055-0059. Forgetting that row lets them run; 0060 uses IF NOT EXISTS.
+// was renumbered (0060, now 0064). Drizzle only runs migrations newer than the
+// latest applied one, so a database that ran the old 0055 would skip upstream's
+// 0055-0063. Forgetting that row lets them run; 0064 uses IF NOT EXISTS. The
+// 0060 row needs no such fix: its timestamp is older than upstream's 0060-0063.
 const OLD_FORK_MIGRATION_HASH =
   "2b08ce172177722cf20f11c3b4bc132e2f0441eee2a55198f4664db312a7faae";
 const OLD_FORK_MIGRATION_CREATED_AT = 1791186039997;

@@ -33,8 +33,22 @@ export class GitHub {
       throw new Error(`GitHub request failed (${response.status}).`);
     }
     const result = await response.json();
-    if (result.errors?.length)
-      throw new Error("GitHub GraphQL request failed.");
+    if (result.errors?.length) {
+      const details = result.errors
+        .map((error) =>
+          [error?.type, error?.message]
+            .filter((value) => typeof value === "string")
+            .join(": "),
+        )
+        .join("; ")
+        .replaceAll(this.token, "[redacted]")
+        .replace(/\p{Cc}/gu, " ")
+        .slice(0, 1_000)
+        .trim();
+      throw new Error(
+        `GitHub GraphQL request failed: ${details || "No error details returned."}`,
+      );
+    }
     return result;
   }
 
@@ -46,6 +60,27 @@ export class GitHub {
       );
       pulls.push(...batch);
       if (batch.length < 100) return pulls;
+    }
+  }
+
+  async convertToDraft(pullRequestId) {
+    if (typeof pullRequestId !== "string" || !pullRequestId.trim()) {
+      throw new Error("Missing pull request node ID.");
+    }
+    const result = await this.request("graphql", {
+      method: "POST",
+      body: {
+        query: `mutation($pullRequestId: ID!) {
+          convertPullRequestToDraft(input: { pullRequestId: $pullRequestId }) {
+            pullRequest { id isDraft }
+          }
+        }`,
+        variables: { pullRequestId },
+      },
+    });
+    const converted = result.data?.convertPullRequestToDraft?.pullRequest;
+    if (converted?.id !== pullRequestId || converted.isDraft !== true) {
+      throw new Error("GitHub did not convert the pull request to draft.");
     }
   }
 
