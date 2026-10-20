@@ -49,6 +49,7 @@ function describeDefault(field: DescribedField, t: Translate, locale?: string) {
         ? t("settings:customFields.startsChecked")
         : t("settings:customFields.startsUnchecked");
     case "text":
+    case "url":
       return value ? t("settings:customFields.startsAs", { value }) : "";
     case "number":
       return value ? t("settings:customFields.startsAt", { value }) : "";

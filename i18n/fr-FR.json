@@ -1543,7 +1543,8 @@
 				"dropdown": "Sélecteur",
 				"number": "Nombre",
 				"text": "Texte",
-				"multiselect": "Sélecteur à choix multiples"
+				"multiselect": "Sélecteur à choix multiples",
+				"url": "Link"
 			},
 			"clearDefault": "Effacer la valeur par défaut",
 			"moreOptions": "+{{hiddenCount}} de plus",
@@ -1570,7 +1571,8 @@
 			"issues": {
 				"defaultRequired": "Les champs requis nécessitent une valeur par défaut.",
 				"moreOptionsRequired": "Ajoutez au moins deux options pour autoriser plusieurs choix.",
-				"optionsRequired": "Ajoutez au moins une option."
+				"optionsRequired": "Ajoutez au moins une option.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Nom",
 			"newTitle": "Nouveau champ",
@@ -3288,7 +3290,9 @@
 			"moreFields_one": "{{count}} champ de plus",
 			"moreFields_many": "{{count}} champs de plus",
 			"moreFields_other": "{{count}} champs de plus",
-			"manage": "Gérer les champs"
+			"manage": "Gérer les champs",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3955,7 +3959,8 @@
 			"fields": {
 				"title": "Champs",
 				"empty": "Vide",
-				"none": "Aucun"
+				"none": "Aucun",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Sous-tâches",
@@ -4229,7 +4234,8 @@
 			"defaultValue": "Valeur par défaut",
 			"multiselectOptionsRequired": "Ajoutez au moins deux options différentes.",
 			"unchecked": "Non coché",
-			"validDefaultRequired": "Entrez une valeur par défaut valide pour ce champ obligatoire."
+			"validDefaultRequired": "Entrez une valeur par défaut valide pour ce champ obligatoire.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Nouveau projet",

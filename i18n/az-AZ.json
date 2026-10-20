@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Açılan siyahı, bir neçə seçim"
+				"multiselect": "Açılan siyahı, bir neçə seçim",
+				"url": "Link"
 			},
 			"clearDefault": "Standart dəyəri təmizlə",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "Tələb olunan sahələrin standart dəyəri olmalıdır.",
 				"moreOptionsRequired": "Bir neçə seçimə icazə vermək üçün ən azı iki seçim əlavə edin.",
-				"optionsRequired": "Ən azı bir seçim əlavə edin."
+				"optionsRequired": "Ən azı bir seçim əlavə edin.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Ad",
 			"newTitle": "Yeni sahə",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} saxlanılmadı",
 			"moreFields_one": "Daha {{count}} sahə",
 			"moreFields_other": "Daha {{count}} sahə",
-			"manage": "Sahələri idarə et"
+			"manage": "Sahələri idarə et",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4309,7 +4313,8 @@
 			"defaultValue": "Standart dəyər",
 			"multiselectOptionsRequired": "Ən azı iki fərqli seçim əlavə edin.",
 			"unchecked": "İşarələnməyib",
-			"validDefaultRequired": "Bu tələb olunan sahə üçün etibarlı standart dəyər daxil edin."
+			"validDefaultRequired": "Bu tələb olunan sahə üçün etibarlı standart dəyər daxil edin.",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "Təmizlə",
@@ -4401,7 +4406,8 @@
 			"fields": {
 				"empty": "Boş",
 				"none": "Yoxdur",
-				"title": "Sahələr"
+				"title": "Sahələr",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "Keçid əlavə et",

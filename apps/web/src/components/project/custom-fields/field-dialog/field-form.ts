@@ -4,6 +4,7 @@ import type {
   CustomFieldType,
   FieldKind,
 } from "@/components/project/custom-fields/types";
+import { normalizeCustomFieldUrl } from "@/components/custom-fields/custom-field-url";
 import { moveItem } from "@/components/project/sortable/apply-order";
 
 export type FieldFormState = {
@@ -20,7 +21,8 @@ export type FieldFormIssue =
   | "nameRequired"
   | "optionsRequired"
   | "moreOptionsRequired"
-  | "defaultRequired";
+  | "defaultRequired"
+  | "invalidUrl";
 
 export const EMPTY_FIELD_FORM: FieldFormState = {
   kind: "text",
@@ -142,6 +144,7 @@ export function toApiDefault(state: FieldFormState): string | null {
 
   const trimmed = state.defaultValue.trim();
   if (!trimmed) return null;
+  if (state.kind === "url") return normalizeCustomFieldUrl(trimmed) ?? trimmed;
   return state.kind === "text" ? state.defaultValue : trimmed;
 }
 
@@ -154,6 +157,14 @@ export function getFormIssue(state: FieldFormState): FieldFormIssue | null {
     return state.multiple ? "moreOptionsRequired" : "optionsRequired";
   }
   if (state.required && toApiDefault(state) === null) return "defaultRequired";
+  const defaultValue = state.defaultValue.trim();
+  if (
+    state.kind === "url" &&
+    defaultValue &&
+    !normalizeCustomFieldUrl(defaultValue)
+  ) {
+    return "invalidUrl";
+  }
   return null;
 }
 

@@ -4,7 +4,8 @@ export type CustomFieldType =
   | "date"
   | "boolean"
   | "dropdown"
-  | "multiselect";
+  | "multiselect"
+  | "url";
 
 export type FieldForm = {
   name: string;
@@ -89,6 +90,9 @@ export function validFieldDefault(
     }
     case "text":
       return true;
+    // A quick shape check; the API normalizes and has the final say.
+    case "url":
+      return /^(https?:\/\/)?[^\s/:@]+\.[^\s]+$/i.test(trimmed);
   }
 }
 

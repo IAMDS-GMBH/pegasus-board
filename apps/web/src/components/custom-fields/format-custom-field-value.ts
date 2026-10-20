@@ -1,6 +1,7 @@
 import { isValid, parseISO } from "date-fns";
 import type { CustomFieldType } from "@/components/project/custom-fields/types";
 import { formatDateMedium, formatDateShort } from "@/lib/format";
+import { customFieldUrlLabel } from "./custom-field-url";
 import { parseMultiselect } from "./parse-multiselect";
 
 const VISIBLE_OPTIONS = 2;
@@ -35,6 +36,8 @@ export function formatCustomFieldValue(
       more: 0,
     };
   }
+
+  if (type === "url") return { text: customFieldUrlLabel(value), more: 0 };
 
   return { text: value, more: 0 };
 }

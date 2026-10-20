@@ -2238,7 +2238,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Lista rozwijana, wiele opcji"
+				"multiselect": "Lista rozwijana, wiele opcji",
+				"url": "Link"
 			},
 			"clearDefault": "Wyczyść wartość domyślną",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -2265,7 +2266,8 @@
 			"issues": {
 				"defaultRequired": "Pola wymagane muszą mieć wartość domyślną.",
 				"moreOptionsRequired": "Dodaj co najmniej dwie opcje, aby zezwolić na wiele.",
-				"optionsRequired": "Dodaj co najmniej jedną opcję."
+				"optionsRequired": "Dodaj co najmniej jedną opcję.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Nazwa",
 			"newTitle": "Nowe pole",
@@ -3622,7 +3624,9 @@
 			"moreFields_few": "Jeszcze {{count}} pola",
 			"moreFields_many": "Jeszcze {{count}} pól",
 			"moreFields_other": "Jeszcze {{count}} pola",
-			"manage": "Zarządzaj polami"
+			"manage": "Zarządzaj polami",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4017,7 +4021,8 @@
 			"fields": {
 				"title": "Pola",
 				"empty": "Puste",
-				"none": "Brak"
+				"none": "Brak",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Podzadania",
@@ -4294,7 +4299,8 @@
 			"defaultValue": "Wartość domyślna",
 			"multiselectOptionsRequired": "Dodaj co najmniej dwie różne opcje.",
 			"unchecked": "Odznaczone",
-			"validDefaultRequired": "Wprowadź prawidłową wartość domyślną dla tego wymaganego pola."
+			"validDefaultRequired": "Wprowadź prawidłową wartość domyślną dla tego wymaganego pola.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Nowy projekt",

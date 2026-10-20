@@ -1552,7 +1552,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Випадний список, кілька значень"
+				"multiselect": "Випадний список, кілька значень",
+				"url": "Link"
 			},
 			"clearDefault": "Очистити значення за замовчуванням",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1579,7 +1580,8 @@
 			"issues": {
 				"defaultRequired": "Обов'язковим полям потрібне значення за замовчуванням.",
 				"moreOptionsRequired": "Додайте щонайменше два варіанти, щоб дозволити кілька.",
-				"optionsRequired": "Додайте щонайменше один варіант."
+				"optionsRequired": "Додайте щонайменше один варіант.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Назва",
 			"newTitle": "Нове поле",
@@ -3340,7 +3342,9 @@
 			"moreFields_few": "Ще {{count}} поля",
 			"moreFields_many": "Ще {{count}} полів",
 			"moreFields_other": "Ще {{count}} поля",
-			"manage": "Керувати полями"
+			"manage": "Керувати полями",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4017,7 +4021,8 @@
 			"fields": {
 				"title": "Поля",
 				"empty": "Порожньо",
-				"none": "Немає"
+				"none": "Немає",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Підзавдання",
@@ -4294,7 +4299,8 @@
 			"defaultValue": "Значення за замовчуванням",
 			"multiselectOptionsRequired": "Додайте щонайменше два різні варіанти.",
 			"unchecked": "Не позначено",
-			"validDefaultRequired": "Введіть дійсне значення за замовчуванням для цього обов’язкового поля."
+			"validDefaultRequired": "Введіть дійсне значення за замовчуванням для цього обов’язкового поля.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Новий проєкт",

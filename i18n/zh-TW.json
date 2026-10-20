@@ -1524,7 +1524,8 @@
 				"dropdown": "下拉選單",
 				"number": "數字",
 				"text": "文字",
-				"multiselect": "下拉選單（可複選）"
+				"multiselect": "下拉選單（可複選）",
+				"url": "Link"
 			},
 			"clearDefault": "清除預設值",
 			"moreOptions": "+{{hiddenCount}} 個",
@@ -1551,7 +1552,8 @@
 			"issues": {
 				"defaultRequired": "必填欄位需要預設值。",
 				"moreOptionsRequired": "若要允許複選，請至少新增兩個選項。",
-				"optionsRequired": "請至少新增一個選項。"
+				"optionsRequired": "請至少新增一個選項。",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "名稱",
 			"newTitle": "新增自訂欄位",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "有 {{count}} 個必填欄位是空的",
 			"saveError": "無法儲存{{field}}",
 			"moreFields_other": "另外 {{count}} 個欄位",
-			"manage": "管理欄位"
+			"manage": "管理欄位",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "無法移動任務，請再試一次。",
@@ -4240,7 +4244,8 @@
 			"defaultValue": "預設值",
 			"multiselectOptionsRequired": "請新增至少兩個不同的選項。",
 			"unchecked": "未勾選",
-			"validDefaultRequired": "請為此必填欄位輸入有效的預設值。"
+			"validDefaultRequired": "請為此必填欄位輸入有效的預設值。",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "清除",
@@ -4332,7 +4337,8 @@
 			"fields": {
 				"empty": "空白",
 				"none": "無",
-				"title": "欄位"
+				"title": "欄位",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "新增連結",

@@ -1543,7 +1543,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Desplegable, selección múltiple"
+				"multiselect": "Desplegable, selección múltiple",
+				"url": "Link"
 			},
 			"clearDefault": "Quitar valor por defecto",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1570,7 +1571,8 @@
 			"issues": {
 				"defaultRequired": "Los campos obligatorios necesitan un valor por defecto.",
 				"moreOptionsRequired": "Añade al menos dos opciones para permitir varias.",
-				"optionsRequired": "Añade al menos una opción."
+				"optionsRequired": "Añade al menos una opción.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Nombre",
 			"newTitle": "Nuevo campo",
@@ -3288,7 +3290,9 @@
 			"moreFields_one": "{{count}} campo más",
 			"moreFields_many": "{{count}} campos más",
 			"moreFields_other": "{{count}} campos más",
-			"manage": "Gestionar campos"
+			"manage": "Gestionar campos",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3955,7 +3959,8 @@
 			"fields": {
 				"title": "Campos",
 				"empty": "Vacío",
-				"none": "Ninguno"
+				"none": "Ninguno",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Subtareas",
@@ -4229,7 +4234,8 @@
 			"defaultValue": "Valor por defecto",
 			"multiselectOptionsRequired": "Añade al menos dos opciones distintas.",
 			"unchecked": "Sin marcar",
-			"validDefaultRequired": "Introduce un valor por defecto válido para este campo obligatorio."
+			"validDefaultRequired": "Introduce un valor por defecto válido para este campo obligatorio.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Nuevo proyecto",

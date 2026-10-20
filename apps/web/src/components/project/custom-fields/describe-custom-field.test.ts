@@ -11,6 +11,7 @@ const english: Record<string, string> = {
   "settings:customFields.types.dropdown": "Dropdown",
   "settings:customFields.types.multiselect": "Dropdown, pick several",
   "settings:customFields.types.boolean": "Checkbox",
+  "settings:customFields.types.url": "Link",
   "settings:customFields.moreOptions": "+{{hiddenCount}} more",
   "settings:customFields.startsAs": "Starts as “{{value}}”",
   "settings:customFields.startsAt": "Starts at {{value}}",
@@ -53,6 +54,9 @@ describe("describeCustomField", () => {
       "Text · Starts as “Internal”",
     );
     expect(describeField("number", "5")).toBe("Number · Starts at 5");
+    expect(describeField("url", "https://example.org/")).toBe(
+      "Link · Starts as “https://example.org/”",
+    );
     expect(describeField("date", "2026-03-12")).toBe(
       "Date · Starts on Mar 12, 2026",
     );

@@ -167,7 +167,7 @@ Gelaufen: `task-view-assigned-only` (20), `custom-field` (15), `custom-field-sec
 | Konzept-Anforderung | Upstream-Stand | Lücke | Maßnahme | Stufe | PT |
 |---|---|---|---|---|---|
 | Typen Text, Zahl, Datum, Auswahl, Checkbox | `text`, `number`, `date`, `dropdown`, `boolean`, zusätzlich `multiselect` | keine | — | — | 0 |
-| Typ Link (`url`) | fehlt | als `text` nutzbar, ohne Validierung und ohne klickbaren Link | eigener Typ: Zod-Enum, Validierung, Editor-Icon, Anzeige als Link, 21 Locale-Schlüssel | 1 | 0,5 |
+| Typ Link (`url`) | fehlt | als `text` nutzbar, ohne Validierung und ohne klickbaren Link | **erledigt** in PEGA-87 ([Bericht](2026-10-custom-field-link.md)) | — | erledigt |
 | Fachlicher Schlüssel `key` | fehlt | Hub muss IDs statt Schlüssel verwenden | Zuordnung Feld → Definition-ID in der Hub-Konfiguration (Abschnitt 2.5) | 1 (Hub) | 0 (Fork) |
 | Pflicht, Optionen, Sortierung | vorhanden | Pflicht erzwingt Standardwert | Hub-seitige Prüfung; keine Fork-Änderung | — | 0 |
 | `auf_karte_sichtbar` und Anzeige der wichtigsten Felder auf der Karten-Vorschau (Kampagne, Ort, Position, Paket, Score) | Chip mit Anzahl + Hover-Liste | Werte nicht direkt sichtbar; keine Auswahl, welche Felder | Spalte `visible_on_card` (Migration 0061, idempotent), Schalter im Editor, Rendering auf Board-Karte und Backlog-Zeile, Tests | 1 | 1–1,5 |
@@ -199,7 +199,7 @@ Konzept Kap. 20: „Custom Fields vollständig (Datenmodell, API, Feldverwaltung
 | Position | PT |
 |---|---|
 | Deutsche Übersetzung der Custom-Field-Oberfläche | 0,25 |
-| Typ `url` | 0,5 |
+| Typ `url` | 0,5 (erledigt in PEGA-87) |
 | `visible_on_card` + Werte auf der Karten-Vorschau (Migration, API, Editor, Board, Backlog, Tests) | 1–1,5 |
 | Serverseitiger Filter nach Feldwerten | 1–1,5 |
 | Realtime-Ereignis für Feldwerte | 0,5 |

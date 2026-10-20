@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Паѓачко мени, повеќе избори"
+				"multiselect": "Паѓачко мени, повеќе избори",
+				"url": "Link"
 			},
 			"clearDefault": "Исчисти ја стандардната вредност",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "Задолжителните полиња бараат стандардна вредност.",
 				"moreOptionsRequired": "Додај барем две опции за да дозволиш повеќе.",
-				"optionsRequired": "Додај барем една опција."
+				"optionsRequired": "Додај барем една опција.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Име",
 			"newTitle": "Ново поле",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} не може да се зачува",
 			"moreFields_one": "Уште {{count}} поле",
 			"moreFields_other": "Уште {{count}} полиња",
-			"manage": "Управувај со полиња"
+			"manage": "Управувај со полиња",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3893,7 +3897,8 @@
 			"fields": {
 				"title": "Полиња",
 				"empty": "Празно",
-				"none": "Нема"
+				"none": "Нема",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Подзадачи",
@@ -4164,7 +4169,8 @@
 			"defaultValue": "Стандардна вредност",
 			"multiselectOptionsRequired": "Додај барем две различни опции.",
 			"unchecked": "Нештиклирано",
-			"validDefaultRequired": "Внеси валидна стандардна вредност за ова задолжително поле."
+			"validDefaultRequired": "Внеси валидна стандардна вредност за ова задолжително поле.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Нов проект",
