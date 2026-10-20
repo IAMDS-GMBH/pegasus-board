@@ -1525,7 +1525,8 @@
 				"dropdown": "下拉选择",
 				"number": "数字",
 				"text": "文本",
-				"multiselect": "下拉选择（多选）"
+				"multiselect": "下拉选择（多选）",
+				"url": "Link"
 			},
 			"clearDefault": "清除默认值",
 			"moreOptions": "还有 {{hiddenCount}} 项",
@@ -1552,7 +1553,8 @@
 			"issues": {
 				"defaultRequired": "必填字段需要设置默认值。",
 				"moreOptionsRequired": "要允许多选，请至少添加两个选项。",
-				"optionsRequired": "请至少添加一个选项。"
+				"optionsRequired": "请至少添加一个选项。",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "名称",
 			"newTitle": "新建字段",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "有 {{count}} 个必填字段为空",
 			"saveError": "无法保存{{field}}",
 			"moreFields_other": "另外 {{count}} 个字段",
-			"manage": "管理字段"
+			"manage": "管理字段",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "无法移动任务，请重试。",
@@ -4240,7 +4244,8 @@
 			"defaultValue": "默认值",
 			"multiselectOptionsRequired": "请添加至少两个不同的选项。",
 			"unchecked": "未勾选",
-			"validDefaultRequired": "请为此必填字段输入有效的默认值。"
+			"validDefaultRequired": "请为此必填字段输入有效的默认值。",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "清除",
@@ -4332,7 +4337,8 @@
 			"fields": {
 				"empty": "空",
 				"none": "无",
-				"title": "字段"
+				"title": "字段",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "添加链接",

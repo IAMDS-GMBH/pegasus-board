@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Λίστα, πολλαπλή επιλογή"
+				"multiselect": "Λίστα, πολλαπλή επιλογή",
+				"url": "Link"
 			},
 			"clearDefault": "Καθαρισμός προεπιλογής",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "Τα υποχρεωτικά πεδία χρειάζονται προεπιλεγμένη τιμή.",
 				"moreOptionsRequired": "Προσθέστε τουλάχιστον δύο επιλογές για πολλαπλή επιλογή.",
-				"optionsRequired": "Προσθέστε τουλάχιστον μία επιλογή."
+				"optionsRequired": "Προσθέστε τουλάχιστον μία επιλογή.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Όνομα",
 			"newTitle": "Νέο πεδίο",
@@ -3236,7 +3238,9 @@
 			"saveError": "Δεν ήταν δυνατή η αποθήκευση του πεδίου {{field}}",
 			"moreFields_one": "{{count}} ακόμη πεδίο",
 			"moreFields_other": "{{count}} ακόμη πεδία",
-			"manage": "Διαχείριση πεδίων"
+			"manage": "Διαχείριση πεδίων",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3893,7 +3897,8 @@
 			"fields": {
 				"title": "Πεδία",
 				"empty": "Κενό",
-				"none": "Κανένα"
+				"none": "Κανένα",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Υποεργασίες",
@@ -4164,7 +4169,8 @@
 			"defaultValue": "Προεπιλεγμένη τιμή",
 			"multiselectOptionsRequired": "Προσθέστε τουλάχιστον δύο διαφορετικές επιλογές.",
 			"unchecked": "Μη επιλεγμένο",
-			"validDefaultRequired": "Εισαγάγετε μια έγκυρη προεπιλεγμένη τιμή για αυτό το υποχρεωτικό πεδίο."
+			"validDefaultRequired": "Εισαγάγετε μια έγκυρη προεπιλεγμένη τιμή για αυτό το υποχρεωτικό πεδίο.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Νέο έργο",

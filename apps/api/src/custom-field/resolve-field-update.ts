@@ -6,6 +6,7 @@ import {
   normalizeOptions,
   readOptions,
 } from "./choice-options";
+import { toStoredCustomFieldValue } from "./url-value";
 
 export type CurrentCustomField = {
   name: string;
@@ -53,7 +54,8 @@ function resolveDefault(
 ) {
   if (requested !== undefined) {
     if (requested === null || requested.trim() === "") return null;
-    return type === "date" ? requested.trim() : requested;
+    if (type === "date") return requested.trim();
+    return toStoredCustomFieldValue(type, requested);
   }
 
   if (

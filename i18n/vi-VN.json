@@ -1525,7 +1525,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Danh sách thả xuống, chọn nhiều"
+				"multiselect": "Danh sách thả xuống, chọn nhiều",
+				"url": "Link"
 			},
 			"clearDefault": "Xóa mặc định",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1552,7 +1553,8 @@
 			"issues": {
 				"defaultRequired": "Trường bắt buộc cần có giá trị mặc định.",
 				"moreOptionsRequired": "Thêm ít nhất hai tùy chọn để cho phép chọn nhiều.",
-				"optionsRequired": "Thêm ít nhất một tùy chọn."
+				"optionsRequired": "Thêm ít nhất một tùy chọn.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Tên",
 			"newTitle": "Trường mới",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "{{count}} trường bắt buộc còn trống",
 			"saveError": "Không thể lưu {{field}}",
 			"moreFields_other": "Thêm {{count}} trường",
-			"manage": "Quản lý trường"
+			"manage": "Quản lý trường",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -3831,7 +3835,8 @@
 			"fields": {
 				"title": "Trường",
 				"empty": "Trống",
-				"none": "Không có"
+				"none": "Không có",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Công việc con",
@@ -4099,7 +4104,8 @@
 			"defaultValue": "Giá trị mặc định",
 			"multiselectOptionsRequired": "Thêm ít nhất hai tùy chọn khác nhau.",
 			"unchecked": "Chưa chọn",
-			"validDefaultRequired": "Nhập giá trị mặc định hợp lệ cho trường bắt buộc này."
+			"validDefaultRequired": "Nhập giá trị mặc định hợp lệ cho trường bắt buộc này.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Dự án mới",

@@ -22538,8 +22538,10 @@
                       "date",
                       "dropdown",
                       "boolean",
-                      "multiselect"
-                    ]
+                      "multiselect",
+                      "url"
+                    ],
+                    "description": "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored."
                   },
                   "required": {
                     "type": "boolean",
@@ -22920,7 +22922,8 @@
                       "date",
                       "dropdown",
                       "boolean",
-                      "multiselect"
+                      "multiselect",
+                      "url"
                     ],
                     "description": "Only `dropdown` and `multiselect` can switch between each other. Task values are converted, and switching to `dropdown` is rejected while a task has more than one option picked. Any other type change is rejected."
                   },

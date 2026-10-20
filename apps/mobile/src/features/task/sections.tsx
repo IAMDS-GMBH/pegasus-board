@@ -1,5 +1,12 @@
 import * as WebBrowser from "expo-web-browser";
-import { CornerLeftUp, Link2, Play, Plus, X } from "lucide-react-native";
+import {
+  CornerLeftUp,
+  ExternalLink,
+  Link2,
+  Play,
+  Plus,
+  X,
+} from "lucide-react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -137,6 +144,7 @@ export function CustomFields({
   extras: TaskExtras;
 }) {
   const { t } = useTranslation(["mobile"]);
+  const c = useColors();
   const { run } = useAction();
   const [editing, setEditing] = useState<CustomFieldDefinition | null>(null);
   if (!extras.fields.length) return null;
@@ -169,6 +177,29 @@ export function CustomFields({
               ) : null}
             </Txt>
           ) : null;
+        } else if (f.type === "url" && value) {
+          const href = /^https?:\/\//i.test(value) ? value : null;
+          display = (
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+            >
+              <Txt variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+                {value.replace(/^https?:\/\//i, "").replace(/\/$/, "")}
+              </Txt>
+              {href ? (
+                <Touch
+                  onPress={() => WebBrowser.openBrowserAsync(href)}
+                  accessibilityRole="link"
+                  accessibilityLabel={t("mobile:taskDetail.fields.openLink", {
+                    field: f.name,
+                  })}
+                  hitSlop={8}
+                >
+                  <ExternalLink size={16} color={c.muted} strokeWidth={2} />
+                </Touch>
+              ) : null}
+            </View>
+          );
         } else if (value) {
           display = (
             <Txt
@@ -241,12 +272,18 @@ export function CustomFields({
         onSave={(values) => editing && set(editing.id, JSON.stringify(values))}
       />
       <TextInputSheet
-        visible={!!editing && ["text", "number"].includes(editing.type)}
+        visible={!!editing && ["text", "number", "url"].includes(editing.type)}
         onClose={() => setEditing(null)}
         title={editing?.name ?? ""}
         initial={editing ? (valueOf(editing.id) ?? "") : ""}
         multiline={editing?.type === "text"}
-        keyboardType={editing?.type === "number" ? "decimal-pad" : "default"}
+        keyboardType={
+          editing?.type === "number"
+            ? "decimal-pad"
+            : editing?.type === "url"
+              ? "url"
+              : "default"
+        }
         validate={(v) => !editing?.required || v.trim().length > 0}
         onSubmit={(v) => editing && set(editing.id, v)}
       />

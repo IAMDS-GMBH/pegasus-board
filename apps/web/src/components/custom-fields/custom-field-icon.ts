@@ -1,6 +1,7 @@
 import {
   Calendar,
   Hash,
+  Link,
   List,
   type LucideIcon,
   SquareCheck,
@@ -16,6 +17,7 @@ const ICONS: Record<CustomFieldType, LucideIcon> = {
   dropdown: SquareChevronDown,
   boolean: SquareCheck,
   multiselect: List,
+  url: Link,
 };
 
 export function customFieldIcon(type: CustomFieldType): LucideIcon {

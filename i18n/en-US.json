@@ -1754,7 +1754,8 @@
 				"date": "Date",
 				"dropdown": "Dropdown",
 				"boolean": "Checkbox",
-				"multiselect": "Dropdown, pick several"
+				"multiselect": "Dropdown, pick several",
+				"url": "Link"
 			},
 			"startsAs": "Starts as “{{value}}”",
 			"startsAt": "Starts at {{value}}",
@@ -1791,7 +1792,8 @@
 			"issues": {
 				"optionsRequired": "Add at least one option.",
 				"moreOptionsRequired": "Add at least two options to allow several.",
-				"defaultRequired": "Required fields need a default."
+				"defaultRequired": "Required fields need a default.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"createField": "Create field",
 			"save": "Save",
@@ -3231,7 +3233,9 @@
 			"saveError": "Couldn't save {{field}}",
 			"moreFields_one": "{{count}} more field",
 			"moreFields_other": "{{count}} more fields",
-			"manage": "Manage fields"
+			"manage": "Manage fields",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"descriptionSearchLoading": "Searching full descriptions…",
 		"descriptionSearchError": "Description search failed. Results may be incomplete.",
@@ -3893,7 +3897,8 @@
 			"fields": {
 				"title": "Fields",
 				"empty": "Empty",
-				"none": "None"
+				"none": "None",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Subtasks",
@@ -4104,6 +4109,7 @@
 			"checkbox": "Checkbox",
 			"dropdown": "Dropdown",
 			"multiSelect": "Multi-select",
+			"url": "Link",
 			"projectUpdated": "Project updated",
 			"project": "Project",
 			"projectSettings": "Project settings",

@@ -1525,7 +1525,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "ドロップダウン（複数選択）"
+				"multiselect": "ドロップダウン（複数選択）",
+				"url": "Link"
 			},
 			"clearDefault": "デフォルトをクリア",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1552,7 +1553,8 @@
 			"issues": {
 				"defaultRequired": "必須フィールドにはデフォルト値が必要です。",
 				"moreOptionsRequired": "複数選択を許可するには、選択肢を 2 つ以上追加してください。",
-				"optionsRequired": "選択肢を 1 つ以上追加してください。"
+				"optionsRequired": "選択肢を 1 つ以上追加してください。",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "名前",
 			"newTitle": "新しいフィールド",
@@ -3184,7 +3186,9 @@
 			"missingRequired_other": "必須フィールドが {{count}} 件未入力です",
 			"saveError": "{{field}}を保存できませんでした",
 			"moreFields_other": "ほか {{count}} 件のフィールド",
-			"manage": "フィールドを管理"
+			"manage": "フィールドを管理",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4240,7 +4244,8 @@
 			"defaultValue": "デフォルト値",
 			"multiselectOptionsRequired": "異なる選択肢を2つ以上追加してください。",
 			"unchecked": "チェックなし",
-			"validDefaultRequired": "この必須フィールドに有効なデフォルト値を入力してください。"
+			"validDefaultRequired": "この必須フィールドに有効なデフォルト値を入力してください。",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "クリア",
@@ -4332,7 +4337,8 @@
 			"fields": {
 				"empty": "未設定",
 				"none": "なし",
-				"title": "フィールド"
+				"title": "フィールド",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "リンクを追加",

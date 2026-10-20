@@ -25,14 +25,20 @@ export function CustomFieldDefaultInput({
   const [picking, setPicking] = useState(false);
   const label = t("mobile:projectSettings.defaultValue");
 
-  if (type === "text" || type === "number") {
+  if (type === "text" || type === "number" || type === "url") {
     return (
       <TextField
         label={label}
         accessibilityLabel={label}
         value={value}
         onChangeText={onChange}
-        keyboardType={type === "number" ? "numbers-and-punctuation" : "default"}
+        keyboardType={
+          type === "number"
+            ? "numbers-and-punctuation"
+            : type === "url"
+              ? "url"
+              : "default"
+        }
         autoCapitalize="none"
         autoCorrect={false}
       />

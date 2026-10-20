@@ -1,6 +1,7 @@
 import {
   CalendarIcon,
   Hash,
+  Link,
   List,
   type LucideIcon,
   SquareCheck,
@@ -17,6 +18,7 @@ export const FIELD_KIND_ICONS: Record<FieldKind, LucideIcon> = {
   date: CalendarIcon,
   dropdown: List,
   boolean: SquareCheck,
+  url: Link,
 };
 
 export const FIELD_KINDS = (Object.keys(FIELD_KIND_ICONS) as FieldKind[]).map(

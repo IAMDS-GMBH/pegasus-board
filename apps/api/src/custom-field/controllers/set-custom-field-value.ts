@@ -7,6 +7,7 @@ import {
   customFieldValueTable,
   taskTable,
 } from "../../database/schema";
+import { normalizeUrlValue, toStoredCustomFieldValue } from "../url-value";
 
 function isMultiselectEmpty(value: string): boolean {
   if (!value || value.trim().length === 0) return true;
@@ -124,12 +125,20 @@ async function setCustomFieldValue(
     }
   }
 
+  if (field.type === "url" && normalizedValue.length > 0) {
+    if (!normalizeUrlValue(normalizedValue)) {
+      throw new HTTPException(400, {
+        message: "Value must be an http or https link",
+      });
+    }
+  }
+
   const [result] = await db
     .insert(customFieldValueTable)
     .values({
       taskId,
       fieldId,
-      value: normalizedValue,
+      value: toStoredCustomFieldValue(field.type, normalizedValue),
     })
     .onConflictDoUpdate({
       target: [customFieldValueTable.taskId, customFieldValueTable.fieldId],

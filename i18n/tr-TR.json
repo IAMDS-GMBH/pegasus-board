@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Açılır liste, çoklu seçim"
+				"multiselect": "Açılır liste, çoklu seçim",
+				"url": "Link"
 			},
 			"clearDefault": "Varsayılanı temizle",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "Zorunlu alanların varsayılan değeri olmalıdır.",
 				"moreOptionsRequired": "Çoklu seçime izin vermek için en az iki seçenek ekleyin.",
-				"optionsRequired": "En az bir seçenek ekleyin."
+				"optionsRequired": "En az bir seçenek ekleyin.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Ad",
 			"newTitle": "Yeni alan",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} kaydedilemedi",
 			"moreFields_one": "{{count}} alan daha",
 			"moreFields_other": "{{count}} alan daha",
-			"manage": "Alanları yönet"
+			"manage": "Alanları yönet",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4309,7 +4313,8 @@
 			"defaultValue": "Varsayılan değer",
 			"multiselectOptionsRequired": "En az iki farklı seçenek ekleyin.",
 			"unchecked": "İşaretli değil",
-			"validDefaultRequired": "Bu gerekli alan için geçerli bir varsayılan değer girin."
+			"validDefaultRequired": "Bu gerekli alan için geçerli bir varsayılan değer girin.",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "Temizle",
@@ -4401,7 +4406,8 @@
 			"fields": {
 				"empty": "Boş",
 				"none": "Yok",
-				"title": "Alanlar"
+				"title": "Alanlar",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "Bağlantı ekle",

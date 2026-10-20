@@ -49,6 +49,12 @@ function assertValidDefaultForType(
     return;
   }
 
+  if (type === "url") {
+    const error = validateCustomFieldValue(trimmedValue, "url", name);
+    if (error) badRequest(error);
+    return;
+  }
+
   if (type === "dropdown" && options && options.length > 0) {
     const normalizedOptions = options.map((option) => option.trim());
     if (!normalizedOptions.includes(trimmedValue)) {

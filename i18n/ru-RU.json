@@ -1560,7 +1560,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Выпадающий список, несколько значений"
+				"multiselect": "Выпадающий список, несколько значений",
+				"url": "Link"
 			},
 			"clearDefault": "Очистить значение по умолчанию",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1587,7 +1588,8 @@
 			"issues": {
 				"defaultRequired": "Обязательным полям нужно значение по умолчанию.",
 				"moreOptionsRequired": "Добавьте хотя бы два варианта, чтобы разрешить несколько.",
-				"optionsRequired": "Добавьте хотя бы один вариант."
+				"optionsRequired": "Добавьте хотя бы один вариант.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Название",
 			"newTitle": "Новое поле",
@@ -3392,7 +3394,9 @@
 			"moreFields_few": "Ещё {{count}} поля",
 			"moreFields_many": "Ещё {{count}} полей",
 			"moreFields_other": "Ещё {{count}} поля",
-			"manage": "Управлять полями"
+			"manage": "Управлять полями",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4069,7 +4073,8 @@
 			"fields": {
 				"title": "Поля",
 				"empty": "Пусто",
-				"none": "Нет"
+				"none": "Нет",
+				"openLink": "Open {{field}}"
 			},
 			"subtasks": {
 				"title": "Подзадачи",
@@ -4346,7 +4351,8 @@
 			"defaultValue": "Значение по умолчанию",
 			"multiselectOptionsRequired": "Добавьте хотя бы два разных варианта.",
 			"unchecked": "Не отмечено",
-			"validDefaultRequired": "Введите корректное значение по умолчанию для этого обязательного поля."
+			"validDefaultRequired": "Введите корректное значение по умолчанию для этого обязательного поля.",
+			"url": "Link"
 		},
 		"projectNew": {
 			"newProject": "Новый проект",

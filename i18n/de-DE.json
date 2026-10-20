@@ -1611,7 +1611,8 @@
 				"dropdown": "Dropdown",
 				"number": "Zahl",
 				"text": "Text",
-				"multiselect": "Dropdown, Mehrfachauswahl"
+				"multiselect": "Dropdown, Mehrfachauswahl",
+				"url": "Link"
 			},
 			"clearDefault": "Standardwert entfernen",
 			"moreOptions": "+{{hiddenCount}} weitere",
@@ -1638,7 +1639,8 @@
 			"issues": {
 				"defaultRequired": "Pflichtfelder benötigen einen Standardwert.",
 				"moreOptionsRequired": "Füge mindestens zwei Optionen hinzu, um Mehrfachauswahl zu erlauben.",
-				"optionsRequired": "Füge mindestens eine Option hinzu."
+				"optionsRequired": "Füge mindestens eine Option hinzu.",
+				"invalidUrl": "Gib einen Link ein, z. B. example.org oder https://example.org."
 			},
 			"nameLabel": "Name",
 			"newTitle": "Neues Feld",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} konnte nicht gespeichert werden",
 			"moreFields_one": "{{count}} weiteres Feld",
 			"moreFields_other": "{{count}} weitere Felder",
-			"manage": "Felder verwalten"
+			"manage": "Felder verwalten",
+			"invalidUrl": "Gib einen gültigen Link ein, z. B. linkedin.com/in/name.",
+			"openLink": "{{field}} öffnen"
 		},
 		"board": {
 			"reorderFailed": "Die Reihenfolge konnte nicht gespeichert werden.",
@@ -3893,7 +3897,8 @@
 			"fields": {
 				"title": "Felder",
 				"empty": "Leer",
-				"none": "Keine"
+				"none": "Keine",
+				"openLink": "{{field}} öffnen"
 			},
 			"subtasks": {
 				"title": "Unteraufgaben",
@@ -4104,6 +4109,7 @@
 			"checkbox": "Checkbox",
 			"dropdown": "Dropdown",
 			"multiSelect": "Mehrfachauswahl",
+			"url": "Link",
 			"projectUpdated": "Projekt aktualisiert",
 			"project": "Projekt",
 			"projectSettings": "Projekteinstellungen",

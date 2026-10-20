@@ -64,7 +64,13 @@ export function FieldDefaultInput({
       return (
         <Input
           size="sm"
-          type={form.kind === "number" ? "number" : "text"}
+          type={
+            form.kind === "number"
+              ? "number"
+              : form.kind === "url"
+                ? "url"
+                : "text"
+          }
           value={form.defaultValue}
           aria-labelledby={labelledBy}
           placeholder={t("settings:customFields.noDefault")}

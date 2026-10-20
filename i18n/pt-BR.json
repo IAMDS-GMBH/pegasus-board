@@ -1543,7 +1543,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Lista suspensa, várias opções"
+				"multiselect": "Lista suspensa, várias opções",
+				"url": "Link"
 			},
 			"clearDefault": "Limpar padrão",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1570,7 +1571,8 @@
 			"issues": {
 				"defaultRequired": "Campos obrigatórios precisam de um padrão.",
 				"moreOptionsRequired": "Adicione pelo menos duas opções para permitir várias.",
-				"optionsRequired": "Adicione pelo menos uma opção."
+				"optionsRequired": "Adicione pelo menos uma opção.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Nome",
 			"newTitle": "Novo campo",
@@ -3288,7 +3290,9 @@
 			"moreFields_one": "Mais {{count}} campo",
 			"moreFields_many": "Mais {{count}} campos",
 			"moreFields_other": "Mais {{count}} campos",
-			"manage": "Gerenciar campos"
+			"manage": "Gerenciar campos",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4378,7 +4382,8 @@
 			"defaultValue": "Valor padrão",
 			"multiselectOptionsRequired": "Adicione pelo menos duas opções diferentes.",
 			"unchecked": "Desmarcado",
-			"validDefaultRequired": "Digite um valor padrão válido para este campo obrigatório."
+			"validDefaultRequired": "Digite um valor padrão válido para este campo obrigatório.",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "Limpar",
@@ -4470,7 +4475,8 @@
 			"fields": {
 				"empty": "Vazio",
 				"none": "Nenhum",
-				"title": "Campos"
+				"title": "Campos",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "Adicionar link",

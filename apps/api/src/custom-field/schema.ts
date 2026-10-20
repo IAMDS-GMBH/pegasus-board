@@ -19,12 +19,17 @@ const customFieldType = z.enum([
   "dropdown",
   "boolean",
   "multiselect",
+  // Pegasus fork (PEGA-87): an http(s) link, stored normalized.
+  "url",
 ]);
 
 export const createCustomFieldBody = z.object({
   projectId: z.string(),
   name: z.string(),
-  type: customFieldType,
+  type: customFieldType.openapi({
+    description:
+      "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored.",
+  }),
   required: z.boolean().optional().default(false),
   defaultValue: z.string().optional(),
   options: z.array(z.string()).optional(),

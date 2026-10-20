@@ -7236,6 +7236,9 @@
 								},
 								"multiselect": {
 									"type": "string"
+								},
+								"url": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -7244,7 +7247,8 @@
 								"date",
 								"dropdown",
 								"boolean",
-								"multiselect"
+								"multiselect",
+								"url"
 							]
 						},
 						"multiple": {
@@ -13373,9 +13377,15 @@
 					"properties": {
 						"ariaLabel": {
 							"type": "string"
+						},
+						"invalidUrl": {
+							"type": "string"
+						},
+						"openLink": {
+							"type": "string"
 						}
 					},
-					"required": ["ariaLabel"]
+					"required": ["ariaLabel", "invalidUrl", "openLink"]
 				},
 				"descriptionSearchLoading": {
 					"type": "string"
@@ -15777,9 +15787,12 @@
 								},
 								"none": {
 									"type": "string"
+								},
+								"openLink": {
+									"type": "string"
 								}
 							},
-							"required": ["title", "empty", "none"]
+							"required": ["title", "empty", "none", "openLink"]
 						},
 						"subtasks": {
 							"type": "object",
@@ -16879,6 +16892,9 @@
 						},
 						"multiselectOptionsRequired": {
 							"type": "string"
+						},
+						"url": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -16949,7 +16965,8 @@
 						"checked",
 						"unchecked",
 						"validDefaultRequired",
-						"multiselectOptionsRequired"
+						"multiselectOptionsRequired",
+						"url"
 					]
 				},
 				"projectNew": {

@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { Kbd } from "@/components/ui/kbd";
@@ -5,6 +6,7 @@ import { Kbd } from "@/components/ui/kbd";
 type TextFieldEditorProps = {
   field: CustomFieldDefinition;
   draft: string;
+  invalid?: boolean;
   onDraftChange: (value: string) => void;
   onSubmit: () => void;
 };
@@ -12,18 +14,23 @@ type TextFieldEditorProps = {
 export function TextFieldEditor({
   field,
   draft,
+  invalid = false,
   onDraftChange,
   onSubmit,
 }: TextFieldEditorProps) {
   const { t } = useTranslation();
   const isNumber = field.type === "number";
+  const isUrl = field.type === "url";
+  const errorId = useId();
 
   return (
     <div className="w-64">
       <input
         autoFocus
-        type={isNumber ? "number" : "text"}
-        inputMode={isNumber ? "decimal" : undefined}
+        type={isNumber ? "number" : isUrl ? "url" : "text"}
+        inputMode={isNumber ? "decimal" : isUrl ? "url" : undefined}
+        aria-invalid={invalid || undefined}
+        aria-describedby={invalid ? errorId : undefined}
         value={draft}
         aria-label={field.name}
         placeholder={field.defaultValue || field.name}
@@ -36,7 +43,19 @@ export function TextFieldEditor({
         className="h-10 w-full bg-transparent px-3 text-[13px] text-foreground outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
       />
       <div className="flex items-center justify-between gap-2 border-border/80 border-t px-3 py-2 text-muted-foreground text-xs">
-        <span>{field.required ? t("tasks:customFields.required") : null}</span>
+        {invalid ? (
+          <span
+            id={errorId}
+            role="alert"
+            className="text-destructive-foreground"
+          >
+            {t("tasks:customFields.invalidUrl")}
+          </span>
+        ) : (
+          <span>
+            {field.required ? t("tasks:customFields.required") : null}
+          </span>
+        )}
         <span className="flex items-center gap-1">
           <Kbd>{t("tasks:customFields.enterKey")}</Kbd>
           {t("tasks:customFields.toSave")}

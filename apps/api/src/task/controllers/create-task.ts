@@ -11,6 +11,7 @@ import {
   projectTable,
   userTable,
 } from "../../database/schema";
+import { toStoredCustomFieldValue } from "../../custom-field/url-value";
 import { publishEvent } from "../../events";
 import {
   assertAssignableUser,
@@ -19,6 +20,7 @@ import {
 import {
   assertRequiredCustomFields,
   assertValidTaskStatus,
+  type CustomFieldValueType,
   isCustomFieldValueEmpty,
 } from "../validate-task-fields";
 import { claimTaskNumber } from "./claim-task-numbers";
@@ -93,12 +95,7 @@ async function createTask({
       field.defaultValue != null &&
       !isCustomFieldValueEmpty(
         field.defaultValue,
-        field.type as
-          | "number"
-          | "boolean"
-          | "date"
-          | "dropdown"
-          | "multiselect",
+        field.type as CustomFieldValueType,
       )
     ) {
       mergedCustomFields.push({
@@ -201,7 +198,10 @@ async function createTask({
         mergedCustomFields.map(({ fieldId, value }) => ({
           taskId: task.id,
           fieldId,
-          value: value.trim(),
+          value: toStoredCustomFieldValue(
+            allFields.find((field) => field.id === fieldId)?.type ?? "",
+            value.trim(),
+          ),
         })),
       );
     }

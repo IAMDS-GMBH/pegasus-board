@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { CardFieldList } from "./card-field-list";
 import type { CardField } from "./card-fields";
@@ -47,6 +47,66 @@ describe("CardFieldList", () => {
     render(<CardFieldList fields={fields.slice(0, 1)} max={3} />);
     expect(screen.getByText("Story points")).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
+  });
+
+  it("renders a link value as a link that leaves the card alone", () => {
+    const onCardClick = vi.fn();
+    const onCardPointerDown = vi.fn();
+    const onCardKeyDown = vi.fn();
+    const onCardMouseDown = vi.fn();
+    render(
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- stands in for the task card
+      <div
+        onClick={onCardClick}
+        onPointerDown={onCardPointerDown}
+        onKeyDown={onCardKeyDown}
+        onMouseDown={onCardMouseDown}
+      >
+        <CardFieldList
+          fields={[
+            {
+              fieldId: "profile",
+              name: "LinkedIn",
+              type: "url",
+              value: "https://linkedin.com/in/max",
+            },
+          ]}
+          max={2}
+        />
+      </div>,
+    );
+
+    const link = screen.getByRole("link", { name: "linkedin.com/in/max" });
+    expect(link).toHaveAttribute("href", "https://linkedin.com/in/max");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+
+    fireEvent.pointerDown(link);
+    fireEvent.mouseDown(link);
+    fireEvent.click(link);
+    fireEvent.keyDown(link, { key: "Enter" });
+    expect(onCardClick).not.toHaveBeenCalled();
+    expect(onCardPointerDown).not.toHaveBeenCalled();
+    expect(onCardKeyDown).not.toHaveBeenCalled();
+    expect(onCardMouseDown).not.toHaveBeenCalled();
+  });
+
+  it("never links a stored value that is not an http link", () => {
+    render(
+      <CardFieldList
+        fields={[
+          {
+            fieldId: "profile",
+            name: "LinkedIn",
+            type: "url",
+            value: "javascript:alert(1)",
+          },
+        ]}
+        max={2}
+      />,
+    );
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.getByText("javascript:alert(1)")).toBeInTheDocument();
   });
 
   it("renders nothing without fields", () => {

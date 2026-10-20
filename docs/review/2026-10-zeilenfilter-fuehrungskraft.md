@@ -125,6 +125,22 @@ Status: **gedeckt** = im Prototyp geschlossen und getestet · **offen** = in Stu
 
 **Summe offene Pflichtmaßnahmen (#8, #9, #10, #11, #12, #14, #15, #17, #21, #7):** 3,25–3,75 PT inkl. Tests; davon mit hoher Dringlichkeit vor dem Pilot: #10 (Custom-Field-Werte), #12 (Benachrichtigungen), #14 (Assets).
 
+### Nachtrag: Upstream-Sync 2026-10-19
+
+Beim Sync auf Upstream `cfe528c1` (v2.46.2+141) wurde der Zeilenfilter gegen alle neuen und geänderten Upstream-Routen geprüft (Register: [fork-eingriffe.md](../fork-eingriffe.md)). Ergebnis:
+
+| # | Änderung | Status |
+|---|---|---|
+| 10 | Custom-Field-Werte je Projekt | **geschlossen** in PEGA-5 (`68932d3b`) |
+| 15 | Kalender-Feed: Upstream liefert ohne Label-Auswahl jetzt alle datierten Karten des Projekts | **geschlossen**: `denyAssignedOnly` an den Feed-Routen (403 auch mit `project:share`) |
+| 19 | Restsignal 400 vs. 404 | **geschlossen durch Upstream**: unbekannte IDs liefern jetzt 404 wie verdeckte |
+| 23 | **Mehrfachrollen** (neu durch Upstream `ba783c35`, `member,fuehrungskraft`): Der Scope verglich den ganzen Rollen-String und ließ solche Mitglieder ungefiltert | **geschlossen**: eingeschränkt, sobald eine Rolle eingeschränkt ist (außer `owner`); eine doppelte, uneingeschränkte Rollenzeile hebt die Einschränkung nicht mehr auf |
+| 24 | **Karten sortieren** (`POST /api/task/reorder`) prüft nur das Projekt: Mit `task:update` lassen sich Status und Position verdeckter Karten ändern. Zugleich scheitert das Ziehen für die Führungskraft mit 409, sobald eine verdeckte Karte in Quell- oder Zielspalte liegt, und verrät so deren Existenz | **offen**, neu erkannt; Maßnahme: `restrictToUserId` in `task/controllers/reorder-tasks.ts` (Vorab-Select und Update), 0,5 PT |
+| 18 | Subtask-Zähler: zusätzlich liefert `GET /api/task/{id}?view=board` die ID einer verdeckten Elternkarte (`parentSubtaskCounts`) | offen, erweitert; Maßnahme wie #18 plus Filter auf die Elternkarte in `get-task.ts` |
+| 8, 9, 11, 12, 13, 14 | unverändert gegenüber Abschnitt 4; #12 zusätzlich: E-Mails enthalten seit Upstream `ed0ea788` Labels, Assignee-Kürzel und einen ungefilterten Spaltenzähler | offen |
+
+Empfehlung: Die offenen Punkte #8, #9, #24 (Schreibzugriffe auf verdeckte Karten) zuerst, dann ein gemeinsames SQL-Prädikat `assignedOnlyRoleCondition` nach dem Vorbild von `project-access/project-access-condition.ts` für #11, #12 und #18, danach #14. Eigene Story.
+
 ---
 
 ## 5. Abgleich mit dem Konzept

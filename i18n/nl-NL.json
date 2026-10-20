@@ -1534,7 +1534,8 @@
 				"dropdown": "Dropdown",
 				"number": "Number",
 				"text": "Text",
-				"multiselect": "Dropdown, meerdere keuzes"
+				"multiselect": "Dropdown, meerdere keuzes",
+				"url": "Link"
 			},
 			"clearDefault": "Standaardwaarde wissen",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1561,7 +1562,8 @@
 			"issues": {
 				"defaultRequired": "Verplichte velden hebben een standaardwaarde nodig.",
 				"moreOptionsRequired": "Voeg minimaal twee opties toe om meerdere toe te staan.",
-				"optionsRequired": "Voeg minimaal één optie toe."
+				"optionsRequired": "Voeg minimaal één optie toe.",
+				"invalidUrl": "Enter a link, like example.org or https://example.org."
 			},
 			"nameLabel": "Naam",
 			"newTitle": "Nieuw veld",
@@ -3236,7 +3238,9 @@
 			"saveError": "{{field}} kon niet worden opgeslagen",
 			"moreFields_one": "Nog {{count}} veld",
 			"moreFields_other": "Nog {{count}} velden",
-			"manage": "Velden beheren"
+			"manage": "Velden beheren",
+			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
+			"openLink": "Open {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4309,7 +4313,8 @@
 			"defaultValue": "Standaardwaarde",
 			"multiselectOptionsRequired": "Voeg minimaal twee verschillende opties toe.",
 			"unchecked": "Niet aangevinkt",
-			"validDefaultRequired": "Voer een geldige standaardwaarde in voor dit verplichte veld."
+			"validDefaultRequired": "Voer een geldige standaardwaarde in voor dit verplichte veld.",
+			"url": "Link"
 		},
 		"search": {
 			"clear": "Wissen",
@@ -4401,7 +4406,8 @@
 			"fields": {
 				"empty": "Leeg",
 				"none": "Geen",
-				"title": "Velden"
+				"title": "Velden",
+				"openLink": "Open {{field}}"
 			},
 			"links": {
 				"add": "Link toevoegen",
