@@ -10,6 +10,7 @@ import {
   hasWorkspacePermission,
   requireWorkspacePermission,
 } from "../utils/require-workspace-permission";
+import { denyAssignedOnly } from "../utils/assigned-only-scope";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { calendarFeedSchema } from "./response";
 import {
@@ -28,13 +29,16 @@ import {
 const sharingMiddleware = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ project: ["share"] }),
+  // Pegasus fork: a feed covers every dated task in the project.
+  denyAssignedOnly,
 ];
 const managementErrors = {
-  400: errorResponse("Invalid request or unknown project"),
+  400: errorResponse("Invalid request"),
   401: errorResponse("Authentication required"),
   403: errorResponse(
-    "No workspace access or missing project sharing permission",
+    "No access to the project, missing project sharing permission, or role limited to assigned tasks",
   ),
+  404: errorResponse("Project not found"),
 };
 
 export const publicCalendarFeed = apiRouter().openapi(
@@ -99,7 +103,7 @@ const calendarFeed = apiRouter<BaseVariables & { workspaceId: string }>()
       tags: ["Calendar feeds"],
       summary: "Create a calendar feed",
       description:
-        "Create a calendar subscription matching any selected label. Tasks need a start or due date. All-day dates use the supplied time zone. Creating a missing workspace label definition also requires label:create permission.",
+        "Create a calendar subscription matching any selected label, or all project tasks when no labels are selected. Tasks need a start or due date. All-day dates use the supplied time zone. Creating a missing workspace label definition also requires label:create permission.",
       middleware: sharingMiddleware,
       request: {
         params: calendarFeedProjectParam,
@@ -112,7 +116,7 @@ const calendarFeed = apiRouter<BaseVariables & { workspaceId: string }>()
         201: jsonResponse("Calendar feed created", calendarFeedSchema),
         ...managementErrors,
         403: errorResponse(
-          "No workspace access, missing project:share permission, or missing label:create permission for a new workspace label definition",
+          "No access to the project, missing project:share permission, or missing label:create permission for a new workspace label definition",
         ),
       },
     }),
@@ -147,8 +151,8 @@ const calendarFeed = apiRouter<BaseVariables & { workspaceId: string }>()
           "Calendar feed revoked",
           z.object({ success: z.boolean() }),
         ),
-        404: errorResponse("Calendar feed not found in this project"),
         ...managementErrors,
+        404: errorResponse("Project or calendar feed not found"),
       },
     }),
     async (c) =>

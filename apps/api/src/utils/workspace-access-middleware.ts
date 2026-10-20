@@ -2,11 +2,23 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
+import { assertProjectAccess } from "../project-access/assert-project-access";
 import {
   assertTasksVisible,
   resolveAssignedOnlyUserId,
 } from "./assigned-only-scope";
 import { validateWorkspaceAccess } from "./validate-workspace-access";
+
+type LookupResource =
+  | "project"
+  | "task"
+  | "label"
+  | "timeEntry"
+  | "activity"
+  | "comment"
+  | "column"
+  | "workflowRule"
+  | "customField";
 
 type WorkspaceIdSource =
   | { type: "query"; key: string }
@@ -14,16 +26,7 @@ type WorkspaceIdSource =
   | { type: "param"; key: string }
   | {
       type: "lookup";
-      resource:
-        | "project"
-        | "task"
-        | "label"
-        | "timeEntry"
-        | "activity"
-        | "comment"
-        | "column"
-        | "workflowRule"
-        | "customField";
+      resource: LookupResource;
       idKey: string;
     }
   | {
@@ -32,8 +35,31 @@ type WorkspaceIdSource =
       idKey: string;
     };
 
+const WORKSPACE_NOT_FOUND = "Workspace not found";
+const TASKS_NOT_FOUND = "No tasks found";
+
+const RESOURCE_NOT_FOUND: Record<LookupResource, string> = {
+  project: "Project not found",
+  task: "Task not found",
+  label: "Label not found",
+  timeEntry: "Time entry not found",
+  activity: "Activity not found",
+  comment: "Comment not found",
+  column: "Column not found",
+  workflowRule: "Workflow rule not found",
+  customField: "Custom field not found",
+};
+
 type WorkspaceAccessMiddlewareConfig = {
   sources: WorkspaceIdSource[];
+};
+
+type ResourceScope = {
+  workspaceId: string;
+  projectId: string | null;
+  // Pegasus fork: set only when the resource resolves through a task
+  // (undefined otherwise); `null` means the task exists but has no assignee.
+  assigneeId?: string | null;
 };
 
 async function readJsonObjectBody(
@@ -57,6 +83,8 @@ export function workspaceAccessMiddleware(
     }
 
     let workspaceId: string | null = null;
+    let projectIds: string[] = [];
+    let notFoundMessage = WORKSPACE_NOT_FOUND;
     // Assignees of the task(s) the request targets, when the workspace was
     // resolved through a task. Checked after the role is known (below).
     let taskAssignees: Array<string | null> | null = null;
@@ -80,10 +108,15 @@ export function workspaceAccessMiddleware(
         // handler acted on another (`{"taskId": "<someone else's>"}`).
         const id = c.req.param(source.idKey) || idFromBody;
         if (id) {
-          const found = await lookupWorkspaceId(source.resource, id);
-          workspaceId = found?.workspaceId ?? null;
-          if (found && found.assigneeId !== undefined) {
-            taskAssignees = [found.assigneeId];
+          notFoundMessage = RESOURCE_NOT_FOUND[source.resource];
+          const scope = await lookupScope(source.resource, id);
+          if (!scope) {
+            throw new HTTPException(404, { message: notFoundMessage });
+          }
+          workspaceId = scope.workspaceId;
+          projectIds = scope.projectId ? [scope.projectId] : [];
+          if (scope.assigneeId !== undefined) {
+            taskAssignees = [scope.assigneeId];
           }
         }
       } else if (source.type === "lookupMany") {
@@ -94,9 +127,11 @@ export function workspaceAccessMiddleware(
             (id): id is string => typeof id === "string",
           );
           if (taskIds.length > 0) {
+            notFoundMessage = TASKS_NOT_FOUND;
             const tasks = await db
               .select({
                 workspaceId: schema.projectTable.workspaceId,
+                projectId: schema.projectTable.id,
                 assigneeId: schema.taskTable.userId,
               })
               .from(schema.taskTable)
@@ -109,7 +144,7 @@ export function workspaceAccessMiddleware(
               ...new Set(tasks.map((task) => task.workspaceId)),
             ];
             if (workspaceIds.length === 0) {
-              throw new HTTPException(404, { message: "No tasks found" });
+              throw new HTTPException(404, { message: notFoundMessage });
             }
             if (workspaceIds.length > 1) {
               throw new HTTPException(400, {
@@ -117,6 +152,7 @@ export function workspaceAccessMiddleware(
               });
             }
             workspaceId = workspaceIds[0] ?? null;
+            projectIds = [...new Set(tasks.map((task) => task.projectId))];
             taskAssignees = tasks.map((task) => task.assigneeId);
           }
         }
@@ -136,7 +172,10 @@ export function workspaceAccessMiddleware(
     const apiKey = c.get("apiKey");
     const apiKeyId = apiKey?.id;
 
-    await validateWorkspaceAccess(userId, workspaceId, apiKeyId);
+    await validateWorkspaceAccess(userId, workspaceId, apiKeyId, {
+      notFoundMessage,
+    });
+    await assertProjectAccess(userId, projectIds);
 
     c.set("workspaceId", workspaceId);
 
@@ -152,230 +191,192 @@ export function workspaceAccessMiddleware(
   };
 }
 
-type WorkspaceLookup = {
-  workspaceId: string;
-  // Set only when the resource resolves through a task (undefined otherwise);
-  // `null` means the task exists but has no assignee.
-  assigneeId?: string | null;
-};
-
-async function lookupWorkspaceId(
-  resource:
-    | "project"
-    | "task"
-    | "label"
-    | "timeEntry"
-    | "activity"
-    | "comment"
-    | "column"
-    | "workflowRule"
-    | "customField",
+async function lookupScope(
+  resource: LookupResource,
   id: string,
-): Promise<WorkspaceLookup | null> {
-  try {
-    switch (resource) {
-      case "project": {
-        const [project] = await db
-          .select({ workspaceId: schema.projectTable.workspaceId })
-          .from(schema.projectTable)
-          .where(eq(schema.projectTable.id, id))
-          .limit(1);
-        return project?.workspaceId
-          ? { workspaceId: project.workspaceId }
-          : null;
-      }
-
-      case "task": {
-        const [task] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-            assigneeId: schema.taskTable.userId,
-          })
-          .from(schema.taskTable)
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.taskTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.taskTable.id, id))
-          .limit(1);
-        return task?.workspaceId
-          ? {
-              workspaceId: task.workspaceId,
-              assigneeId: task.assigneeId,
-            }
-          : null;
-      }
-
-      case "label": {
-        const [label] = await db
-          .select({
-            workspaceId: schema.labelTable.workspaceId,
-            taskId: schema.labelTable.taskId,
-            taskWorkspaceId: schema.projectTable.workspaceId,
-            assigneeId: schema.taskTable.userId,
-          })
-          .from(schema.labelTable)
-          .leftJoin(
-            schema.taskTable,
-            eq(schema.labelTable.taskId, schema.taskTable.id),
-          )
-          .leftJoin(
-            schema.projectTable,
-            eq(schema.taskTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.labelTable.id, id))
-          .limit(1);
-        // Older releases allowed inconsistent label/task references. Never use
-        // such a row to authorize reads, mutations or external provider sync.
-        if (label?.taskId && label.taskWorkspaceId !== label.workspaceId) {
-          return null;
-        }
-        if (!label?.workspaceId) return null;
-        // Workspace-level label definitions (no task) are not assignee-scoped.
-        return label.taskId
-          ? {
-              workspaceId: label.workspaceId,
-              assigneeId: label.assigneeId,
-            }
-          : { workspaceId: label.workspaceId };
-      }
-
-      case "timeEntry": {
-        const [timeEntry] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-            assigneeId: schema.taskTable.userId,
-          })
-          .from(schema.timeEntryTable)
-          .innerJoin(
-            schema.taskTable,
-            eq(schema.timeEntryTable.taskId, schema.taskTable.id),
-          )
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.taskTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.timeEntryTable.id, id))
-          .limit(1);
-        return timeEntry?.workspaceId
-          ? {
-              workspaceId: timeEntry.workspaceId,
-              assigneeId: timeEntry.assigneeId,
-            }
-          : null;
-      }
-
-      case "activity": {
-        const [activity] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-            assigneeId: schema.taskTable.userId,
-          })
-          .from(schema.activityTable)
-          .innerJoin(
-            schema.taskTable,
-            eq(schema.activityTable.taskId, schema.taskTable.id),
-          )
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.taskTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.activityTable.id, id))
-          .limit(1);
-        return activity?.workspaceId
-          ? {
-              workspaceId: activity.workspaceId,
-              assigneeId: activity.assigneeId,
-            }
-          : null;
-      }
-
-      case "comment": {
-        const [comment] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-            assigneeId: schema.taskTable.userId,
-          })
-          .from(schema.activityTable)
-          .innerJoin(
-            schema.taskTable,
-            eq(schema.activityTable.taskId, schema.taskTable.id),
-          )
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.taskTable.projectId, schema.projectTable.id),
-          )
-          .where(
-            and(
-              eq(schema.activityTable.id, id),
-              eq(schema.activityTable.type, "comment"),
-            ),
-          )
-          .limit(1);
-        return comment?.workspaceId
-          ? {
-              workspaceId: comment.workspaceId,
-              assigneeId: comment.assigneeId,
-            }
-          : null;
-      }
-
-      case "column": {
-        const [column] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-          })
-          .from(schema.columnTable)
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.columnTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.columnTable.id, id))
-          .limit(1);
-        return column?.workspaceId ? { workspaceId: column.workspaceId } : null;
-      }
-
-      case "workflowRule": {
-        const [workflowRule] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-          })
-          .from(schema.workflowRuleTable)
-          .innerJoin(
-            schema.projectTable,
-            eq(schema.workflowRuleTable.projectId, schema.projectTable.id),
-          )
-          .where(eq(schema.workflowRuleTable.id, id))
-          .limit(1);
-        return workflowRule?.workspaceId
-          ? { workspaceId: workflowRule.workspaceId }
-          : null;
-      }
-
-      case "customField": {
-        const [field] = await db
-          .select({
-            workspaceId: schema.projectTable.workspaceId,
-          })
-          .from(schema.customFieldDefinitionTable)
-          .innerJoin(
-            schema.projectTable,
-            eq(
-              schema.customFieldDefinitionTable.projectId,
-              schema.projectTable.id,
-            ),
-          )
-          .where(eq(schema.customFieldDefinitionTable.id, id))
-          .limit(1);
-        return field?.workspaceId ? { workspaceId: field.workspaceId } : null;
-      }
-
-      default:
-        return null;
+): Promise<ResourceScope | null> {
+  switch (resource) {
+    case "project": {
+      const [project] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+        })
+        .from(schema.projectTable)
+        .where(eq(schema.projectTable.id, id))
+        .limit(1);
+      return project ?? null;
     }
-  } catch (error) {
-    console.error(`Error looking up workspaceId for ${resource}:`, error);
-    return null;
+
+    case "task": {
+      const [task] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+          assigneeId: schema.taskTable.userId,
+        })
+        .from(schema.taskTable)
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.taskTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.taskTable.id, id))
+        .limit(1);
+      return task ?? null;
+    }
+
+    case "label": {
+      const [label] = await db
+        .select({
+          workspaceId: schema.labelTable.workspaceId,
+          taskId: schema.labelTable.taskId,
+          taskWorkspaceId: schema.projectTable.workspaceId,
+          taskProjectId: schema.projectTable.id,
+          assigneeId: schema.taskTable.userId,
+        })
+        .from(schema.labelTable)
+        .leftJoin(
+          schema.taskTable,
+          eq(schema.labelTable.taskId, schema.taskTable.id),
+        )
+        .leftJoin(
+          schema.projectTable,
+          eq(schema.taskTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.labelTable.id, id))
+        .limit(1);
+      const labelOutsideTaskWorkspace =
+        label?.taskId && label.taskWorkspaceId !== label.workspaceId;
+      if (labelOutsideTaskWorkspace || !label?.workspaceId) return null;
+      return {
+        workspaceId: label.workspaceId,
+        projectId: label.taskProjectId ?? null,
+        // Workspace-level label definitions (no task) are not assignee-scoped.
+        ...(label.taskId ? { assigneeId: label.assigneeId } : {}),
+      };
+    }
+
+    case "timeEntry": {
+      const [timeEntry] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+          assigneeId: schema.taskTable.userId,
+        })
+        .from(schema.timeEntryTable)
+        .innerJoin(
+          schema.taskTable,
+          eq(schema.timeEntryTable.taskId, schema.taskTable.id),
+        )
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.taskTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.timeEntryTable.id, id))
+        .limit(1);
+      return timeEntry ?? null;
+    }
+
+    case "activity": {
+      const [activity] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+          assigneeId: schema.taskTable.userId,
+        })
+        .from(schema.activityTable)
+        .innerJoin(
+          schema.taskTable,
+          eq(schema.activityTable.taskId, schema.taskTable.id),
+        )
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.taskTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.activityTable.id, id))
+        .limit(1);
+      return activity ?? null;
+    }
+
+    case "comment": {
+      const [comment] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+          assigneeId: schema.taskTable.userId,
+        })
+        .from(schema.activityTable)
+        .innerJoin(
+          schema.taskTable,
+          eq(schema.activityTable.taskId, schema.taskTable.id),
+        )
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.taskTable.projectId, schema.projectTable.id),
+        )
+        .where(
+          and(
+            eq(schema.activityTable.id, id),
+            eq(schema.activityTable.type, "comment"),
+          ),
+        )
+        .limit(1);
+      return comment ?? null;
+    }
+
+    case "column": {
+      const [column] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+        })
+        .from(schema.columnTable)
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.columnTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.columnTable.id, id))
+        .limit(1);
+      return column ?? null;
+    }
+
+    case "workflowRule": {
+      const [workflowRule] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+        })
+        .from(schema.workflowRuleTable)
+        .innerJoin(
+          schema.projectTable,
+          eq(schema.workflowRuleTable.projectId, schema.projectTable.id),
+        )
+        .where(eq(schema.workflowRuleTable.id, id))
+        .limit(1);
+      return workflowRule ?? null;
+    }
+
+    case "customField": {
+      const [field] = await db
+        .select({
+          workspaceId: schema.projectTable.workspaceId,
+          projectId: schema.projectTable.id,
+        })
+        .from(schema.customFieldDefinitionTable)
+        .innerJoin(
+          schema.projectTable,
+          eq(
+            schema.customFieldDefinitionTable.projectId,
+            schema.projectTable.id,
+          ),
+        )
+        .where(eq(schema.customFieldDefinitionTable.id, id))
+        .limit(1);
+      return field ?? null;
+    }
+
+    default:
+      return null;
   }
 }
 
