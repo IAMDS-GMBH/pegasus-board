@@ -15,6 +15,7 @@ export type FieldFormState = {
   required: boolean;
   defaultValue: string;
   defaultValues: string[];
+  showOnCard: boolean;
 };
 
 export type FieldFormIssue =
@@ -32,6 +33,7 @@ export const EMPTY_FIELD_FORM: FieldFormState = {
   required: false,
   defaultValue: "",
   defaultValues: [],
+  showOnCard: false,
 };
 
 function parseDefaultValues(value: string | null) {
@@ -66,6 +68,7 @@ export function formFromField(field?: CustomFieldDefinition | null) {
     required: field.required,
     defaultValue: initialDefault(field),
     defaultValues: multiple ? parseDefaultValues(field.defaultValue) : [],
+    showOnCard: field.showOnCard,
   } satisfies FieldFormState;
 }
 
@@ -176,6 +179,7 @@ export function toCreatePayload(state: FieldFormState, projectId: string) {
     required: state.required,
     defaultValue: toApiDefault(state) ?? undefined,
     options: state.kind === "dropdown" ? state.options : undefined,
+    showOnCard: state.showOnCard,
   };
 }
 
@@ -185,6 +189,7 @@ export function toUpdatePayload(state: FieldFormState) {
     type: toApiType(state),
     required: state.required,
     defaultValue: toApiDefault(state),
+    showOnCard: state.showOnCard,
     ...(state.kind === "dropdown" ? { options: state.options } : {}),
   };
 }

@@ -7253,6 +7253,15 @@
 						},
 						"multiple": {
 							"type": "string"
+						},
+						"showOnCard": {
+							"type": "string"
+						},
+						"showOnCardDescription": {
+							"type": "string"
+						},
+						"onCard": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -7279,7 +7288,10 @@
 						"clearDefault",
 						"availableOptions",
 						"types",
-						"multiple"
+						"multiple",
+						"showOnCard",
+						"showOnCardDescription",
+						"onCard"
 					]
 				},
 				"githubIntegration": {

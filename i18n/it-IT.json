@@ -1592,7 +1592,10 @@
 			"typeLocked": "Il tipo non può essere modificato dopo la creazione del campo.",
 			"unchecked": "Non selezionata",
 			"updateError": "Salvataggio del campo personalizzato fallito.",
-			"updateSuccess": "Campo personalizzato salvato."
+			"updateSuccess": "Campo personalizzato salvato.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

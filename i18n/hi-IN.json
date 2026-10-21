@@ -1583,7 +1583,10 @@
 			"typeLocked": "फ़ील्ड बनने के बाद उसका प्रकार नहीं बदला जा सकता।",
 			"unchecked": "अनचेक",
 			"updateError": "कस्टम फ़ील्ड सहेजने में विफल।",
-			"updateSuccess": "कस्टम फ़ील्ड सहेजी गई।"
+			"updateSuccess": "कस्टम फ़ील्ड सहेजी गई।",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

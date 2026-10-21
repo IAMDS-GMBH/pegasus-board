@@ -1592,7 +1592,10 @@
 			"typeLocked": "El tipo no se puede cambiar después de crear el campo.",
 			"unchecked": "Sin marcar",
 			"updateError": "Error al guardar el campo personalizado.",
-			"updateSuccess": "Campo personalizado guardado."
+			"updateSuccess": "Campo personalizado guardado.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

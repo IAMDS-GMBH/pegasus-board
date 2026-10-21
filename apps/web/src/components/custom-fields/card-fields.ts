@@ -37,7 +37,10 @@ export function cardFieldsForTask(
 ): CardField[] {
   if (!values) return [];
   return (valuesByTask(values).get(taskId) ?? [])
-    .filter((entry) => !hiddenFieldIds.includes(entry.fieldId))
+    .filter(
+      (entry) =>
+        entry.fieldShowOnCard && !hiddenFieldIds.includes(entry.fieldId),
+    )
     .map((entry) => ({
       fieldId: entry.fieldId,
       name: entry.fieldName,

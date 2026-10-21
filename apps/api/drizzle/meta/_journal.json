@@ -456,6 +456,13 @@
       "when": 1792412013481,
       "tag": "0064_workspace_role_assigned_only",
       "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1792503936310,
+      "tag": "0065_custom_field_show_on_card",
+      "breakpoints": true
     }
   ]
 }

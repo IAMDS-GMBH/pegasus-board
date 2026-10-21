@@ -170,7 +170,7 @@ Gelaufen: `task-view-assigned-only` (20), `custom-field` (15), `custom-field-sec
 | Typ Link (`url`) | fehlt | als `text` nutzbar, ohne Validierung und ohne klickbaren Link | **erledigt** in PEGA-87 ([Bericht](2026-10-custom-field-link.md)) | — | erledigt |
 | Fachlicher Schlüssel `key` | fehlt | Hub muss IDs statt Schlüssel verwenden | Zuordnung Feld → Definition-ID in der Hub-Konfiguration (Abschnitt 2.5) | 1 (Hub) | 0 (Fork) |
 | Pflicht, Optionen, Sortierung | vorhanden | Pflicht erzwingt Standardwert | Hub-seitige Prüfung; keine Fork-Änderung | — | 0 |
-| `auf_karte_sichtbar` und Anzeige der wichtigsten Felder auf der Karten-Vorschau (Kampagne, Ort, Position, Paket, Score) | Chip mit Anzahl + Hover-Liste | Werte nicht direkt sichtbar; keine Auswahl, welche Felder | Spalte `visible_on_card` (Migration 0061, idempotent), Schalter im Editor, Rendering auf Board-Karte und Backlog-Zeile, Tests | 1 | 1–1,5 |
+| `auf_karte_sichtbar` und Anzeige der wichtigsten Felder auf der Karten-Vorschau (Kampagne, Ort, Position, Paket, Score) | Chip mit Anzahl + Hover-Liste | Werte nicht direkt sichtbar; keine Auswahl, welche Felder | **erledigt** in PEGA-88 als `show_on_card` (Migration 0065, [Bericht](2026-10-custom-fields-karte.md)) | — | erledigt |
 | Filter im Board nach Auswahl- und Datumsfeldern | Filterleiste vorhanden; Wertevorrat per API | Filterung **clientseitig** auf der geladenen Seite (max. 100 Karten je Request); Konzept Kap. 4 verlangt serverseitig für mehrere tausend Karten | Parameter `customFields` in `listTasksQuery`, Join in `get-tasks.ts`, Toolbar nutzt den Parameter; Index `(field_id, value)` prüfen | 1 | 1–1,5 |
 | Feldverwaltung in den Projekteinstellungen | vorhanden auf der Seite „Workflow“ | — | optional eigene Seite „Felder“ (Route + Navigationseintrag) | 1 (optional) | 0,25 |
 | Felddefinition bearbeiten (Name, Optionen) | fehlt; Upstream-Branch `feat/edit-custom-fields` in Arbeit | Umbenennen nur durch Löschen und Neuanlegen (Werte gehen verloren) | **abwarten und per Upstream-Sync übernehmen**, nicht bauen; Rückfall, falls bis Stufe 1 nicht gemergt: eigene Route | 1 (Sync) | 0 (Rückfall 1) |
@@ -200,7 +200,7 @@ Konzept Kap. 20: „Custom Fields vollständig (Datenmodell, API, Feldverwaltung
 |---|---|
 | Deutsche Übersetzung der Custom-Field-Oberfläche | 0,25 |
 | Typ `url` | 0,5 (erledigt in PEGA-87) |
-| `visible_on_card` + Werte auf der Karten-Vorschau (Migration, API, Editor, Board, Backlog, Tests) | 1–1,5 |
+| `visible_on_card` + Werte auf der Karten-Vorschau (Migration, API, Editor, Board, Backlog, Tests) | 1–1,5 (erledigt in PEGA-88) |
 | Serverseitiger Filter nach Feldwerten | 1–1,5 |
 | Realtime-Ereignis für Feldwerte | 0,5 |
 | **Summe Kern** | **3,25–4,25 → gerundet 3–4,5** |

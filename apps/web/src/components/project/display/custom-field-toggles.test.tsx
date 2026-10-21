@@ -20,8 +20,13 @@ vi.mock(
   () => ({
     default: () => ({
       data: [
-        { id: "points", name: "Story points", type: "number" },
-        { id: "customer", name: "Customer", type: "text" },
+        {
+          id: "points",
+          name: "Story points",
+          type: "number",
+          showOnCard: true,
+        },
+        { id: "customer", name: "Customer", type: "text", showOnCard: false },
       ],
     }),
   }),
@@ -49,5 +54,9 @@ describe("CustomFieldToggles", () => {
 
     useUserPreferencesStore.getState().resetDisplayPreferences();
     expect(useUserPreferencesStore.getState().hiddenCardFieldIds).toEqual([]);
+  });
+  it("offers only fields the admin put on the card", () => {
+    render(<CustomFieldToggles projectId="project-1" />);
+    expect(screen.queryByRole("button", { name: "Customer" })).toBeNull();
   });
 });

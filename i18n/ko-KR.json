@@ -1574,7 +1574,10 @@
 			"typeLocked": "필드를 만든 후에는 유형을 변경할 수 없습니다.",
 			"unchecked": "체크 안 됨",
 			"updateError": "사용자 정의 필드를 저장하지 못했습니다.",
-			"updateSuccess": "사용자 정의 필드가 저장되었습니다."
+			"updateSuccess": "사용자 정의 필드가 저장되었습니다.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

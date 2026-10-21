@@ -8,6 +8,7 @@ type FieldSettingsBoxProps = {
   form: FieldFormState;
   onMultipleChange: (multiple: boolean) => void;
   onRequiredChange: (required: boolean) => void;
+  onShowOnCardChange: (showOnCard: boolean) => void;
   onDefaultChange: (
     defaults: Pick<FieldFormState, "defaultValue" | "defaultValues">,
   ) => void;
@@ -17,6 +18,7 @@ export function FieldSettingsBox({
   form,
   onMultipleChange,
   onRequiredChange,
+  onShowOnCardChange,
   onDefaultChange,
 }: FieldSettingsBoxProps) {
   const { t } = useTranslation();
@@ -46,6 +48,19 @@ export function FieldSettingsBox({
           <Switch
             checked={form.required}
             onCheckedChange={onRequiredChange}
+            aria-labelledby={labelId}
+            aria-describedby={descriptionId}
+          />
+        )}
+      </FieldSettingRow>
+      <FieldSettingRow
+        title={t("settings:customFields.showOnCard")}
+        description={t("settings:customFields.showOnCardDescription")}
+      >
+        {({ labelId, descriptionId }) => (
+          <Switch
+            checked={form.showOnCard}
+            onCheckedChange={onShowOnCardChange}
             aria-labelledby={labelId}
             aria-describedby={descriptionId}
           />

@@ -10,6 +10,7 @@ const dropdown: CurrentCustomField = {
   required: false,
   defaultValue: "Medium",
   options: ["Small", "Medium", "Large"],
+  showOnCard: false,
 };
 
 describe("resolveFieldUpdate", () => {
@@ -19,6 +20,15 @@ describe("resolveFieldUpdate", () => {
       name: "T-shirt size",
       removedOptions: [],
     });
+  });
+
+  it("switches the card preview on and keeps it when the request leaves it out", () => {
+    const shown = resolveFieldUpdate(dropdown, { showOnCard: true });
+    expect(shown.showOnCard).toBe(true);
+    expect(
+      resolveFieldUpdate({ ...dropdown, showOnCard: true }, { name: "Size" })
+        .showOnCard,
+    ).toBe(true);
   });
 
   it("rejects type changes other than dropdown and multiselect", () => {

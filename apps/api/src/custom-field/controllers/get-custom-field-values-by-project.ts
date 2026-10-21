@@ -22,6 +22,7 @@ async function getCustomFieldValuesByProject(
       fieldPosition: customFieldDefinitionTable.position,
       fieldType: customFieldDefinitionTable.type,
       fieldOptions: customFieldDefinitionTable.options,
+      fieldShowOnCard: customFieldDefinitionTable.showOnCard,
     })
     .from(customFieldValueTable)
     .innerJoin(taskTable, eq(customFieldValueTable.taskId, taskTable.id))

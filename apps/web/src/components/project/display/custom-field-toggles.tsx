@@ -7,9 +7,11 @@ import { useUserPreferencesStore } from "@/store/user-preferences";
 
 export function CustomFieldToggles({ projectId }: { projectId: string }) {
   const { t } = useTranslation();
-  const { data: fields = [] } = useGetCustomFieldsByProject(projectId) as {
+  const { data: definitions = [] } = useGetCustomFieldsByProject(projectId) as {
     data: CustomFieldDefinition[] | undefined;
   };
+  // Pegasus fork (PEGA-88): only fields the admin put on the card can be hidden.
+  const fields = definitions.filter((field) => field.showOnCard);
   const hiddenFieldIds = useUserPreferencesStore(
     (state) => state.hiddenCardFieldIds,
   );

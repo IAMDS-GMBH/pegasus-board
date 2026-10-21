@@ -1574,7 +1574,10 @@
 			"typeLocked": "フィールドの作成後は種類を変更できません。",
 			"unchecked": "チェックなし",
 			"updateError": "カスタムフィールドを保存できませんでした。",
-			"updateSuccess": "カスタムフィールドを保存しました。"
+			"updateSuccess": "カスタムフィールドを保存しました。",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

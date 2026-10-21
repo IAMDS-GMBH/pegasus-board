@@ -35,6 +35,7 @@ function definition(
     defaultValue: null,
     options: null,
     position: 0,
+    showOnCard: false,
     createdAt: "",
     updatedAt: "",
     ...overrides,
@@ -183,6 +184,7 @@ describe("payloads", () => {
       required: false,
       defaultValue: '["Small"]',
       options: ["Small", "Medium", "Large"],
+      showOnCard: false,
     });
   });
 
@@ -204,6 +206,7 @@ describe("payloads", () => {
       required: false,
       defaultValue: "https://linkedin.com/company/x",
       options: undefined,
+      showOnCard: false,
     });
   });
 
@@ -219,6 +222,16 @@ describe("payloads", () => {
       type: "number",
       required: false,
       defaultValue: null,
+      showOnCard: false,
     });
+  });
+
+  it("carries the card preview setting from the field into both payloads", () => {
+    const form = formFromField(definition({ showOnCard: true }));
+    expect(form.showOnCard).toBe(true);
+    expect(toCreatePayload(form, "p1").showOnCard).toBe(true);
+    expect(toUpdatePayload({ ...form, showOnCard: false }).showOnCard).toBe(
+      false,
+    );
   });
 });

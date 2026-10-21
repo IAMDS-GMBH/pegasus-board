@@ -1592,7 +1592,10 @@
 			"typeLocked": "Le type ne peut plus être modifié après la création du champ.",
 			"unchecked": "Non coché",
 			"updateError": "Échec de l'enregistrement du champ personnalisé.",
-			"updateSuccess": "Champ personnalisé enregistré."
+			"updateSuccess": "Champ personnalisé enregistré.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

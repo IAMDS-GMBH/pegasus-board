@@ -16,6 +16,7 @@ export type CustomFieldDefinition = {
   defaultValue: string | null;
   options: string[] | null;
   position: number;
+  showOnCard: boolean;
   createdAt: string;
   updatedAt: string;
 };

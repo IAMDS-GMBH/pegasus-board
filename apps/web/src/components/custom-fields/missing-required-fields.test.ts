@@ -18,6 +18,7 @@ const field = (
   defaultValue: null,
   options: null,
   position: 0,
+  showOnCard: false,
   createdAt: "",
   updatedAt: "",
 });

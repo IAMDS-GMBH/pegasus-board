@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
-import { CardFieldList } from "@/components/custom-fields/card-field-list";
+import { CardFieldRows } from "@/components/custom-fields/card-field-rows";
 import { CheckboxMark } from "@/components/custom-fields/checkbox-mark";
 import { AssigneeButton } from "@/components/task-chips/assignee-button";
 import { ChecklistChip } from "@/components/task-chips/checklist-chip";
@@ -190,6 +190,8 @@ function TaskCardContent({
               {task.title}
             </div>
 
+            {!taskIsCompleted && <CardFieldRows fields={cardFields} />}
+
             {!taskIsCompleted && (
               <div className="mt-2.5 flex flex-wrap items-center gap-1 empty:hidden">
                 {showPriority && hasPriority && <PriorityChip task={task} />}
@@ -203,11 +205,6 @@ function TaskCardContent({
                 {showLabels && (
                   <LabelChips task={task} workspaceId={workspaceId} />
                 )}
-                <CardFieldList
-                  fields={cardFields}
-                  max={2}
-                  className="contents"
-                />
               </div>
             )}
           </div>
