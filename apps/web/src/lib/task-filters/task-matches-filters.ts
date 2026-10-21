@@ -10,6 +10,7 @@ import {
   DUE_DATE_FILTER_VALUES,
 } from "@/hooks/use-task-filters";
 import type Task from "@/types/task";
+import { parseMultiselect } from "@/components/custom-fields/parse-multiselect";
 import { customFieldSubjectId } from "./filter-subject-id";
 
 export type TaskFilterContext = {
@@ -20,8 +21,20 @@ export type TaskFilterContext = {
   today: Date;
   getCustomFieldValues: (
     taskId: string,
-  ) => Array<{ fieldId: string; value: string | null }>;
+  ) => Array<{ fieldId: string; value: string | null; fieldType?: string }>;
 };
+
+// Pegasus fork (PEGA-89): multiselect values are JSON arrays; any selected
+// option matches. Other types keep the stored string.
+function customFieldCandidates(entry: {
+  value: string | null;
+  fieldType?: string;
+}) {
+  if (entry.value == null || entry.value === "") return [];
+  return entry.fieldType === "multiselect"
+    ? parseMultiselect(entry.value)
+    : [entry.value];
+}
 
 function matchesQuery(task: Task, context: TaskFilterContext) {
   const query = context.query?.trim().toLowerCase();
@@ -118,10 +131,10 @@ export function taskMatchesFilters(
   return Object.entries(filters.customFields ?? {}).every(
     ([fieldId, allowed]) => {
       if (allowed.length === 0) return true;
-      const value = fieldValues.find(
-        (entry) => entry.fieldId === fieldId,
-      )?.value;
-      const matches = value != null && value !== "" && allowed.includes(value);
+      const entry = fieldValues.find((entry) => entry.fieldId === fieldId);
+      const matches = entry
+        ? customFieldCandidates(entry).some((value) => allowed.includes(value))
+        : false;
       return passes(customFieldSubjectId(fieldId), matches);
     },
   );

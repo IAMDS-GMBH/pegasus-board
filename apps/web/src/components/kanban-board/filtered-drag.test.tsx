@@ -177,6 +177,56 @@ describe("filtered board dragging", () => {
   });
 });
 
+// Pegasus fork (PEGA-89): with a server filter the cache is a subset of the
+// board, so drops append to the target column without `expectedTasks`.
+describe("server-filtered board dragging", () => {
+  const canonical = {
+    id: "p",
+    columns: [
+      {
+        id: "todo",
+        slug: "todo",
+        tasks: [
+          { id: "a", status: "todo", position: 0 },
+          { id: "b", status: "todo", position: 4 },
+        ],
+      },
+      {
+        id: "doing",
+        slug: "doing",
+        tasks: [{ id: "c", status: "doing", position: 7 }],
+      },
+    ],
+    plannedTasks: [],
+    archivedTasks: [],
+  } as unknown as ProjectWithTasks;
+
+  it("appends a cross-column drop and sends no expected tasks", () => {
+    mocks.project = canonical;
+    const view = render(<KanbanBoard project={canonical} serverFiltered />);
+    fireEvent.click(view.getByText("drop-c"));
+    expect(mocks.reorder).toHaveBeenCalledOnce();
+    const request = mocks.reorder.mock.calls[0][0];
+    expect(request.expectedTasks).toBeUndefined();
+    expect(request.tasks).toEqual([{ id: "a", position: 8, status: "doing" }]);
+    expect(
+      mocks.setProject.mock.calls[0][0].columns[1].tasks.map(
+        (task: { id: string }) => task.id,
+      ),
+    ).toEqual(["c", "a"]);
+    view.unmount();
+  });
+
+  it("ignores a drop inside the same column", () => {
+    mocks.project = canonical;
+    const view = render(<KanbanBoard project={canonical} serverFiltered />);
+    fireEvent.click(view.getByText("drop"));
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    expect(mocks.setProject).not.toHaveBeenCalled();
+    view.unmount();
+  });
+});
+
 it("rejects an in-flight Kanban drop after a failed refresh disables dragging", () => {
   const canonical = {
     id: "p",

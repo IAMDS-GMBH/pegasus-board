@@ -4,7 +4,7 @@ import { defaultRolePayloads, DEFAULT_ROLE_NAMES } from "@kaneo/permissions";
 import bcrypt from "bcryptjs";
 import { eq, inArray } from "drizzle-orm";
 import db, { getDatabasePool, schema } from "../src/database";
-import { DEFAULT_PROJECT_COLUMNS } from "../src/project/controllers/create-project";
+import { DEFAULT_PROJECT_COLUMNS } from "../src/project/controllers/insert-project";
 
 if (process.env.NODE_ENV === "production") {
   console.error("Refusing to seed: NODE_ENV is production.");

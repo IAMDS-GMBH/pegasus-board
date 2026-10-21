@@ -20,7 +20,17 @@ const context: TaskFilterContext = {
   weekStartsOn: 1,
   today: new Date(2026, 9, 14),
   getCustomFieldValues: (taskId) =>
-    taskId === "t1" ? [{ fieldId: "size", value: "L" }] : [],
+    taskId === "t1"
+      ? [
+          { fieldId: "size", value: "L" },
+          {
+            fieldId: "channels",
+            value: JSON.stringify(["Meta", "LinkedIn"]),
+            fieldType: "multiselect",
+          },
+          { fieldId: "note", value: "Meta, LinkedIn", fieldType: "text" },
+        ]
+      : [],
 };
 
 function task(overrides: Partial<Task>): Task {
@@ -122,6 +132,29 @@ describe("taskMatchesFilters", () => {
     [{ customFields: { size: ["L"] }, negated: ["customField:size"] }, false],
   ] as Array<[Partial<BoardFilters>, boolean]>)(
     "inverts negated subjects %o",
+    (filters, expected) => {
+      expect(
+        taskMatchesFilters(task({}), { ...noFilters, ...filters }, context),
+      ).toBe(expected);
+    },
+  );
+
+  // Pegasus fork (PEGA-89)
+  it.each([
+    [{ customFields: { channels: ["LinkedIn"] } }, true],
+    [{ customFields: { channels: ["Formular"] } }, false],
+    [{ customFields: { channels: ["Formular", "Meta"] } }, true],
+    [
+      {
+        customFields: { channels: ["Meta"] },
+        negated: ["customField:channels"],
+      },
+      false,
+    ],
+    [{ customFields: { note: ["Meta"] } }, false],
+    [{ customFields: { note: ["Meta, LinkedIn"] } }, true],
+  ] as Array<[Partial<BoardFilters>, boolean]>)(
+    "matches any selected option of a multiselect field %o",
     (filters, expected) => {
       expect(
         taskMatchesFilters(task({}), { ...noFilters, ...filters }, context),

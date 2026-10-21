@@ -1,6 +1,7 @@
 import { pagingNumber, z } from "../openapi";
 import { MAX_TASK_POSITION } from "./controllers/next-task-position";
 import { TICKET_ID_PATTERN } from "./ticket-id";
+import { customFieldsParam, labelsParam } from "./task-filter-params";
 import { VALID_PRIORITIES } from "./validate-task-fields";
 
 export const taskParam = z.object({ id: z.string() });
@@ -54,6 +55,9 @@ export const listTasksQuery = z.object({
   sortOrder: z.enum(["asc", "desc"]).optional(),
   dueBefore: z.string().optional(),
   dueAfter: z.string().optional(),
+  // Pegasus fork (PEGA-89): database-side label and custom field filters.
+  labels: labelsParam,
+  customFields: customFieldsParam,
 });
 
 export const bulkUpdateBody = z.object({

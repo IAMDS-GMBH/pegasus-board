@@ -24,6 +24,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed-dev.ts",
+    "db:seed:cards": "tsx scripts/seed-cards.ts",
     "openapi:export": "tsx scripts/export-openapi.ts"
   },
   "dependencies": {

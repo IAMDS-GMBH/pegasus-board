@@ -86,6 +86,91 @@ describe("useGetTasks", () => {
   });
 });
 
+// Pegasus fork (PEGA-89)
+describe("useGetTasks with server filters", () => {
+  const board = { id: "p", columns: [{ tasks: [] }] };
+
+  it("passes the registered filters to the fetcher and refetches on change", async () => {
+    getTasks.mockResolvedValue(board);
+    const filters = { customFields: { paket: ["P2"] } };
+    const hook = renderHook(
+      ({ serverFilters }) => useGetTasks("p", { serverFilters }),
+      { wrapper: Wrapper, initialProps: { serverFilters: filters } },
+    );
+    await waitFor(() => expect(hook.result.current.data).toEqual(board));
+    expect(getTasks).toHaveBeenCalledTimes(1);
+    expect(getTasks.mock.calls[0][3]).toEqual(filters);
+
+    // Same filters, new object: no refetch.
+    hook.rerender({ serverFilters: { customFields: { paket: ["P2"] } } });
+    await act(async () => {});
+    expect(getTasks).toHaveBeenCalledTimes(1);
+
+    const next = { customFields: { paket: ["P3"] }, labels: ["Kampagne A"] };
+    hook.rerender({ serverFilters: next });
+    await waitFor(() => expect(getTasks).toHaveBeenCalledTimes(2));
+    expect(getTasks.mock.calls[1][3]).toEqual(next);
+    hook.unmount();
+  });
+
+  it("lets another observer of the same key fetch with the board's filters", async () => {
+    getTasks.mockResolvedValue(board);
+    const filters = { labels: ["Kampagne A"] };
+    const boardHook = renderHook(
+      () => useGetTasks("p", { serverFilters: filters }),
+      {
+        wrapper: Wrapper,
+      },
+    );
+    await waitFor(() => expect(boardHook.result.current.data).toEqual(board));
+    const other = renderHook(
+      () => useGetTasks("p", { refetchOnMount: false }),
+      {
+        wrapper: Wrapper,
+      },
+    );
+    await act(async () => {
+      await queryClient.refetchQueries({ queryKey: ["tasks", "p"] });
+    });
+    expect(getTasks.mock.calls.at(-1)?.[3]).toEqual(filters);
+    other.unmount();
+    boardHook.unmount();
+  });
+
+  it("clears the filters and refetches the whole board when the board unmounts", async () => {
+    getTasks.mockResolvedValue(board);
+    const boardHook = renderHook(
+      () => useGetTasks("p", { serverFilters: { labels: ["A"] } }),
+      { wrapper: Wrapper },
+    );
+    await waitFor(() => expect(boardHook.result.current.data).toEqual(board));
+    const other = renderHook(
+      () => useGetTasks("p", { refetchOnMount: false }),
+      {
+        wrapper: Wrapper,
+      },
+    );
+    boardHook.unmount();
+    await waitFor(() => expect(getTasks).toHaveBeenCalledTimes(2));
+    expect(getTasks.mock.calls[1][3]).toBeNull();
+    other.unmount();
+  });
+
+  it("does not refetch when the board mounts without filters", async () => {
+    getTasks.mockResolvedValue(board);
+    const hook = renderHook(() => useGetTasks("p", { serverFilters: null }), {
+      wrapper: Wrapper,
+    });
+    await waitFor(() => expect(hook.result.current.data).toEqual(board));
+    await act(async () => {});
+    expect(getTasks).toHaveBeenCalledTimes(1);
+    expect(getTasks.mock.calls[0][3]).toBeNull();
+    hook.unmount();
+    await act(async () => {});
+    expect(getTasks).toHaveBeenCalledTimes(1);
+  });
+});
+
 it.each(["private", "public"])(
   "does not cache incomplete %s pagination after failure and supports retry",
   async (kind) => {

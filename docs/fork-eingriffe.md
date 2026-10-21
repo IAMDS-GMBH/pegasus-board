@@ -21,6 +21,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | WWK | Theming und Markenname | Web, i18n | `apps/web/src/brand/index.test.ts` |
 | PEGA-87 | Custom-Field-Typ `url` (Link) | API, Web, Mobile, CLI, MCP, i18n | `tests/api-integration/custom-field-url.test.ts`, `tests/api/custom-field/url-value.test.ts`, `apps/web/src/components/custom-fields/custom-field-url.test.ts`, `card-field-list.test.tsx` |
 | PEGA-88 | Felder auf der Kartenvorschau (`custom_field_definition.show_on_card`) | Datenmodell, API, Web, i18n | `tests/api-integration/custom-field.test.ts` („stores whether a field shows on the card…“), `tests/api/custom-field/resolve-field-update.test.ts`, `apps/web/src/components/custom-fields/{card-fields,card-field-rows}.test.ts(x)`, `kanban-board/task-card.test.tsx`, `project/display/custom-field-toggles.test.tsx` |
+| PEGA-89 | Serverseitiger Board-Filter nach Feldwerten und Labels | API, Web, MCP, Tests, Dev-Seed | `tests/api-integration/task-list-filters.test.ts` (1.000 Karten, < 2 s), `tests/api/task/task-filter-params.test.ts`, `tests/e2e/filter-performance.spec.ts`, Web: `server-filters.test.ts`, `board-server-filters.test.ts`, `use-get-tasks.test.tsx`, `task-matches-filters.test.ts`, `use-task-filters-with-labels-support.test.tsx`, `filtered-drag.test.tsx`, MCP: `register.test.ts` |
 
 ---
 
@@ -95,6 +96,24 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 - Migration wie bei PEGA-6 hinter die letzte Upstream-Migration nummerieren.
 - Neue Upstream-Abfragen, die `customFieldValueSchema` liefern, brauchen `fieldShowOnCard`; die Antwortvalidierung bzw. TypeScript meldet das.
 - Ändert Upstream die Kartenanzeige der Felder (`task-card-content.tsx`, `card-fields.ts`), muss der Filter auf `fieldShowOnCard` erhalten bleiben; `card-fields.test.ts` schlägt sonst fehl.
+
+### PEGA-89 — Serverseitiger Board-Filter nach Feldwerten und Labels
+
+**Zweck:** Der Innendienst filtert das Board nach Feldwerten (Paket, Kampagne, Prüfergebnis …), auch wenn tausende Karten im Pool liegen. Bisher lud die Web-App das ganze Board (Seiten à 100 Karten) und filterte im Browser; jetzt wendet `GET /task/tasks/{projectId}` die Parameter `labels` und `customFields` vor der Paginierung an, kombinierbar mit `status` ([Review](review/2026-10-filter-serverseitig.md)). Upstream kennt keinen Label- oder Feldfilter in der Task-Liste (geprüft 2026-10-21).
+
+**Regel:** `labels` = JSON-Array von Label-**Namen** (beliebiger Treffer; Labels sind Kopien je Karte, IDs taugen nicht), `customFields` = JSON-Objekt Feld-ID → Werte (UND über Felder, ODER innerhalb eines Feldes; `multiselect` trifft jede gewählte Option). Unbekannte Feld-ID → leeres Ergebnis (wie der Client), kein 400. Keine Migration: `EXPLAIN ANALYZE` bei 1.000 Karten liegt bei unter 1 ms über den vorhandenen Index `custom_field_value_fieldId_idx`; ein Index `(field_id, value)` wird erst bei Bedarf ergänzt. Die Web-App schickt nur **nicht negierte** Label- und Feldfilter an den Server; Spalte, Negation, Fälligkeit und Suche bleiben clientseitig, der Client-Matcher prüft auch die Serverzeilen nach. Mit aktivem Serverfilter hält der Cache `["tasks", projectId]` nur die Treffer: Drag-and-drop hängt eine Karte ans Ende der Zielspalte (ohne `expectedTasks`), Umsortieren in der Spalte ist dann aus; die Gesamtzahl in der Toolbar wird ausgeblendet.
+
+**Dateien:**
+- API: `apps/api/src/task/task-filter-params.ts` (neu), `task/schema.ts` (`listTasksQuery`), `task/controllers/get-tasks.ts` (`labels`, `customFields`, `customFieldConditions`); `apps/docs/openapi.json`
+- Web: `apps/web/src/lib/task-filters/server-filters.ts`, `lib/board-server-filters.ts` (neu); `fetchers/task/get-tasks.ts`, `hooks/queries/task/use-get-tasks.ts` (`serverFilters`), `routes/.../board.tsx`, `components/project/toolbar/{use-project-task-view.ts,task-count.tsx}`, `components/kanban-board/index.tsx` (`serverFiltered`); Matcher-Korrektur `hooks/use-task-filters-with-labels-support.ts` (projektweite Werte statt Karten-Cache), `lib/task-filters/task-matches-filters.ts` (Multiselect), `components/custom-fields/card-fields.ts` (`valuesByTask` exportiert), `hooks/queries/custom-field/use-get-custom-field-values-by-project.ts` (`enabled`); gelöscht: `hooks/{queries,mutations}/custom-field/use-get-all-custom-field-values-by-project.ts`
+- MCP: `packages/mcp/src/tools/register.ts` (`list_tasks`: `labels`, `customFields`)
+- Dev-Seed: `apps/api/scripts/seed-cards.ts`, `scripts/seed-cards/{generate-cards,insert-cards}.ts`, Skript `db:seed:cards`; `scripts/seed-dev.ts` (Import `insert-project` repariert)
+
+**Beim Sync beachten:**
+- `get-tasks.ts`, `task/schema.ts`, `use-get-tasks.ts` und `kanban-board/index.tsx` ändert Upstream häufig; die Fork-Stellen sind mit `Pegasus fork (PEGA-89)` kommentiert und klein. `task-list-filters.test.ts` schlägt fehl, wenn der Filter oder der Zeilenfilter darin verloren geht.
+- Der Query-Key `["tasks", projectId]` bleibt unverändert, weil `use-project-websocket.ts` und das Drag-and-drop ihn direkt patchen. Die Serverfilter liegen in einer Registry je QueryClient (`board-server-filters.ts`), damit auch andere Beobachter des Keys (Task-Crumb, Relationen) mit denselben Filtern laden.
+- Upstream-Fehler, die hier mitbehoben sind und beim Sync nicht zurückkommen dürfen: der Feldfilter las Werte aus dem Karten-Cache `["custom-field-values", taskId]` (nur geöffnete Karten) und verglich Multiselect-Werte als ganzen JSON-String.
+- Bekommt Upstream eigene Filterparameter in `listTasksQuery`, die Fork-Parameter darauf abbilden statt beide zu behalten.
 
 ---
 

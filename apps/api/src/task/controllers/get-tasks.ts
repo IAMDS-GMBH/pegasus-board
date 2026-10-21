@@ -3,10 +3,12 @@ import {
   asc,
   desc,
   eq,
+  exists,
   getTableColumns,
   gte,
   inArray,
   lte,
+  or,
   type SQL,
   type SQLWrapper,
   sql,
@@ -15,6 +17,8 @@ import { alias } from "drizzle-orm/pg-core";
 import { HTTPException } from "hono/http-exception";
 import {
   columnTable,
+  customFieldDefinitionTable,
+  customFieldValueTable,
   externalLinkTable,
   labelTable,
   projectTable,
@@ -31,6 +35,10 @@ import {
 } from "../description-pages";
 import { taskIsCompleted } from "../task-is-completed";
 import { getSubtaskCounts } from "../get-subtask-counts";
+import type {
+  TaskCustomFieldFilter,
+  TaskLabelFilter,
+} from "../task-filter-params";
 
 export type GetTasksOptions = {
   publicOnly?: boolean;
@@ -54,7 +62,63 @@ export type GetTasksOptions = {
     | "number";
   sortOrder?: "asc" | "desc";
   status?: string;
+  // Pegasus fork (PEGA-89): any of these label names.
+  labels?: TaskLabelFilter;
+  // Pegasus fork (PEGA-89): every field must hold one of its values.
+  customFields?: TaskCustomFieldFilter;
 };
+
+// Pegasus fork (PEGA-89): one EXISTS per field keeps the count and the page
+// query on the same predicate. Unknown fields match nothing, like the client
+// filter does, so a stale stored filter cannot break the board with a 400.
+async function customFieldConditions(
+  db: TaskReadDatabase,
+  projectId: string,
+  filter: TaskCustomFieldFilter,
+): Promise<SQL[]> {
+  const fieldIds = Object.keys(filter);
+  const definitions = await db
+    .select({
+      id: customFieldDefinitionTable.id,
+      type: customFieldDefinitionTable.type,
+    })
+    .from(customFieldDefinitionTable)
+    .where(
+      and(
+        eq(customFieldDefinitionTable.projectId, projectId),
+        inArray(customFieldDefinitionTable.id, fieldIds),
+      ),
+    );
+  const types = new Map(definitions.map((field) => [field.id, field.type]));
+  return fieldIds.map((fieldId) => {
+    const type = types.get(fieldId);
+    const values = filter[fieldId] ?? [];
+    if (!type || values.length === 0) return sql`false`;
+    const matches =
+      type === "multiselect"
+        ? or(
+            inArray(customFieldValueTable.value, values),
+            // CASE guarantees the cast only runs on JSON arrays.
+            sql`CASE WHEN ${customFieldValueTable.value} LIKE '[%' THEN ${customFieldValueTable.value}::jsonb ?| array[${sql.join(
+              values.map((value) => sql`${value}`),
+              sql`, `,
+            )}]::text[] ELSE false END`,
+          )
+        : inArray(customFieldValueTable.value, values);
+    return exists(
+      db
+        .select({ one: sql`1` })
+        .from(customFieldValueTable)
+        .where(
+          and(
+            eq(customFieldValueTable.taskId, taskTable.id),
+            eq(customFieldValueTable.fieldId, fieldId),
+            matches,
+          ),
+        ),
+    );
+  });
+}
 
 const priorityCaseExpr = sql<number>`CASE
   WHEN ${taskTable.priority} = 'urgent' THEN 4
@@ -145,6 +209,29 @@ async function getTasksPage(
 
   if (options.dueAfter) {
     conditions.push(gte(taskTable.dueDate, new Date(options.dueAfter)));
+  }
+
+  // Pegasus fork (PEGA-89): labels are per-task copies, so match by name.
+  if (options.labels?.length) {
+    conditions.push(
+      exists(
+        db
+          .select({ one: sql`1` })
+          .from(labelTable)
+          .where(
+            and(
+              eq(labelTable.taskId, taskTable.id),
+              inArray(labelTable.name, options.labels),
+            ),
+          ),
+      ),
+    );
+  }
+
+  if (options.customFields) {
+    conditions.push(
+      ...(await customFieldConditions(db, projectId, options.customFields)),
+    );
   }
 
   const whereClause = and(...conditions);

@@ -5562,6 +5562,26 @@
             "required": false,
             "name": "dueAfter",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "JSON array of label names; a task matches when it carries any of them, e.g. [\"Kampagne A\"]."
+            },
+            "required": false,
+            "description": "JSON array of label names; a task matches when it carries any of them, e.g. [\"Kampagne A\"].",
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "JSON object of custom field id to allowed values. A task matches when every listed field holds one of its values (multiselect: any selected option), e.g. {\"<fieldId>\":[\"P2\"]}."
+            },
+            "required": false,
+            "description": "JSON object of custom field id to allowed values. A task matches when every listed field holds one of its values (multiselect: any selected option), e.g. {\"<fieldId>\":[\"P2\"]}.",
+            "name": "customFields",
+            "in": "query"
           }
         ],
         "responses": {
@@ -10653,6 +10673,26 @@
             },
             "required": false,
             "name": "dueAfter",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "JSON array of label names; a task matches when it carries any of them, e.g. [\"Kampagne A\"]."
+            },
+            "required": false,
+            "description": "JSON array of label names; a task matches when it carries any of them, e.g. [\"Kampagne A\"].",
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "JSON object of custom field id to allowed values. A task matches when every listed field holds one of its values (multiselect: any selected option), e.g. {\"<fieldId>\":[\"P2\"]}."
+            },
+            "required": false,
+            "description": "JSON object of custom field id to allowed values. A task matches when every listed field holds one of its values (multiselect: any selected option), e.g. {\"<fieldId>\":[\"P2\"]}.",
+            "name": "customFields",
             "in": "query"
           }
         ],

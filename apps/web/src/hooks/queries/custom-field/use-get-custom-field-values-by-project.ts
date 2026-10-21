@@ -13,11 +13,14 @@ export type CustomFieldValue = {
   fieldShowOnCard: boolean;
 };
 
-function useGetCustomFieldValuesByProject(projectId: string) {
+function useGetCustomFieldValuesByProject(
+  projectId: string,
+  { enabled = true }: { enabled?: boolean } = {},
+) {
   return useQuery<CustomFieldValue[]>({
     queryKey: ["custom-field-values", projectId],
     queryFn: () => getCustomFieldValuesByProject({ projectId }),
-    enabled: Boolean(projectId),
+    enabled: Boolean(projectId) && enabled,
   });
 }
 

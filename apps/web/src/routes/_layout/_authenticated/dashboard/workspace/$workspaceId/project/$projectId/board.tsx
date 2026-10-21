@@ -19,6 +19,7 @@ import { useBoardSort } from "@/hooks/use-board-sort";
 import { cn } from "@/lib/cn";
 import { sortTasks } from "@/lib/sort-tasks";
 import { countColumnTasks } from "@/lib/task-filters/count-tasks";
+import { toServerFilters } from "@/lib/task-filters/server-filters";
 import { useBackgroundStore } from "@/store/background";
 import useProjectStore from "@/store/project";
 import { useUserPreferencesStore } from "@/store/user-preferences";
@@ -81,17 +82,7 @@ function RouteComponent() {
   const { projectId, workspaceId } = Route.useParams();
   const { taskId } = Route.useSearch();
   const navigate = useNavigate();
-  const {
-    data,
-    isError: boardError,
-    isFetching: boardFetching,
-    refetch: retryBoard,
-  } = useGetTasks(projectId);
   const { project, setProject } = useProjectStore();
-  const viewMode = useUserPreferencesStore((state) => state.viewMode);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const { sort, setSort } = useBoardSort(projectId);
-  const { background } = useBackgroundStore();
   const view = useProjectTaskView({
     project,
     projectId,
@@ -99,6 +90,22 @@ function RouteComponent() {
     scope: "board",
   });
   const { descriptionSearch, filters } = view;
+  // Pegasus fork (PEGA-89): label and field filters run in the database so
+  // the board loads only matching cards; the client matcher still applies.
+  const serverFilters = useMemo(
+    () => toServerFilters(filters.filters, view.options.labels),
+    [filters.filters, view.options.labels],
+  );
+  const {
+    data,
+    isError: boardError,
+    isFetching: boardFetching,
+    refetch: retryBoard,
+  } = useGetTasks(projectId, { serverFilters });
+  const viewMode = useUserPreferencesStore((state) => state.viewMode);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const { sort, setSort } = useBoardSort(projectId);
+  const { background } = useBackgroundStore();
 
   const handleCloseTaskSheet = useCallback(() => {
     navigate({
@@ -160,7 +167,7 @@ function RouteComponent() {
       summary={
         <TaskCount
           shown={countColumnTasks(filters.filteredProject)}
-          total={countColumnTasks(project)}
+          total={serverFilters ? undefined : countColumnTasks(project)}
         />
       }
       filterBar={
@@ -224,6 +231,7 @@ function RouteComponent() {
                 }
                 sortedByNumber={sort.field === "number"}
                 sortedByPriority={sort.field === "priority"}
+                serverFiltered={serverFilters !== null}
               />
             ) : (
               <ListView
