@@ -7,6 +7,7 @@ import {
   sendOtpEmail,
   sendPasswordResetEmail,
   sendWorkspaceInvitationEmail,
+  withAppName,
 } from "@kaneo/email";
 import {
   ac,
@@ -180,6 +181,10 @@ async function shouldDeliverSignInEmail(email: string) {
 }
 
 function getAuthEmailCopy(locale?: string | null) {
+  return withAppName(getKaneoAuthEmailCopy(locale));
+}
+
+function getKaneoAuthEmailCopy(locale?: string | null) {
   const localeKey = getLocaleKey(locale);
 
   if (localeKey === "de") {

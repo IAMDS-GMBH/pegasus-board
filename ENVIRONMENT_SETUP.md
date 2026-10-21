@@ -77,6 +77,8 @@ Only put public browser configuration in `VITE_*` variables. Never put database 
 
 The web app ships in the WWK design by default. Set `VITE_BRAND=kaneo` in `apps/web/.env.local` to switch to the unbranded base look for comparison. Vite reads it at build or dev time, and the production image does not substitute it at runtime. See `docs/theming-wwk.md`.
 
+The API names the product in emails and chat notifications. It uses `APP_NAME` from the root `.env` and defaults to `WWK Board`. Set `APP_NAME=Kaneo` for the upstream name, including the kaneo.app links in email footers.
+
 The production containers use different names: their startup script replaces `KANEO_API_URL`, `KANEO_CLIENT_URL`, and `KANEO_TURNSTILE_SITE_KEY` in the built assets. Editing `VITE_API_URL` in a running container does not change its API address.
 
 ## Install and start

@@ -11,6 +11,7 @@ import { Frame } from "../components/frame";
 import { InvitationCard } from "../components/invitation-card";
 import { Spacer } from "../components/spacer";
 import { resolveEmailLocale } from "./resolve-locale";
+import { appName, withAppName } from "../components/app-name";
 
 void React;
 
@@ -65,8 +66,9 @@ const DEFAULT_COPY: WorkspaceInvitationEmailCopy = {
 };
 
 function interpolate(template: string, values: Record<string, string>) {
+  const all: Record<string, string> = { appName: appName(), ...values };
   return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
-    return values[key] ?? "";
+    return all[key] ?? "";
   });
 }
 
@@ -80,8 +82,9 @@ const WorkspaceInvitationEmail = ({
   role,
   expiresAt,
   instance,
-  copy = DEFAULT_COPY,
+  copy: rawCopy = DEFAULT_COPY,
 }: WorkspaceInvitationEmailProps) => {
+  const copy = withAppName(rawCopy);
   const values = { workspaceName, inviterName, inviterEmail };
   const lang = locale ?? "en";
   const details = copy.details;
@@ -123,7 +126,7 @@ const WorkspaceInvitationEmail = ({
       ) : null}
       <EmailNote>{copy.ignore}</EmailNote>
       <EmailFooter
-        title={copy.footer}
+        title={interpolate(copy.footer, values)}
         links={footerLinks(resolveEmailLocale(locale))}
       />
     </EmailShell>

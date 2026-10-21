@@ -22,7 +22,13 @@ module.exports = function withPermissionLocales(config) {
     const lang = LPROJ[locale] ?? locale.split("-")[0];
     locales[lang] = {
       ...locales[lang],
-      ios: { NSPhotoLibraryUsageDescription: permissions.photos },
+      // The catalog says {{appName}} for i18next; Info.plist needs the name itself.
+      ios: {
+        NSPhotoLibraryUsageDescription: permissions.photos.replaceAll(
+          "{{appName}}",
+          config.name,
+        ),
+      },
     };
   }
   return { ...config, locales };

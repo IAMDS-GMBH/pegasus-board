@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { appName } from "@kaneo/email";
 import { and, eq } from "drizzle-orm";
 import db from "../../database";
 import {
@@ -160,7 +161,7 @@ async function sendTelegramMessage(
     `<b>Project:</b> ${escapeHtml(data.projectName)}`,
     `<b>Status:</b> ${escapeHtml(toSentenceCase(data.status))}`,
     `<b>Priority:</b> ${escapeHtml(toSentenceCase(data.priority))}`,
-    `<b>Triggered by:</b> ${escapeHtml(data.actorName ?? "Kaneo")}`,
+    `<b>Triggered by:</b> ${escapeHtml(data.actorName ?? appName())}`,
   ];
 
   try {

@@ -12,6 +12,7 @@ import {
 } from "../components/request-details";
 import { signInReason } from "../components/security-reasons";
 import { emailHtmlLang, resolveEmailLocale } from "./resolve-locale";
+import { withAppName } from "../components/app-name";
 
 void React;
 
@@ -95,7 +96,7 @@ const MagicLinkEmail = ({
   device,
 }: MagicLinkEmailProps) => {
   const emailLocale = resolveEmailLocale(locale);
-  const copy = messages[emailLocale];
+  const copy = withAppName(messages[emailLocale]);
 
   return (
     <EmailShell

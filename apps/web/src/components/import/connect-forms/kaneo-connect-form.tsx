@@ -1,3 +1,4 @@
+import { brand } from "@/brand";
 import { useTranslation } from "react-i18next";
 import { ConnectFieldRow } from "@/components/import/connect-forms/connect-field-row";
 import type { ConnectFormProps } from "@/components/import/connect-forms/connect-form-props";
@@ -30,7 +31,11 @@ export function KaneoConnectForm({
           inputMode="url"
           value={values.url}
           onChange={(event) => onChange({ url: event.target.value })}
-          placeholder="https://cloud.kaneo.app"
+          placeholder={
+            brand.upstreamLinks
+              ? "https://cloud.kaneo.app"
+              : "https://board.example.com"
+          }
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}

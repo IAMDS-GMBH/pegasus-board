@@ -1,3 +1,4 @@
+import { brand } from "@/brand";
 import type { ReactNode } from "react";
 import { AuthLegalFooter } from "./auth-legal-footer";
 
@@ -21,7 +22,7 @@ export function AuthPage({
           <div className="flex w-full max-w-[360px] flex-col">
             <div className="flex flex-col gap-5 pb-8">
               <img
-                src="/favicon.svg"
+                src={brand.favicon}
                 alt=""
                 className="size-10 shrink-0 rounded-lg border border-border"
               />

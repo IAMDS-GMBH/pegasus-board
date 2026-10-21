@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { brand } from "@/brand";
 import useGetConfig from "@/hooks/queries/config/use-get-config";
 
 const links = [
@@ -12,7 +13,8 @@ export function AuthLegalFooter() {
   const { t } = useTranslation();
   const { data: config } = useGetConfig();
 
-  if (!config?.isCloud) return null;
+  // WWK has no terms/privacy pages yet, so the kaneo.app ones stay hidden.
+  if (!config?.isCloud || !brand.upstreamLinks) return null;
 
   return (
     <footer className="flex justify-center gap-5 px-6 pb-8 text-muted-foreground text-xs">

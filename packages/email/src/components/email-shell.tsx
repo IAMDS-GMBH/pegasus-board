@@ -11,6 +11,7 @@ import { Row } from "./row";
 import { emailAsset } from "./assets";
 import { themeCss } from "./theme";
 import { colors, fontFamily } from "./tokens";
+import { appName, isKaneo } from "./app-name";
 
 void React;
 
@@ -55,7 +56,7 @@ export function EmailShell({
             <Row style={brand}>
               <Column style={markCell}>
                 <Img
-                  src={emailAsset("mark")}
+                  src={emailAsset(isKaneo() ? "mark" : "mark-wwk")}
                   width="28"
                   height="28"
                   alt=""
@@ -63,7 +64,7 @@ export function EmailShell({
                 />
               </Column>
               <Column className="k-text" style={wordmark}>
-                Kaneo
+                {appName()}
               </Column>
             </Row>
             {children}

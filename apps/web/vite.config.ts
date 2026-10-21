@@ -6,6 +6,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig, lazyPlugins } from "vite-plus";
 import packageJson from "../../package.json";
+import { brandHtmlPlugin } from "./brand-html-plugin";
 
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
 const sentryOrg = process.env.SENTRY_ORG;
@@ -52,6 +53,7 @@ export default defineConfig({
       routeFileIgnorePattern: "\\.test\\.tsx?$",
     }),
     tailwindcss(),
+    brandHtmlPlugin(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     // Hidden when Sentry env vars are absent so local dev does not depend on it.

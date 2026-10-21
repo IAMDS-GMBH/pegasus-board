@@ -1,3 +1,4 @@
+import { brand } from "@/brand";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -41,7 +42,7 @@ export function OnboardingShell({
       >
         <header className="flex items-center justify-between gap-4">
           <img
-            src="/favicon.svg"
+            src={brand.favicon}
             alt=""
             className="size-8 rounded-lg border border-border"
           />

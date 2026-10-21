@@ -15,6 +15,7 @@ import {
 } from "../components/task-card";
 import { colors } from "../components/tokens";
 import { emailHtmlLang, resolveEmailLocale } from "./resolve-locale";
+import { withAppName } from "../components/app-name";
 
 void React;
 
@@ -126,7 +127,7 @@ const NotificationEmail = ({
   settingsUrl,
 }: NotificationEmailProps) => {
   const emailLocale = resolveEmailLocale(locale);
-  const copy = messages[emailLocale];
+  const copy = withAppName(messages[emailLocale]);
   const lang = emailHtmlLang(emailLocale);
   const priority: TaskCardPriority | undefined = task?.priority;
   const card = task ? (

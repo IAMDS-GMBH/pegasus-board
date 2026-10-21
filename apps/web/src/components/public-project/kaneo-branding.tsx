@@ -1,7 +1,10 @@
 import { useTranslation } from "react-i18next";
+import { brand } from "@/brand";
 
 export function KaneoBranding() {
   const { t } = useTranslation();
+
+  if (!brand.upstreamLinks) return null;
 
   return (
     <a

@@ -63,7 +63,7 @@ async function startImportRun({
   const slot = reserveImportSlot();
   if (!slot) {
     throw new HTTPException(429, {
-      message: `This Kaneo server is already running ${MAX_ACTIVE_IMPORTS} imports. Try again when one of them finishes.`,
+      message: `This server is already running ${MAX_ACTIVE_IMPORTS} imports. Try again when one of them finishes.`,
     });
   }
 

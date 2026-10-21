@@ -1,6 +1,6 @@
 {
 	"expo": {
-		"name": "Kaneo",
+		"name": "WWK Board",
 		"slug": "kaneo",
 		"version": "0.2.0",
 		"orientation": "portrait",
@@ -26,7 +26,7 @@
 			"package": "de.usekaneo.kaneo",
 			"versionCode": 2,
 			"adaptiveIcon": {
-				"backgroundColor": "#141414",
+				"backgroundColor": "#009036",
 				"foregroundImage": "./assets/images/android-icon-foreground.png",
 				"backgroundImage": "./assets/images/android-icon-background.png",
 				"monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -51,14 +51,14 @@
 				"expo-notifications",
 				{
 					"icon": "./assets/images/notification-icon.png",
-					"color": "#141414",
+					"color": "#009036",
 					"defaultChannel": "kaneo_activity"
 				}
 			],
 			[
 				"expo-image-picker",
 				{
-					"photosPermission": "Kaneo uses your photos to attach images to tasks and comments, and for your profile photo.",
+					"photosPermission": "WWK Board uses your photos to attach images to tasks and comments, and for your profile photo.",
 					"cameraPermission": false,
 					"microphonePermission": false
 				}

@@ -1,6 +1,6 @@
 {
 	"common": {
-		"appName": "Kaneo",
+		"appName": "{{appName}}",
 		"actions": {
 			"cancel": "取消",
 			"close": "关闭",
@@ -96,7 +96,7 @@
 				"errorToast": "项目创建失败"
 			},
 			"createWorkspace": {
-				"breadcrumbKaneo": "KANEO",
+				"breadcrumbKaneo": "{{appName}}",
 				"title": "创建新工作区",
 				"description": "为你的工作区提供一个名称即可创建。",
 				"namePlaceholder": "工作区名称",
@@ -182,7 +182,7 @@
 				"use_a_permanent_email_address_disposable_addresses_cannot_create_accounts_": "请使用长期有效的邮箱地址。一次性邮箱无法创建账户。"
 			},
 			"instanceStatusError": "无法连接服务器，请稍后重试。",
-			"heading": "登录 Kaneo",
+			"heading": "登录 {{appName}}",
 			"submitPassword": "登录",
 			"invitation": {
 				"title": "{{inviterName}} 邀请你加入 {{workspaceName}}",
@@ -190,7 +190,7 @@
 				"description": "请使用收到邀请的邮箱登录。登录后你将立即加入该工作区。"
 			},
 			"footer": {
-				"newHere": "初次使用 Kaneo？",
+				"newHere": "初次使用 {{appName}}？",
 				"createAccount": "创建账户",
 				"inviteOnly": "此处仅限受邀注册。请向管理员申请邀请。",
 				"providerSignUp": "新用户？使用上方任一服务登录即可创建账户。",
@@ -245,7 +245,7 @@
 			"toggleMessage": "已经有账户？",
 			"toggleLink": "登录",
 			"instanceStatusError": "无法连接服务器，请稍后重试。",
-			"instanceAdminTitle": "设置你的 Kaneo 实例",
+			"instanceAdminTitle": "设置你的 {{appName}} 实例",
 			"instanceAdminSubtitle": "此账户将成为拥有完整权限的实例管理员。",
 			"heading": "创建你的账户",
 			"submitPassword": "创建账户",
@@ -297,7 +297,7 @@
 				"acceptFailed": "接受邀请失败",
 				"acceptSuccess": "邀请已接受，欢迎加入团队！"
 			},
-			"description": "{{inviterName}} 邀请你加入 Kaneo 上的这个工作区。",
+			"description": "{{inviterName}} 邀请你加入 {{appName}} 上的这个工作区。",
 			"invitedBy": "邀请人",
 			"sentTo": "发送至",
 			"signedInAs": "当前登录账户",
@@ -305,7 +305,7 @@
 			"notNow": "暂不加入",
 			"join": "加入工作区",
 			"switchAccount": "切换账户",
-			"goToKaneo": "前往 Kaneo",
+			"goToKaneo": "前往 {{appName}}",
 			"mismatch": {
 				"title": "当前登录的邮箱不同",
 				"description": "此邀请发送至 {{invitedEmail}}，但你当前以 {{email}} 登录。"
@@ -324,7 +324,7 @@
 			}
 		},
 		"onboarding": {
-			"pageTitle": "欢迎使用 Kaneo",
+			"pageTitle": "欢迎使用 {{appName}}",
 			"workspaceName": "工作区名称",
 			"workspaceNamePlaceholder": "例如：某某公司、我的团队",
 			"toast": {
@@ -371,7 +371,7 @@
 				},
 				"invite": {
 					"title": "邀请你的团队",
-					"description": "大家都在的时候，Kaneo 最好用。打开侧边栏中的 **成员**，通过邮件邀请成员。"
+					"description": "大家都在的时候，{{appName}} 最好用。打开侧边栏中的 **成员**，通过邮件邀请成员。"
 				},
 				"integrations": {
 					"title": "连接 GitHub、GitLab 或 Gitea",
@@ -497,7 +497,7 @@
 		"device": {
 			"connect": {
 				"title": "连接设备",
-				"description": "输入终端或应用中显示的代码，将其关联到你的 Kaneo 账户。",
+				"description": "输入终端或应用中显示的代码，将其关联到你的 {{appName}} 账户。",
 				"label": "设备代码",
 				"submit": "继续",
 				"noCode": "还没有代码？请先在应用中发起登录。",
@@ -531,7 +531,7 @@
 				"description": "登录后会立即返回此处进行批准。",
 				"submit": "登录"
 			},
-			"openApp": "Open Kaneo"
+			"openApp": "Open {{appName}}"
 		},
 		"mcp": {
 			"authorize": {
@@ -604,7 +604,7 @@
 		"notificationsPage": {
 			"pageTitle": "通知",
 			"title": "通知",
-			"subtitle": "Kaneo 会通知你哪些内容，以及通过哪些渠道通知你。",
+			"subtitle": "{{appName}} 会通知你哪些内容，以及通过哪些渠道通知你。",
 			"statusConnected": "已连接",
 			"statusPaused": "已暂停",
 			"emailTitle": "邮箱",
@@ -634,10 +634,10 @@
 			"webhookDescription": "以 JSON 格式将每条通知发送到你自己的端点。",
 			"endpointUrl": "端点 URL",
 			"signingSecret": "签名密钥",
-			"webhookUrlPlaceholder": "https://example.com/webhooks/kaneo",
+			"webhookUrlPlaceholder": "https://example.com/webhook",
 			"webhookSecretPlaceholder": "可选的共享密钥",
 			"webhookSecretHintConfigured": "已配置签名密钥（{{masked}}），输入新密钥以替换。",
-			"webhookSecretHintOptional": "设置密钥后，Kaneo 会对请求体进行签名。",
+			"webhookSecretHintOptional": "设置密钥后，{{appName}} 会对请求体进行签名。",
 			"connectWebhook": "连接 Webhook",
 			"eventPreferencesTitle": "通知我关于",
 			"eventPreferencesDescription": "你自己的评论、提及和状态变更不会通知你。",
@@ -675,7 +675,7 @@
 			"toastRuleRemovedGeneric": "工作区通知规则已移除",
 			"channelNotConnected": "未连接",
 			"channelOff": "已关闭",
-			"channelsDescription": "通知始终会显示在 Kaneo 中。连接渠道后，也可以在其他地方收到通知。",
+			"channelsDescription": "通知始终会显示在 {{appName}} 中。连接渠道后，也可以在其他地方收到通知。",
 			"channelsTitle": "渠道",
 			"configure": "配置",
 			"configureChannel": "配置 {{channel}}",
@@ -691,7 +691,7 @@
 			"eventStatusChangesHint": "你的某个任务移动到其他列时。",
 			"eventTaskAssignmentsHint": "有人将任务指派给你时。",
 			"loadFailed": "无法加载通知设置。",
-			"onlyInKaneo": "仅在 Kaneo 中",
+			"onlyInKaneo": "仅在 {{appName}} 中",
 			"optional": "可选",
 			"projectCount_other": "{{count}} 个项目",
 			"reminderLeadTimeUnitDaysBefore_other": "天前",
@@ -714,14 +714,14 @@
 			"statusSending": "发送中",
 			"stopping": "正在停止...",
 			"stopSending": "停止发送",
-			"stopSendingDescription": "此工作区的通知将只显示在 Kaneo 中。",
+			"stopSendingDescription": "此工作区的通知将只显示在 {{appName}} 中。",
 			"stopSendingTitle": "停止从 {{workspaceName}} 发送通知？",
 			"workspacesDescription": "选择哪些工作区和项目可以使用你的渠道。",
 			"workspacesTitle": "工作区"
 		},
 		"preferencesPage": {
 			"title": "偏好设置",
-			"subtitle": "自定义 Kaneo 的外观和使用方式。",
+			"subtitle": "自定义 {{appName}} 的外观和使用方式。",
 			"appearanceTitle": "常规",
 			"theme": "主题",
 			"selectTheme": "选择主题",
@@ -758,7 +758,7 @@
 		"developerPage": {
 			"pageTitle": "API 密钥",
 			"title": "API 密钥",
-			"subtitle": "让脚本、CLI 和 MCP 客户端以你的身份使用 Kaneo。",
+			"subtitle": "让脚本、CLI 和 MCP 客户端以你的身份使用 {{appName}}。",
 			"unnamedKey": "未命名",
 			"emptyDescription": "创建密钥后，即可在 CLI、MCP 客户端或你自己的脚本中使用。",
 			"emptyTitle": "还没有 API 密钥",
@@ -1249,11 +1249,11 @@
 				"removeError": "移除 GitHub 集成失败",
 				"issuesImported": "Issues 导入成功",
 				"importError": "导入 Issues 失败",
-				"commentOnEnabled": "Kaneo 将在新 Issue 上评论任务链接",
+				"commentOnEnabled": "{{appName}} 将在新 Issue 上评论任务链接",
 				"commentOnDisabled": "新 Issue 的任务链接评论已关闭",
 				"settingsUpdateError": "更新 GitHub 集成失败"
 			},
-			"commentTaskLinkTitle": "在新 Issue 上评论 Kaneo 链接",
+			"commentTaskLinkTitle": "在新 Issue 上评论 {{appName}} 链接",
 			"commentTaskLinkHint": "方便 GitHub 上的人跳转到对应任务。",
 			"updatePermissions": "更新权限",
 			"installGithubApp": "安装 GitHub App",
@@ -1270,9 +1270,9 @@
 			"linkAccountTitle": "关联你的 GitHub 账号",
 			"linked": "已关联",
 			"linkGithub": "关联 GitHub",
-			"verifyMissingPermissions": "Kaneo GitHub App 缺少以下权限：{{list}}。",
-			"verifyNotInstalled": "Kaneo GitHub App 尚未安装到此仓库。",
-			"verifyReady": "Kaneo GitHub App 已安装，并具备所需权限。",
+			"verifyMissingPermissions": "{{appName}} GitHub App 缺少以下权限：{{list}}。",
+			"verifyNotInstalled": "{{appName}} GitHub App 尚未安装到此仓库。",
+			"verifyReady": "{{appName}} GitHub App 已安装，并具备所需权限。",
 			"workflowHint": "要在 PR 打开或合并时移动任务，请前往",
 			"workflowLink": "工作流"
 		},
@@ -1290,13 +1290,13 @@
 				"removeError": "移除 Gitea 集成失败",
 				"issuesImported": "Issues 导入成功",
 				"importError": "导入 Issues 失败",
-				"commentOnEnabled": "Kaneo 将在新 Issue 上评论任务链接",
+				"commentOnEnabled": "{{appName}} 将在新 Issue 上评论任务链接",
 				"commentOnDisabled": "新 Issue 的任务链接评论已关闭",
 				"settingsUpdateError": "更新 Gitea 集成失败"
 			},
-			"commentTaskLinkTitle": "在新 Issue 上评论 Kaneo 链接",
+			"commentTaskLinkTitle": "在新 Issue 上评论 {{appName}} 链接",
 			"commentTaskLinkHint": "方便 Gitea 上的人跳转到对应任务。",
-			"webhookHint": "在仓库设置中添加此 Webhook，以便将变更同步回 Kaneo。",
+			"webhookHint": "在仓库设置中添加此 Webhook，以便将变更同步回 {{appName}}。",
 			"baseUrlLabel": "Gitea 地址",
 			"tokenLabel": "个人访问令牌",
 			"tokenPlaceholder": "粘贴令牌",
@@ -1378,11 +1378,11 @@
 				"removeError": "移除通用 Webhook 集成失败"
 			},
 			"webhookLabel": "端点 URL",
-			"webhookPlaceholder": "https://example.com/webhooks/kaneo",
-			"webhookHint": "Kaneo 会为每个已启用的事件发送带 JSON 负载的 POST 请求。",
+			"webhookPlaceholder": "https://example.com/webhook",
+			"webhookHint": "{{appName}} 会为每个已启用的事件发送带 JSON 负载的 POST 请求。",
 			"secretLabel": "签名密钥",
 			"secretPlaceholder": "共享密钥",
-			"secretHint": "Kaneo 会用它为每个请求签名，并在 X-Kaneo-Signature 头中发送摘要。",
+			"secretHint": "{{appName}} 会用它为每个请求签名，并在 X-Kaneo-Signature 头中发送摘要。",
 			"secretHintConfigured": "当前密钥：{{secret}}。粘贴新的密钥即可替换。",
 			"eventsTitle": "发送时机",
 			"events": {
@@ -1402,7 +1402,7 @@
 			"reminderLeadTimeLabel": "任务截止前的小时数",
 			"connect": "连接 Webhook",
 			"activeTitle": "正在发送事件",
-			"disconnectDescription": "Kaneo 将停止发送事件，并移除已保存的端点和密钥。",
+			"disconnectDescription": "{{appName}} 将停止发送事件，并移除已保存的端点和密钥。",
 			"disconnectTitle": "断开 Webhook 连接？",
 			"reminderLeadTimeAfter": "小时发送提醒",
 			"reminderLeadTimeBefore": "在任务截止前"
@@ -1438,7 +1438,7 @@
 		},
 		"repositoryBrowser": {
 			"title": "选择仓库",
-			"description": "Kaneo GitHub App 可以访问的仓库。",
+			"description": "{{appName}} GitHub App 可以访问的仓库。",
 			"searchPlaceholder": "搜索仓库",
 			"loadError": "无法加载仓库。",
 			"tryAgain": "重试",
@@ -1643,7 +1643,7 @@
 				"active": "正常",
 				"deactivated": "已停用"
 			},
-			"subtitle": "在这个 Kaneo 实例上拥有账号的所有人。",
+			"subtitle": "在这个 {{appName}} 实例上拥有账号的所有人。",
 			"title": "用户",
 			"toast": {
 				"actionError": "更新用户状态失败",
@@ -1671,7 +1671,7 @@
 			"sectionTitle": "登录",
 			"submit": "修改密码",
 			"submitting": "正在修改...",
-			"subtitle": "你登录 Kaneo 的方式。",
+			"subtitle": "你登录 {{appName}} 的方式。",
 			"title": "安全",
 			"updateError": "更新密码失败。",
 			"updateSuccess": "密码已更新。",
@@ -1693,14 +1693,14 @@
 			"browseModalHint": "你的令牌所属的项目。",
 			"browseNeedsCredentials": "输入 GitLab URL 和令牌即可浏览。",
 			"commentTaskLinkHint": "方便 GitLab 上的人跳转到对应任务。",
-			"commentTaskLinkTitle": "在新 Issue 上评论 Kaneo 链接",
+			"commentTaskLinkTitle": "在新 Issue 上评论 {{appName}} 链接",
 			"importSectionHint": "将未关闭的 Issue 和合并请求导入为任务。",
 			"openInGitlab": "在 GitLab 中打开 {{project}}",
 			"projectPathLabel": "项目路径",
 			"searchProjects": "搜索项目",
 			"toast": {
 				"commentOnDisabled": "新 Issue 的任务链接评论已关闭",
-				"commentOnEnabled": "Kaneo 将在新 Issue 上评论任务链接",
+				"commentOnEnabled": "{{appName}} 将在新 Issue 上评论任务链接",
 				"importError": "导入 Issues 失败",
 				"issuesImported": "Issues 导入成功",
 				"removed": "GitLab 集成已移除",
@@ -1722,7 +1722,7 @@
 				"baseUrlRequired": "GitLab 基础 URL 不能为空",
 				"pathInvalid": "请输入完整路径，例如 group/project"
 			},
-			"webhookHint": "在项目设置中添加此 Webhook，以便将变更同步回 Kaneo。",
+			"webhookHint": "在项目设置中添加此 Webhook，以便将变更同步回 {{appName}}。",
 			"loadProjectsError": "无法加载项目。",
 			"importPermissionHint": "导入需要创建和更新任务的权限。",
 			"browseEmpty": "此令牌不是任何项目的成员。",
@@ -1779,7 +1779,7 @@
 			"currentPlan": {
 				"title": "当前套餐"
 			},
-			"disabled": "当前实例未启用账单功能。自托管的 Kaneo 包含全部功能，永久免费。",
+			"disabled": "当前实例未启用账单功能。自托管的 {{appName}} 包含全部功能，永久免费。",
 			"expiredCallout": {
 				"action": "选择套餐",
 				"adminDescription": "你仍然可以查看所有内容，但在选择套餐之前，创建和编辑会暂停。数据不会被删除。",
@@ -1797,7 +1797,7 @@
 			},
 			"foundingFree": {
 				"badge": "免费",
-				"description": "作为早期支持者，此工作区可以免费使用 Kaneo Cloud。感谢你从一开始就支持我们。",
+				"description": "作为早期支持者，此工作区可以免费使用 {{appName}}。感谢你从一开始就支持我们。",
 				"title": "创始免费版"
 			},
 			"interval": {
@@ -1878,8 +1878,8 @@
 			"filtered": "按标签筛选",
 			"impact": "匹配任务：{{matching}} / {{total}} · 新导出：{{create}} · 将暂停关联：{{pause}} · 待确认关联：{{review}}",
 			"impactTitle": "将会发生什么变化",
-			"incoming": "仓库 → Kaneo",
-			"incomingHint": "选择允许导入或用来创建任务的 Issue。请填写仓库中标签的准确名称。已有任务关联按 Kaneo 一侧的任务规则处理。",
+			"incoming": "仓库 → {{appName}}",
+			"incomingHint": "选择允许导入或用来创建任务的 Issue。请填写仓库中标签的准确名称。已有任务关联按 {{appName}} 一侧的任务规则处理。",
 			"loadError": "无法加载同步规则。",
 			"loading": "正在加载同步规则…",
 			"matchLabels": "标签匹配方式",
@@ -1889,11 +1889,11 @@
 			"noDescription": "暂无描述",
 			"noLabels": "请先在工作区里创建标签，再配置任务筛选条件。",
 			"open": "打开",
-			"outgoing": "Kaneo → 仓库",
-			"outgoingHint": "选择允许同步的 Kaneo 任务。已有任务一旦不再带匹配标签，两个方向的同步都会暂停。",
+			"outgoing": "{{appName}} → 仓库",
+			"outgoingHint": "选择允许同步的 {{appName}} 任务。已有任务一旦不再带匹配标签，两个方向的同步都会暂停。",
 			"paused": "同步已暂停",
 			"pausedHint": "记录和关联都会保留。重新匹配上的任务需要确认一次，才会恢复同步。",
-			"preserveHint": "暂停只是停下同步：Kaneo 任务、仓库 Issue 以及两者的关联都会保留。恢复前需要对比一次；历史评论不会被重复同步。",
+			"preserveHint": "暂停只是停下同步：{{appName}} 任务、仓库 Issue 以及两者的关联都会保留。恢复前需要对比一次；历史评论不会被重复同步。",
 			"previewing": "正在检查同步影响…",
 			"previous": "上一页",
 			"refreshComparison": "刷新对比",
@@ -1912,7 +1912,7 @@
 			"sharedHint": "这些规则对该项目的所有成员都生效。关闭高级设置并不会让规则失效。",
 			"title": "同步内容",
 			"unavailableLabel": "不可用的标签",
-			"useKaneo": "以 Kaneo 为准",
+			"useKaneo": "以 {{appName}} 为准",
 			"useRepository": "以仓库为准",
 			"exportPending": "导出匹配的任务",
 			"inactiveHint": "该集成已暂停。重新启用之前，不会有任务被导出。",
@@ -1925,9 +1925,9 @@
 			"issuesLabelled": "带有标签的 Issue：",
 			"joinAnd": "且",
 			"joinOr": "或",
-			"kaneoToProvider": "Kaneo → {{provider}}",
+			"kaneoToProvider": "{{appName}} → {{provider}}",
 			"pausedSummary_other": "有 {{count}} 个任务不再符合同步规则，已停止同步。",
-			"providerToKaneo": "{{provider}} → Kaneo",
+			"providerToKaneo": "{{provider}} → {{appName}}",
 			"reviewPaused": "查看",
 			"tasksLabelled": "带有标签的任务："
 		},
@@ -1996,7 +1996,7 @@
 			"searchCount_other": "{{count}} 个匹配的工作区",
 			"searchLabel": "搜索工作区",
 			"searchPlaceholder": "按名称或 slug 搜索",
-			"subtitle": "这个 Kaneo 实例上的所有工作区，包括你未加入的工作区。",
+			"subtitle": "这个 {{appName}} 实例上的所有工作区，包括你未加入的工作区。",
 			"title": "工作区",
 			"toast": {
 				"added": "成员已添加",
@@ -2019,7 +2019,7 @@
 				"cancel": "取消",
 				"continue": "继续",
 				"hideSecret": "隐藏 {{field}}",
-				"sectionDescription": "Kaneo 只从 {{source}} 读取数据。密钥仅用于本次导入，不会保存。",
+				"sectionDescription": "{{appName}} 只从 {{source}} 读取数据。密钥仅用于本次导入，不会保存。",
 				"sectionTitle": "连接",
 				"showSecret": "显示 {{field}}",
 				"title": "从 {{source}} 导入",
@@ -2044,11 +2044,11 @@
 				"title": "最近的导入"
 			},
 			"kaneo": {
-				"apiKeyDescription": "在那个 Kaneo 里依次打开设置 → API 密钥。",
+				"apiKeyDescription": "在那个 {{appName}} 里依次打开设置 → API 密钥。",
 				"apiKeyLabel": "API 密钥",
 				"apiKeyPlaceholder": "粘贴 API 密钥",
 				"urlDescription": "你要迁出的那个实例。",
-				"urlLabel": "Kaneo 地址"
+				"urlLabel": "{{appName}} 地址"
 			},
 			"linear": {
 				"apiKeyDescription": "只读权限就够，导入完成后可以撤销。",
@@ -2132,9 +2132,9 @@
 				"connectTo": "连接 {{source}}",
 				"description": "选择你要迁出的工具。你挑中的每个项目都会在这里新建为一个项目。",
 				"kaneo": {
-					"description": "在 Kaneo 云端和自托管实例之间迁移项目。",
+					"description": "Move projects from another {{appName}} instance.",
 					"intro": "该密钥能看到的所有工作区里的项目。你挑中的会复制到这里。",
-					"pickerName": "另一个 Kaneo"
+					"pickerName": "另一个 {{appName}}"
 				},
 				"linear": {
 					"description": "团队、议题、标签、子议题和评论。粘贴个人 API 密钥即可。",
@@ -2171,7 +2171,7 @@
 				"import": "导入",
 				"label": "导入步骤"
 			},
-			"subtitle": "把其它工具里的项目导入 {{workspace}}。Kaneo 只从来源读取数据。",
+			"subtitle": "把其它工具里的项目导入 {{workspace}}。{{appName}} 只从来源读取数据。",
 			"title": "导入",
 			"toast": {
 				"failed": "从 {{source}} 导入失败",
@@ -2184,7 +2184,7 @@
 				"apiKeyPlaceholder": "粘贴 API 密钥",
 				"authorizeButton": "在 Trello 上授权",
 				"authorizeDescription": "会在新标签页打开 Trello。只读权限，一天后失效。",
-				"authorizeLabel": "授权 Kaneo",
+				"authorizeLabel": "授权 {{appName}}",
 				"authorizeNeedsKey": "请先填写 API 密钥。只读权限，一天后失效。",
 				"tokenDescription": "在 Trello 上点「允许」，然后粘贴它给出的令牌。",
 				"tokenLabel": "令牌",
@@ -2254,7 +2254,7 @@
 			"channelLabel": "频道",
 			"channelPlaceholder": "#team-updates",
 			"disconnect": "断开连接",
-			"disconnectDescription": "Kaneo 将停止向 {{provider}} 发布消息，并移除已保存的设置。",
+			"disconnectDescription": "{{appName}} 将停止向 {{provider}} 发布消息，并移除已保存的设置。",
 			"disconnecting": "正在断开连接…",
 			"disconnectTitle": "断开与 {{provider}} 的连接？",
 			"events": {
@@ -3252,14 +3252,14 @@
 	},
 	"invitations": {
 		"email": {
-			"subject": "{{inviterName}} 邀请你加入 Kaneo 上的 {{workspaceName}}",
-			"preview": "你被邀请加入 Kaneo 上的 {{workspaceName}}",
+			"subject": "{{inviterName}} 邀请你加入 {{appName}} 上的 {{workspaceName}}",
+			"preview": "你被邀请加入 {{appName}} 上的 {{workspaceName}}",
 			"title": "加入 {{workspaceName}}",
-			"subtitle": "{{inviterName}}（{{inviterEmail}}）邀请你在 Kaneo 中协作。",
+			"subtitle": "{{inviterName}}（{{inviterEmail}}）邀请你在 {{appName}} 中协作。",
 			"cta": "接受邀请",
 			"sameEmail": "你可以使用收到此邮件的同一邮箱接受。",
 			"ignore": "如果这不是你预期的，可以安全忽略此邮件。",
-			"footer": "Kaneo 工作区邀请",
+			"footer": "{{appName}} 工作区邀请",
 			"details": {
 				"title": "邀请详情",
 				"sentTo": "发送至",
@@ -3743,7 +3743,7 @@
 				"delivery": "通知渠道和事件",
 				"deliveryHint": "邮件、ntfy、Gotify、Webhook",
 				"invitations": "邀请",
-				"permissionDenied": "请先在系统设置中允许 Kaneo 发送通知。",
+				"permissionDenied": "请先在系统设置中允许 {{appName}} 发送通知。",
 				"phone": "手机通知",
 				"phoneHint": "大约每 15 分钟检查一次",
 				"title": "通知"
@@ -3791,7 +3791,7 @@
 		},
 		"background": {
 			"channelDescription": "来自工作区的指派、评论和提及",
-			"channelName": "Kaneo 活动",
+			"channelName": "{{appName}} 活动",
 			"summary_other": "另有 {{count}} 条新通知"
 		},
 		"board": {
@@ -3879,10 +3879,10 @@
 			"apiKeyRejected": "此 API 密钥被拒绝。",
 			"deviceFailed": "设备登录失败（HTTP {{status}}）。",
 			"forbidden": "你没有执行此操作的权限。",
-			"noInstance": "在 {{url}} 未找到 Kaneo 实例（HTTP {{status}}）。",
+			"noInstance": "在 {{url}} 未找到 {{appName}} 实例（HTTP {{status}}）。",
 			"noSession": "服务器未返回会话，请尝试通过浏览器登录。",
 			"notFound": "未找到。",
-			"notKaneo": "{{url}} 似乎不是 Kaneo 服务器。",
+			"notKaneo": "{{url}} 似乎不是 {{appName}} 服务器。",
 			"notSignedIn": "尚未登录",
 			"requestFailed": "请求失败（{{status}}）。",
 			"serverProblem": "服务器出现问题（{{status}}）。",
@@ -4104,7 +4104,7 @@
 				"webhook": "Webhook",
 				"webhookHint": "通过 POST 向 URL 发送通知"
 			},
-			"description": "设置 Kaneo 通知你的方式和内容。",
+			"description": "设置 {{appName}} 通知你的方式和内容。",
 			"events": {
 				"assignments": "指派",
 				"assignmentsHint": "任务指派给你时",
@@ -4298,7 +4298,7 @@
 				"expired": "登录验证码已过期，请重新开始以获取新验证码。",
 				"gettingCode": "正在获取验证码…",
 				"linkCopied": "链接已复制",
-				"message": "请在 Kaneo 网站上批准此设备。你可以使用 GitHub、Google、Discord 或 SSO。",
+				"message": "请在 {{appName}} 网站上批准此设备。你可以使用 GitHub、Google、Discord 或 SSO。",
 				"openBrowser": "打开浏览器",
 				"openFailed": "无法打开浏览器，请复制链接。",
 				"tryAgain": "重试",
@@ -4308,7 +4308,7 @@
 			"email": "邮箱",
 			"emailCode": "通过邮件获取登录验证码",
 			"invalidClient": "此服务器不允许设备登录。请让管理员在 DEVICE_AUTH_CLIENT_IDS 中添加“kaneo-cli”，或使用密码或 API 密钥登录。",
-			"newToKaneo": "初次使用 Kaneo？",
+			"newToKaneo": "初次使用 {{appName}}？",
 			"noPassword": "无需密码",
 			"or": "或",
 			"password": "密码",
@@ -4316,13 +4316,14 @@
 			"selfHosted": "自托管",
 			"sendTo": "发送至 {{email}}",
 			"serverAddress": "服务器地址",
-			"serverAddressHint": "打开 Kaneo 时使用的地址。未启用 TLS 的服务器请使用 http://。如果 API 运行在其他主机上，请输入 API 地址。",
+			"serverAddressHint": "打开 {{appName}} 时使用的地址。未启用 TLS 的服务器请使用 http://。如果 API 运行在其他主机上，请输入 API 地址。",
 			"signIn": "登录",
 			"signUp": {
 				"name": "姓名",
 				"passwordHint": "至少 8 个字符"
 			},
 			"tagline": "简单的项目管理。连接 Kaneo Cloud 或你自己的实例。",
+			"taglineOwnServer": "Simple project management. Connect to your {{appName}} server.",
 			"togglePassword": "切换密码显示",
 			"useApiKey": "使用 API 密钥"
 		},
@@ -4535,7 +4536,7 @@
 			"title": "工作区"
 		},
 		"permissions": {
-			"photos": "Kaneo 使用你的照片为任务和评论添加图片，以及设置你的头像。"
+			"photos": "{{appName}} 使用你的照片为任务和评论添加图片，以及设置你的头像。"
 		}
 	}
 }
