@@ -4,8 +4,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
 import type { ProjectWithTasks } from "@/types/project";
 import TaskCard from "../task-card";
+import { useProgressiveTasks } from "./use-progressive-tasks";
 
 const keepOrder: SortingStrategy = () => null;
 
@@ -26,6 +28,8 @@ export function ColumnDropzone({
   disableSorting = false,
 }: ColumnDropzoneProps) {
   const reduceMotion = useReducedMotion();
+  const sentinel = useRef<HTMLDivElement>(null);
+  const { visibleTasks, hasMore } = useProgressiveTasks(column.tasks, sentinel);
   const hidden = reduceMotion
     ? { opacity: 0 }
     : { opacity: 0, transform: "scale(0.98)" };
@@ -35,12 +39,12 @@ export function ColumnDropzone({
 
   return (
     <SortableContext
-      items={column.tasks}
+      items={visibleTasks}
       strategy={disableSorting ? keepOrder : verticalListSortingStrategy}
     >
       <div className="flex flex-col gap-1.5">
         <AnimatePresence initial={false} mode="popLayout">
-          {column.tasks.map((task) => (
+          {visibleTasks.map((task) => (
             <motion.div
               key={task.id}
               initial={task.id === activeTaskId ? false : hidden}
@@ -60,6 +64,7 @@ export function ColumnDropzone({
             </motion.div>
           ))}
         </AnimatePresence>
+        {hasMore && <div ref={sentinel} aria-hidden className="h-px" />}
       </div>
     </SortableContext>
   );

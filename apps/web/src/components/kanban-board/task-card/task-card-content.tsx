@@ -33,6 +33,7 @@ import { toast } from "@/lib/toast";
 import useBulkSelectionStore from "@/store/bulk-selection";
 import useProjectStore from "@/store/project";
 import { useUserPreferencesStore } from "@/store/user-preferences";
+import { useShallow } from "zustand/react/shallow";
 import type Task from "@/types/task";
 import TaskCardContextMenuContent from "../task-card-context-menu/task-card-context-menu-content";
 import { useTaskCardClick } from "./use-task-card-click";
@@ -54,9 +55,14 @@ function TaskCardContent({
   onDragTouchStart,
 }: TaskCardContentProps) {
   const { t } = useTranslation();
-  const { project } = useProjectStore();
-  const taskIsCompleted =
-    isFinalColumn ?? isTaskCompleted(task.status, project?.columns);
+  // Narrow selectors: every card subscribes, and a whole-store read would
+  // re-render the full board on each setProject.
+  const projectId = useProjectStore((state) => state.project?.id);
+  const projectSlug = useProjectStore((state) => state.project?.slug);
+  const taskIsCompleted = useProjectStore(
+    (state) =>
+      isFinalColumn ?? isTaskCompleted(task.status, state.project?.columns),
+  );
   const hasPriority = Boolean(task.priority) && task.priority !== "no-priority";
   const { data: workspace } = useActiveWorkspace();
   const workspaceId = workspace?.id ?? "";
@@ -68,7 +74,16 @@ function TaskCardContent({
     showLabels,
     showTaskNumbers,
     showTaskItemCounts,
-  } = useUserPreferencesStore();
+  } = useUserPreferencesStore(
+    useShallow((state) => ({
+      showAssignees: state.showAssignees,
+      showPriority: state.showPriority,
+      showDueDates: state.showDueDates,
+      showLabels: state.showLabels,
+      showTaskNumbers: state.showTaskNumbers,
+      showTaskItemCounts: state.showTaskItemCounts,
+    })),
+  );
 
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState<
     boolean | null
@@ -158,7 +173,7 @@ function TaskCardContent({
                           : "text-board-id",
                       )}
                     >
-                      {project?.slug}-{task.number}
+                      {projectSlug}-{task.number}
                     </span>
                   )}
                 </div>
@@ -210,11 +225,11 @@ function TaskCardContent({
           </div>
         </ContextMenuTrigger>
 
-        {hasOpenedMenu && project && workspace && (
+        {hasOpenedMenu && projectId && workspace && (
           <TaskCardContextMenuContent
             task={task}
             taskCardContext={{
-              projectId: project.id,
+              projectId,
               worskpaceId: workspace.id,
               workspaceSlug: workspace.slug,
             }}
