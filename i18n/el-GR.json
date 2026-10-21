@@ -1583,7 +1583,10 @@
 			"typeLocked": "Ο τύπος δεν μπορεί να αλλάξει μετά τη δημιουργία του πεδίου.",
 			"unchecked": "Μη επιλεγμένο",
 			"updateError": "Αποτυχία αποθήκευσης προσαρμοσμένου πεδίου.",
-			"updateSuccess": "Το προσαρμοσμένο πεδίο αποθηκεύτηκε."
+			"updateSuccess": "Το προσαρμοσμένο πεδίο αποθηκεύτηκε.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

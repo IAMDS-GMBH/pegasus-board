@@ -1583,7 +1583,10 @@
 			"typeLocked": "Sahə yaradıldıqdan sonra növü dəyişdirilə bilməz.",
 			"unchecked": "İşarələnməyib",
 			"updateError": "Fərdi sahəni yadda saxlamaq alınmadı.",
-			"updateSuccess": "Fərdi sahə yadda saxlanıldı."
+			"updateSuccess": "Fərdi sahə yadda saxlanıldı.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

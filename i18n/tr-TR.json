@@ -1583,7 +1583,10 @@
 			"typeLocked": "Alan oluşturulduktan sonra türü değiştirilemez.",
 			"unchecked": "İşaretsiz",
 			"updateError": "Özel alan kaydedilemedi.",
-			"updateSuccess": "Özel alan kaydedildi."
+			"updateSuccess": "Özel alan kaydedildi.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

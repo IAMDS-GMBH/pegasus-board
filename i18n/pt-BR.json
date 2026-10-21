@@ -1592,7 +1592,10 @@
 			"typeLocked": "O tipo não pode ser alterado depois que o campo é criado.",
 			"unchecked": "Desmarcado",
 			"updateError": "Falha ao salvar o campo personalizado.",
-			"updateSuccess": "Campo personalizado salvo."
+			"updateSuccess": "Campo personalizado salvo.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

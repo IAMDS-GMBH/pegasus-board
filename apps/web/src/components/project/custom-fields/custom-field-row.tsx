@@ -58,6 +58,11 @@ export function CustomFieldRow({
               {t("settings:customFields.required")}
             </Badge>
           ) : null}
+          {field.showOnCard ? (
+            <Badge variant="outline" className="text-muted-foreground">
+              {t("settings:customFields.onCard")}
+            </Badge>
+          ) : null}
         </div>
         <p className="truncate text-xs text-muted-foreground">
           {describeCustomField(field, t, i18n?.language)}

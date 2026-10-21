@@ -157,20 +157,35 @@ it("doesn't start a drag when a chip is held", async () => {
   expect(onDragStart).not.toHaveBeenCalled();
 });
 
-it("doesn't start a drag when the hidden custom fields button is held", async () => {
+it("shows every configured field as a label and value row", () => {
   cardFields.push(
-    ...["One", "Two", "Three"].map((name) => ({
+    ...["Kampagne", "Ort", "Position"].map((name) => ({
       fieldId: name,
       name,
       type: "text" as const,
-      value: name,
+      value: `${name} value`,
     })),
   );
   render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });
-  const more = screen.getByText("+1");
-  fireEvent.touchStart(more, touchAt);
+  for (const name of ["Kampagne", "Ort", "Position"]) {
+    expect(screen.getByText(name).tagName).toBe("DT");
+    expect(screen.getByText(`${name} value`)).toBeVisible();
+  }
+  expect(screen.queryByText("+1")).toBeNull();
+});
+
+it("doesn't start a drag when a link field on the card is held", async () => {
+  cardFields.push({
+    fieldId: "profile",
+    name: "LinkedIn",
+    type: "url",
+    value: "https://linkedin.com/in/max",
+  });
+  render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });
+  const link = screen.getByRole("link", { name: "linkedin.com/in/max" });
+  fireEvent.touchStart(link, touchAt);
   await holdPastDelay();
-  fireEvent.touchEnd(more);
+  fireEvent.touchEnd(link);
   expect(onDragStart).not.toHaveBeenCalled();
 });
 

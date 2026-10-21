@@ -14,6 +14,7 @@ export type CurrentCustomField = {
   required: boolean;
   defaultValue: string | null;
   options: unknown;
+  showOnCard: boolean;
 };
 
 export type CustomFieldUpdateInput = {
@@ -22,6 +23,7 @@ export type CustomFieldUpdateInput = {
   required?: boolean;
   defaultValue?: string | null;
   options?: string[];
+  showOnCard?: boolean;
 };
 
 export type ResolvedFieldUpdate = {
@@ -30,6 +32,7 @@ export type ResolvedFieldUpdate = {
   required: boolean;
   defaultValue: string | null;
   options: unknown;
+  showOnCard: boolean;
   removedOptions: string[];
 };
 
@@ -107,6 +110,7 @@ export function resolveFieldUpdate(
     required,
     defaultValue,
     options: options ?? field.options,
+    showOnCard: input.showOnCard ?? field.showOnCard,
     removedOptions: options
       ? previousOptions.filter((option) => !options.includes(option))
       : [],

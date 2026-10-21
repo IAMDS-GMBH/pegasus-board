@@ -8,6 +8,7 @@ const value = (
   fieldType: string,
   raw: string | null,
   fieldPosition: number,
+  fieldShowOnCard = true,
 ): CustomFieldValue => ({
   id: `${taskId}-${fieldId}`,
   taskId,
@@ -17,6 +18,7 @@ const value = (
   fieldPosition,
   fieldType,
   fieldOptions: null,
+  fieldShowOnCard,
 });
 
 const values = [
@@ -27,6 +29,7 @@ const values = [
   value("t1", "customer", "text", "", 4),
   value("t1", "urgent", "boolean", "true", 5),
   value("t2", "points", "number", "3", 0),
+  value("t1", "notes", "text", "Not for the card", 6, false),
 ];
 
 describe("cardFieldsForTask", () => {
@@ -36,6 +39,12 @@ describe("cardFieldsForTask", () => {
       "release",
       "urgent",
     ]);
+  });
+
+  it("leaves out fields the admin did not put on the card", () => {
+    expect(
+      cardFieldsForTask(values, "t1", []).some((f) => f.fieldId === "notes"),
+    ).toBe(false);
   });
 
   it("drops fields the person hid from cards", () => {

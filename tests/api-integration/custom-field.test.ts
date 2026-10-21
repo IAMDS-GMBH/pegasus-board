@@ -103,6 +103,104 @@ describe("custom fields API", () => {
     expect(fields[0].id).toBe(field.id);
   });
 
+  // Pegasus fork (PEGA-88): admins pick which fields show on the board card.
+  it("stores whether a field shows on the card and returns it with values", async () => {
+    const { app, project } = await createFixture();
+    const json = { "Content-Type": "application/json" };
+
+    const hiddenResponse = await app.request("/api/custom-field", {
+      method: "POST",
+      headers: json,
+      body: JSON.stringify({
+        projectId: project.id,
+        name: "Notes",
+        type: "text",
+      }),
+    });
+    expect(hiddenResponse.status).toBe(200);
+    const hidden = await hiddenResponse.json();
+    expect(hidden.showOnCard).toBe(false);
+
+    const shownResponse = await app.request("/api/custom-field", {
+      method: "POST",
+      headers: json,
+      body: JSON.stringify({
+        projectId: project.id,
+        name: "Ort",
+        type: "text",
+        showOnCard: true,
+      }),
+    });
+    expect(shownResponse.status).toBe(200);
+    const shown = await shownResponse.json();
+    expect(shown.showOnCard).toBe(true);
+
+    const renameResponse = await app.request(`/api/custom-field/${shown.id}`, {
+      method: "PUT",
+      headers: json,
+      body: JSON.stringify({ name: "PLZ/Ort" }),
+    });
+    expect(renameResponse.status).toBe(200);
+    expect(await renameResponse.json()).toMatchObject({
+      name: "PLZ/Ort",
+      showOnCard: true,
+    });
+
+    const toggleResponse = await app.request(`/api/custom-field/${hidden.id}`, {
+      method: "PUT",
+      headers: json,
+      body: JSON.stringify({ showOnCard: true }),
+    });
+    expect(toggleResponse.status).toBe(200);
+    expect((await toggleResponse.json()).showOnCard).toBe(true);
+
+    const taskResponse = await app.request(`/api/task/${project.id}`, {
+      method: "POST",
+      headers: json,
+      body: JSON.stringify({
+        title: "Bewerber",
+        description: "",
+        status: await getProjectStatus(project.id),
+        priority: "no-priority",
+      }),
+    });
+    expect(taskResponse.status).toBe(200);
+    const task = await taskResponse.json();
+
+    for (const [fieldId, value] of [
+      [shown.id, "86150 Augsburg"],
+      [hidden.id, "Rückruf"],
+    ]) {
+      const response = await app.request("/api/custom-field/value", {
+        method: "PUT",
+        headers: json,
+        body: JSON.stringify({ taskId: task.id, fieldId, value }),
+      });
+      expect(response.status).toBe(200);
+    }
+
+    const hideResponse = await app.request(`/api/custom-field/${hidden.id}`, {
+      method: "PUT",
+      headers: json,
+      body: JSON.stringify({ showOnCard: false }),
+    });
+    expect(hideResponse.status).toBe(200);
+
+    const flags = (rows: { fieldId: string; fieldShowOnCard: boolean }[]) =>
+      Object.fromEntries(rows.map((row) => [row.fieldId, row.fieldShowOnCard]));
+    const expected = { [shown.id]: true, [hidden.id]: false };
+
+    const projectValues = await app.request(
+      `/api/custom-field/project/${project.id}/values`,
+    );
+    expect(projectValues.status).toBe(200);
+    expect(flags(await projectValues.json())).toEqual(expected);
+
+    const taskValues = await app.request(`/api/custom-field/task/${task.id}`);
+    expect(taskValues.status).toBe(200);
+    expect(flags(await taskValues.json())).toEqual(expected);
+  });
+
   it("rejects an invalid default value for a number field", async () => {
     const { app, project } = await createFixture();
 

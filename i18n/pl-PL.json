@@ -2287,7 +2287,10 @@
 			"typeLocked": "Po utworzeniu pola nie można zmienić jego typu.",
 			"unchecked": "Odznaczone",
 			"updateError": "Nie udało się zapisać pola niestandardowego.",
-			"updateSuccess": "Zapisano pole niestandardowe."
+			"updateSuccess": "Zapisano pole niestandardowe.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

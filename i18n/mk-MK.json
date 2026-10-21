@@ -1583,7 +1583,10 @@
 			"typeLocked": "Типот не може да се смени откако полето ќе се креира.",
 			"unchecked": "Нештиклирано",
 			"updateError": "Неуспешно зачувување на прилагоденото поле.",
-			"updateSuccess": "Прилагоденото поле е зачувано."
+			"updateSuccess": "Прилагоденото поле е зачувано.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

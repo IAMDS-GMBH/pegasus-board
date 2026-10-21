@@ -33,6 +33,10 @@ export const createCustomFieldBody = z.object({
   required: z.boolean().optional().default(false),
   defaultValue: z.string().optional(),
   options: z.array(z.string()).optional(),
+  showOnCard: z.boolean().optional().default(false).openapi({
+    description:
+      "Whether the field's value appears on the task card in the board and on list rows.",
+  }),
 });
 
 export const updateCustomFieldBody = z.object({
@@ -54,6 +58,10 @@ export const updateCustomFieldBody = z.object({
   options: z.array(z.string()).optional().openapi({
     description:
       "The full option list for dropdown and multiselect fields, in display order. Adding and reordering options is always allowed. Removing or renaming an option that a task still uses is rejected with 400, so task values are never changed silently.",
+  }),
+  showOnCard: z.boolean().optional().openapi({
+    description:
+      "Whether the field's value appears on the task card in the board and on list rows.",
   }),
 });
 

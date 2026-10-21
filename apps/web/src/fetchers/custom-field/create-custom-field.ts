@@ -13,6 +13,7 @@ async function createCustomField({
   required,
   defaultValue,
   options,
+  showOnCard,
 }: CreateCustomFieldRequest) {
   const response = await client["custom-field"].$post({
     json: {
@@ -22,6 +23,7 @@ async function createCustomField({
       required,
       defaultValue,
       options,
+      showOnCard,
     },
   });
 

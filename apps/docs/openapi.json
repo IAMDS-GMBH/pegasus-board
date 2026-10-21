@@ -4579,6 +4579,9 @@
           "position": {
             "type": "number"
           },
+          "showOnCard": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -4596,6 +4599,7 @@
           "required",
           "defaultValue",
           "position",
+          "showOnCard",
           "createdAt",
           "updatedAt"
         ]
@@ -4627,7 +4631,10 @@
           "fieldType": {
             "type": "string"
           },
-          "fieldOptions": {}
+          "fieldOptions": {},
+          "fieldShowOnCard": {
+            "type": "boolean"
+          }
         },
         "required": [
           "id",
@@ -4636,7 +4643,8 @@
           "value",
           "fieldName",
           "fieldPosition",
-          "fieldType"
+          "fieldType",
+          "fieldShowOnCard"
         ]
       },
       "CustomFieldFilterValues": {
@@ -22555,6 +22563,11 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "showOnCard": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the field's value appears on the task card in the board and on list rows."
                   }
                 },
                 "required": [
@@ -22944,6 +22957,10 @@
                       "type": "string"
                     },
                     "description": "The full option list for dropdown and multiselect fields, in display order. Adding and reordering options is always allowed. Removing or renaming an option that a task still uses is rejected with 400, so task values are never changed silently."
+                  },
+                  "showOnCard": {
+                    "type": "boolean",
+                    "description": "Whether the field's value appears on the task card in the board and on list rows."
                   }
                 }
               }

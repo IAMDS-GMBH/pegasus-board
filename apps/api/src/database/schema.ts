@@ -1431,11 +1431,13 @@ export const customFieldDefinitionTable = pgTable(
         onUpdate: "cascade",
       }),
     name: text("name").notNull(),
-    type: text("type").notNull(), // 'text' | 'number' | 'date' | 'dropdown' | 'boolean'
+    type: text("type").notNull(), // 'text' | 'number' | 'date' | 'dropdown' | 'multiselect' | 'boolean' | 'url'
     required: boolean("required").default(false).notNull(),
     defaultValue: text("default_value"),
     options: jsonb("options"),
     position: integer("position").default(0).notNull(),
+    // Pegasus fork (PEGA-88): the field's value shows on the board card preview.
+    showOnCard: boolean("show_on_card").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" })
       .default(utcNow)
       .notNull(),

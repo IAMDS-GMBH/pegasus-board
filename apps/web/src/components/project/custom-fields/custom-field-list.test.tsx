@@ -53,6 +53,7 @@ const size: CustomFieldDefinition = {
   defaultValue: "Medium",
   options: ["Small", "Medium", "Large"],
   position: 0,
+  showOnCard: false,
   createdAt: "",
   updatedAt: "",
 };
@@ -95,6 +96,12 @@ describe("CustomFieldList", () => {
         "settings:customFields.types.dropdown · Small, Medium, Large",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("marks fields that show on the card", () => {
+    m.fields = [size, { ...size, id: "f2", name: "Ort", showOnCard: true }];
+    renderList();
+    expect(screen.getAllByText("settings:customFields.onCard")).toHaveLength(1);
   });
 
   it("edits from the row menu and deletes only after confirming", async () => {

@@ -50,6 +50,7 @@ const platforms: CustomFieldDefinition = {
   defaultValue: '["Web"]',
   options: ["iOS", "Web"],
   position: 0,
+  showOnCard: false,
   createdAt: "",
   updatedAt: "",
 };
@@ -135,6 +136,7 @@ describe("CustomFieldDialog", () => {
         required: false,
         defaultValue: undefined,
         options: ["Small", "Large"],
+        showOnCard: false,
       }),
     );
     expect(toast.success).toHaveBeenCalledWith(
@@ -142,6 +144,32 @@ describe("CustomFieldDialog", () => {
       { icon: expect.anything() },
     );
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("puts a new field on the card when the switch is on", async () => {
+    const { dialog } = renderDialog();
+    fireEvent.change(
+      within(dialog).getByRole("textbox", {
+        name: "settings:customFields.nameLabel",
+      }),
+      { target: { value: "Ort" } },
+    );
+    const showOnCard = within(dialog).getByRole("switch", {
+      name: "settings:customFields.showOnCard",
+    });
+    expect(showOnCard).not.toBeChecked();
+    fireEvent.click(showOnCard);
+
+    fireEvent.click(
+      within(dialog).getByRole("button", {
+        name: "settings:customFields.createField",
+      }),
+    );
+    await waitFor(() =>
+      expect(m.createField).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Ort", showOnCard: true }),
+      ),
+    );
   });
 
   it("needs a default before a field can be required", () => {
@@ -202,6 +230,7 @@ describe("CustomFieldDialog", () => {
           type: "multiselect",
           required: false,
           defaultValue: null,
+          showOnCard: false,
           options: ["iOS", "Android"],
         },
       }),

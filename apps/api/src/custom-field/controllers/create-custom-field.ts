@@ -16,6 +16,7 @@ async function createCustomField(
   required: boolean,
   defaultValue?: string,
   options?: string[],
+  showOnCard = false,
 ) {
   if (!name.trim())
     throw new HTTPException(400, { message: "Name cannot be empty" });
@@ -53,6 +54,7 @@ async function createCustomField(
         defaultValue: storedDefaultValue ?? null,
         options: options ?? null,
         position: (maxPositionResult?.maxPosition ?? 0) + 1,
+        showOnCard,
       })
       .returning();
 

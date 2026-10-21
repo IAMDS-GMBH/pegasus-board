@@ -1573,7 +1573,10 @@
 			"typeLocked": "欄位建立後就無法變更類型。",
 			"unchecked": "未勾選",
 			"updateError": "無法儲存自訂欄位。",
-			"updateSuccess": "已儲存自訂欄位。"
+			"updateSuccess": "已儲存自訂欄位。",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "管理",
 		"adminUsers": {

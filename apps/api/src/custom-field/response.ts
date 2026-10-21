@@ -10,6 +10,7 @@ export const customFieldDefinitionSchema = z
     defaultValue: z.string().nullable(),
     options: z.unknown().nullable(),
     position: z.number(),
+    showOnCard: z.boolean(),
     createdAt: responseTimestamp,
     updatedAt: responseTimestamp,
   })
@@ -29,6 +30,7 @@ export const customFieldValueSchema = z
     fieldPosition: z.number(),
     fieldType: z.string(),
     fieldOptions: z.unknown().nullable(),
+    fieldShowOnCard: z.boolean(),
   })
   .openapi("CustomFieldValue");
 

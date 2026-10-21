@@ -1574,7 +1574,10 @@
 			"typeLocked": "Không thể đổi loại sau khi đã tạo trường.",
 			"unchecked": "Chưa chọn",
 			"updateError": "Không thể lưu trường tùy chỉnh.",
-			"updateSuccess": "Đã lưu trường tùy chỉnh."
+			"updateSuccess": "Đã lưu trường tùy chỉnh.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

@@ -1609,7 +1609,10 @@
 			"typeLocked": "Тип нельзя изменить после создания поля.",
 			"unchecked": "Не отмечено",
 			"updateError": "Не удалось сохранить пользовательское поле.",
-			"updateSuccess": "Пользовательское поле сохранено."
+			"updateSuccess": "Пользовательское поле сохранено.",
+			"onCard": "On card",
+			"showOnCard": "Show on card",
+			"showOnCardDescription": "The value appears on the card in the board and on list rows."
 		},
 		"administration": "Administration",
 		"adminUsers": {

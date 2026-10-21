@@ -291,8 +291,15 @@ const customField = apiRouter()
     ),
   )
   .openapi(createCustomFieldRoute, async (c) => {
-    const { projectId, name, type, required, defaultValue, options } =
-      c.req.valid("json");
+    const {
+      projectId,
+      name,
+      type,
+      required,
+      defaultValue,
+      options,
+      showOnCard,
+    } = c.req.valid("json");
 
     return c.json(
       await createCustomField(
@@ -302,6 +309,7 @@ const customField = apiRouter()
         required,
         defaultValue,
         options,
+        showOnCard,
       ),
       200,
     );

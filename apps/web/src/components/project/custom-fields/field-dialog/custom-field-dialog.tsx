@@ -192,6 +192,9 @@ export function CustomFieldDialog({
               onRequiredChange={(required) =>
                 setForm((current) => ({ ...current, required }))
               }
+              onShowOnCardChange={(showOnCard) =>
+                setForm((current) => ({ ...current, showOnCard }))
+              }
               onDefaultChange={(defaults) =>
                 setForm((current) => ({ ...current, ...defaults }))
               }
