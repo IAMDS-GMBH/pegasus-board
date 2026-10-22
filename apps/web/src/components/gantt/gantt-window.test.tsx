@@ -73,12 +73,9 @@ vi.mock("@/components/project/task-filters/use-task-filter-options", () => ({
     usedCustomFieldValues: {},
   }),
 }));
-const noCustomFieldValues = () => [];
 vi.mock(
-  "@/hooks/queries/custom-field/use-get-all-custom-field-values-by-project",
-  () => ({
-    default: () => ({ getValuesForTask: noCustomFieldValues }),
-  }),
+  "@/hooks/queries/custom-field/use-get-custom-field-values-by-project",
+  () => ({ default: () => ({ data: [] }) }),
 );
 
 await import("@/routes/_layout/_authenticated/dashboard/workspace/$workspaceId/project/$projectId/gantt");

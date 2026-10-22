@@ -186,6 +186,23 @@ describe("registerTools", () => {
     });
   });
 
+  it("forwards label and custom field filters as JSON query parameters", async () => {
+    const { server, tools } = createServerMock();
+    const client = { json: vi.fn().mockResolvedValue([]) };
+    registerTools(server as never, { client: client as never });
+
+    await tools.get("list_tasks")?.handler({
+      projectId: "project-1",
+      labels: '["Kampagne A"]',
+      customFields: '{"field-1":["P2"]}',
+    });
+
+    expect(client.json).toHaveBeenCalledWith(
+      "/api/task/tasks/project-1?labels=%5B%22Kampagne+A%22%5D&customFields=%7B%22field-1%22%3A%5B%22P2%22%5D%7D",
+      { method: "GET" },
+    );
+  });
+
   it("gets one task by ticket ID with an optional workspace", async () => {
     const { server, tools } = createServerMock();
     const client = {

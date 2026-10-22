@@ -16,8 +16,8 @@ vi.mock("react-i18next", () => ({
   }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }));
-vi.mock("@/store/project", () => ({
-  default: () => ({
+vi.mock("@/store/project", () => {
+  const state = {
     project: {
       id: "project",
       slug: "PROJ",
@@ -26,17 +26,25 @@ vi.mock("@/store/project", () => ({
         { id: "shared", slug: "shared", isFinal: false },
       ],
     },
-  }),
-}));
-vi.mock("@/store/user-preferences", () => ({
-  useUserPreferencesStore: () => ({
+  };
+  return {
+    default: (selector?: (value: typeof state) => unknown) =>
+      selector ? selector(state) : state,
+  };
+});
+vi.mock("@/store/user-preferences", () => {
+  const state = {
     showLabels: true,
     showPriority: true,
     showDueDates: true,
     showTaskNumbers: true,
     showAssignees: true,
-  }),
-}));
+  };
+  return {
+    useUserPreferencesStore: (selector?: (value: typeof state) => unknown) =>
+      selector ? selector(state) : state,
+  };
+});
 vi.mock("@/hooks/mutations/task/use-delete-task", () => ({
   useDeleteTask: () => ({ mutateAsync: vi.fn() }),
 }));

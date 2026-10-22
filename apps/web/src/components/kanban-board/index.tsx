@@ -45,6 +45,10 @@ type KanbanBoardProps = {
   disableCollectionActions?: boolean;
   sortedByNumber?: boolean;
   sortedByPriority?: boolean;
+  // Pegasus fork (PEGA-89): the cache holds only the cards matching a server
+  // filter, so a drop appends to the target column without the full-column
+  // concurrency check; reordering inside a column is not possible then.
+  serverFiltered?: boolean;
 };
 
 function KanbanBoard({
@@ -53,8 +57,10 @@ function KanbanBoard({
   disableCollectionActions = false,
   sortedByNumber = false,
   sortedByPriority = false,
+  serverFiltered = false,
 }: KanbanBoardProps) {
   const isAutomaticallySorted = sortedByNumber || sortedByPriority;
+  const appendOnly = isAutomaticallySorted || serverFiltered;
   const queryClient = useQueryClient();
   const { project: storedProject, setProject } = useProjectStore();
   const setAvailableTasks = useBulkSelectionStore(
@@ -181,7 +187,7 @@ function KanbanBoard({
       dragPreview.clear();
       return;
     }
-    if (!isAutomaticallySorted) {
+    if (!appendOnly) {
       dragPreview.hover(active, over);
       return;
     }
@@ -206,7 +212,7 @@ function KanbanBoard({
 
     const moved =
       insertAfterTarget === undefined
-        ? moveBoardTask(canonical, activeId, overId, isAutomaticallySorted)
+        ? moveBoardTask(canonical, activeId, overId, appendOnly)
         : moveBoardTask(canonical, activeId, overId, false, insertAfterTarget);
     if (!moved || !moved.tasks.length) return;
     for (const task of moved.tasks)
@@ -216,7 +222,7 @@ function KanbanBoard({
     reorder({
       projectId: project.id,
       tasks: moved.tasks,
-      expectedTasks: moved.expectedTasks,
+      expectedTasks: serverFiltered ? undefined : moved.expectedTasks,
       previousBoard: canonical,
     });
   };

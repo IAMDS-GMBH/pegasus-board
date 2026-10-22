@@ -88,7 +88,10 @@ function Column({
           disableCollectionActions={disableCollectionActions}
         />
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-1.5 pt-1.5 pb-1.5 [-webkit-overflow-scrolling:touch]">
+      <div
+        data-column-scroll
+        className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-1.5 pt-1.5 pb-1.5 [-webkit-overflow-scrolling:touch]"
+      >
         <ColumnDropzone
           column={column}
           activeTaskId={activeTaskId}

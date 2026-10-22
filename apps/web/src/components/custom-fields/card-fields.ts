@@ -14,7 +14,7 @@ const groupedByTask = new WeakMap<
   Map<string, CustomFieldValue[]>
 >();
 
-function valuesByTask(values: CustomFieldValue[]) {
+export function valuesByTask(values: CustomFieldValue[]) {
   const cached = groupedByTask.get(values);
   if (cached) return cached;
   const grouped = new Map<string, CustomFieldValue[]>();

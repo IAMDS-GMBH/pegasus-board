@@ -46,5 +46,5 @@ export function useProjectTaskView({
     showStatus: scope !== "backlog",
   });
 
-  return { search, setSearch, descriptionSearch, filters, subjects };
+  return { search, setSearch, descriptionSearch, filters, subjects, options };
 }

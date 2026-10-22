@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { valuesByTask } from "@/components/custom-fields/card-fields";
 import { countActiveFilters } from "@/lib/task-filters/count-active-filters";
 import { filterProjectTasks } from "@/lib/task-filters/filter-project-tasks";
 import { customFieldSubjectId } from "@/lib/task-filters/filter-subject-id";
@@ -8,7 +9,9 @@ import { toggleFilterValue } from "@/lib/task-filters/toggle-filter-value";
 import { useUserPreferencesStore } from "@/store/user-preferences";
 import type { ProjectWithTasks } from "@/types/project";
 import type Task from "@/types/task";
-import useGetCachedCustomFieldValues from "./queries/custom-field/use-get-all-custom-field-values-by-project";
+import useGetCustomFieldValuesByProject, {
+  type CustomFieldValue,
+} from "./queries/custom-field/use-get-custom-field-values-by-project";
 import type { BoardFilters } from "./use-task-filters";
 import { useStoredState } from "./use-stored-state";
 
@@ -23,6 +26,7 @@ const DEFAULT_FILTERS: BoardFilters = {
 };
 
 const NO_IGNORED_FILTERS: ReadonlyArray<keyof BoardFilters> = [];
+const NO_VALUES: CustomFieldValue[] = [];
 
 const FILTER_KEYS: Array<keyof BoardFilters> = [
   "status",
@@ -84,7 +88,17 @@ export function useTaskFiltersWithLabelsSupport(
     normalizeFilters,
     DEFAULT_FILTERS,
   );
-  const { getValuesForTask } = useGetCachedCustomFieldValues();
+  // Pegasus fork (PEGA-89): match on the project-wide values (one request)
+  // instead of the per-task cache, which only exists for opened cards.
+  const { data: projectValues } = useGetCustomFieldValuesByProject(
+    projectId ?? "",
+    { enabled: filters.customFields != null },
+  );
+  const getValuesForTask = useCallback(
+    (taskId: string) =>
+      valuesByTask(projectValues ?? NO_VALUES).get(taskId) ?? [],
+    [projectValues],
+  );
 
   const effectiveFilters = useMemo(
     () =>

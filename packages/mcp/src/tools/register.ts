@@ -220,13 +220,20 @@ export function registerTools(
     sortOrder: z.enum(["asc", "desc"]).optional(),
     dueBefore: optionalIsoDateTimeSchema,
     dueAfter: optionalIsoDateTimeSchema,
+    // Pegasus fork (PEGA-89): database-side label and custom field filters.
+    labels: optionalNonEmptyString.describe(
+      'JSON array of label names; a task matches when it carries any of them, e.g. ["Kampagne A"].',
+    ),
+    customFields: optionalNonEmptyString.describe(
+      'JSON object of custom field id to allowed values; every listed field must hold one of its values, e.g. {"<fieldId>":["P2"]}.',
+    ),
   });
 
   registerTool(
     "list_tasks",
     {
       description:
-        "List a bounded page of tasks for a project (50 by default, maximum 100). Use pagination.totalPages and page to retrieve the rest; filters and sorting apply before pagination. For every task page, also follow relatedPage through pagination.relatedTotalPages for complete labels, links and column metadata. Custom field values are not included; use get_task_custom_field_values.",
+        "List a bounded page of tasks for a project (50 by default, maximum 100). Use pagination.totalPages and page to retrieve the rest; filters and sorting apply before pagination. labels and customFields filter in the database and combine with status. For every task page, also follow relatedPage through pagination.relatedTotalPages for complete labels, links and column metadata. Custom field values are not included; use get_task_custom_field_values.",
       inputSchema: listTasksSchema,
     },
     async (args) => {

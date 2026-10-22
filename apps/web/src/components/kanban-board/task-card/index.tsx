@@ -1,7 +1,7 @@
 import { useRestoreTaskFocus } from "@/components/project/task-view-keys/use-restore-task-focus";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { CSSProperties } from "react";
+import { type CSSProperties, memo } from "react";
 import useBulkSelectionStore from "@/store/bulk-selection";
 import type Task from "@/types/task";
 import TaskCardContent from "./task-card-content";
@@ -80,4 +80,4 @@ function TaskCard({
   );
 }
 
-export default TaskCard;
+export default memo(TaskCard);

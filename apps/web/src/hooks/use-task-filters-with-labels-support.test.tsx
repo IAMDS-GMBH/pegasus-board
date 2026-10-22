@@ -1,7 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vite-plus/test";
 import { useTaskFiltersWithLabelsSupport } from "./use-task-filters-with-labels-support";
+
+const getCustomFieldValuesByProject = vi.hoisted(() => vi.fn());
+vi.mock("@/fetchers/custom-field/get-custom-field-values-by-project", () => ({
+  default: getCustomFieldValuesByProject,
+}));
 
 const IGNORE_STATUS = ["status"] as const;
 
@@ -30,6 +42,7 @@ describe("useTaskFiltersWithLabelsSupport", () => {
 
   beforeEach(() => {
     window.localStorage.clear();
+    getCustomFieldValuesByProject.mockReset();
   });
 
   afterEach(() => {
@@ -128,6 +141,98 @@ describe("useTaskFiltersWithLabelsSupport", () => {
     expect(result.current.filteredProject?.columns[0]?.tasks[0]?.id).toBe(
       "task-1",
     );
+  });
+
+  // Pegasus fork (PEGA-89): the matcher must not depend on the per-task cache
+  // that only exists for opened cards.
+  it("filters unopened cards by custom field from the project-wide values", async () => {
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ customFields: { paket: ["P2"] } }),
+    );
+    const value = (taskId: string, raw: string, fieldType = "dropdown") => ({
+      id: `${taskId}-paket`,
+      taskId,
+      fieldId: "paket",
+      value: raw,
+      fieldName: "Paket",
+      fieldPosition: 0,
+      fieldType,
+      fieldOptions: null,
+    });
+    getCustomFieldValuesByProject.mockResolvedValue([
+      value("task-1", "P1"),
+      value("task-2", "P2"),
+      value("task-3", JSON.stringify(["P2", "P3"]), "multiselect"),
+    ]);
+    const taskOf = (id: string) => ({
+      id,
+      title: id,
+      number: 1,
+      description: null,
+      status: "todo",
+      priority: null,
+      startDate: null,
+      dueDate: null,
+      position: 0,
+      createdAt: "2026-04-16T00:00:00.000Z",
+      updatedAt: "2026-04-16T00:00:00.000Z",
+      userId: null,
+      assigneeId: null,
+      assigneeName: null,
+      assigneeImage: null,
+      projectId: "project-1",
+      labels: [],
+      externalLinks: [],
+    });
+    const project = {
+      id: "project-1",
+      name: "Project",
+      slug: "PROJ",
+      icon: null,
+      description: null,
+      isPublic: false,
+      createdAt: "2026-04-16T00:00:00.000Z",
+      updatedAt: "2026-04-16T00:00:00.000Z",
+      workspaceId: "workspace-1",
+      columns: [
+        {
+          id: "todo",
+          slug: "todo",
+          name: "Todo",
+          icon: null,
+          isFinal: false,
+          tasks: [taskOf("task-1"), taskOf("task-2"), taskOf("task-3")],
+        },
+      ],
+      plannedTasks: [],
+      archivedTasks: [],
+    };
+
+    const { result } = renderHook(
+      () => useTaskFiltersWithLabelsSupport(project, "project-1"),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() => {
+      expect(
+        result.current.filteredProject?.columns[0]?.tasks.map(
+          (task) => task.id,
+        ),
+      ).toEqual(["task-2", "task-3"]);
+    });
+    expect(getCustomFieldValuesByProject).toHaveBeenCalledWith({
+      projectId: "project-1",
+    });
+  });
+
+  it("requests no field values while no custom field filter is active", async () => {
+    window.localStorage.setItem(storageKey, JSON.stringify({ labels: ["x"] }));
+    renderHook(() => useTaskFiltersWithLabelsSupport(undefined, "project-1"), {
+      wrapper: createWrapper(),
+    });
+    await act(async () => {});
+    expect(getCustomFieldValuesByProject).not.toHaveBeenCalled();
   });
 
   it.each(["#123", "proj-123", "proj-"])(
