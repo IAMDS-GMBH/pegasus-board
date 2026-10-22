@@ -1,10 +1,11 @@
+import { brand } from "@/brand";
 import type { SourceLogoProps } from "@/components/import/source-logos/source-logo-size";
 import { cn } from "@/lib/cn";
 
 export function KaneoLogo({ size }: SourceLogoProps) {
   return (
     <img
-      src="/favicon.svg"
+      src={brand.favicon}
       alt=""
       aria-hidden="true"
       draggable={false}

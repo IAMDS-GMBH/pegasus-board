@@ -1,6 +1,6 @@
 {
 	"common": {
-		"appName": "Kaneo",
+		"appName": "{{appName}}",
 		"actions": {
 			"cancel": "İptal",
 			"close": "Kapat",
@@ -96,7 +96,7 @@
 				"errorToast": "Proje oluşturulamadı"
 			},
 			"createWorkspace": {
-				"breadcrumbKaneo": "KANEO",
+				"breadcrumbKaneo": "{{appName}}",
 				"title": "Yeni çalışma alanı oluştur",
 				"description": "Çalışma alanınız için bir ad girerek yeni bir çalışma alanı oluşturun.",
 				"namePlaceholder": "Çalışma alanı adı",
@@ -182,7 +182,7 @@
 				"use_a_permanent_email_address_disposable_addresses_cannot_create_accounts_": "Kalıcı bir e-posta adresi kullanın. Geçici adreslerle hesap oluşturulamaz."
 			},
 			"instanceStatusError": "Sunucuya ulaşılamadı. Lütfen birazdan tekrar deneyin.",
-			"heading": "Kaneo'ya giriş yapın",
+			"heading": "{{appName}}'ya giriş yapın",
 			"submitPassword": "Giriş yap",
 			"invitation": {
 				"title": "{{inviterName}} sizi {{workspaceName}} çalışma alanına davet etti",
@@ -190,7 +190,7 @@
 				"description": "Davetin gönderildiği e-posta adresiyle giriş yapın. Hemen ardından çalışma alanına katılacaksınız."
 			},
 			"footer": {
-				"newHere": "Kaneo'da yeni misiniz?",
+				"newHere": "{{appName}}'da yeni misiniz?",
 				"createAccount": "Hesap oluştur",
 				"inviteOnly": "Burada hesaplar yalnızca davetle oluşturulur. Bir yöneticiden davet isteyin.",
 				"providerSignUp": "Yeni misiniz? Hesap oluşturmak için yukarıdaki sağlayıcılardan biriyle giriş yapın.",
@@ -245,7 +245,7 @@
 			"toggleMessage": "Zaten hesabınız var mı?",
 			"toggleLink": "Giriş yap",
 			"instanceStatusError": "Sunucuya ulaşılamadı. Lütfen birazdan tekrar deneyin.",
-			"instanceAdminTitle": "Kaneo örneğinizi kurun",
+			"instanceAdminTitle": "{{appName}} örneğinizi kurun",
 			"instanceAdminSubtitle": "Bu hesap, tam erişime sahip örnek yöneticisi olur.",
 			"heading": "Hesabınızı oluşturun",
 			"submitPassword": "Hesap oluştur",
@@ -297,7 +297,7 @@
 				"acceptFailed": "Davet kabul edilemedi",
 				"acceptSuccess": "Davet kabul edildi! Aramıza hoş geldiniz."
 			},
-			"description": "{{inviterName}} sizi Kaneo'daki bu çalışma alanına davet etti.",
+			"description": "{{inviterName}} sizi {{appName}}'daki bu çalışma alanına davet etti.",
 			"invitedBy": "Davet eden",
 			"sentTo": "Gönderildiği adres",
 			"signedInAs": "Giriş yapılan hesap",
@@ -305,7 +305,7 @@
 			"notNow": "Şimdi değil",
 			"join": "Çalışma alanına katıl",
 			"switchAccount": "Hesap değiştir",
-			"goToKaneo": "Kaneo'ya git",
+			"goToKaneo": "{{appName}}'ya git",
 			"mismatch": {
 				"title": "Farklı bir e-postayla giriş yaptınız",
 				"description": "Bu davet {{invitedEmail}} adresine gönderildi. {{email}} hesabıyla giriş yaptınız."
@@ -324,7 +324,7 @@
 			}
 		},
 		"onboarding": {
-			"pageTitle": "Kaneo'ya Hoş Geldiniz",
+			"pageTitle": "{{appName}}'ya Hoş Geldiniz",
 			"workspaceName": "Çalışma alanı adı",
 			"workspaceNamePlaceholder": "örn. Acme Inc, Ekibim",
 			"toast": {
@@ -372,7 +372,7 @@
 				},
 				"invite": {
 					"title": "Ekibinizi davet edin",
-					"description": "Kaneo herkes dahil olduğunda en iyi şekilde çalışır. İnsanları e-postayla davet etmek için kenar çubuğunda **Üyeler** bölümünü açın."
+					"description": "{{appName}} herkes dahil olduğunda en iyi şekilde çalışır. İnsanları e-postayla davet etmek için kenar çubuğunda **Üyeler** bölümünü açın."
 				},
 				"integrations": {
 					"title": "GitHub, GitLab veya Gitea bağlayın",
@@ -502,7 +502,7 @@
 		"device": {
 			"connect": {
 				"title": "Cihaz bağlayın",
-				"description": "Kaneo hesabınıza bağlamak için terminalinizde veya uygulamanızda gösterilen kodu girin.",
+				"description": "{{appName}} hesabınıza bağlamak için terminalinizde veya uygulamanızda gösterilen kodu girin.",
 				"label": "Cihaz kodu",
 				"submit": "Devam et",
 				"noCode": "Henüz kodunuz yok mu? Önce uygulamanızdan giriş yapmaya başlayın.",
@@ -536,7 +536,7 @@
 				"description": "Onaylamak için hemen buraya geri döneceksiniz.",
 				"submit": "Giriş yap"
 			},
-			"openApp": "Open Kaneo"
+			"openApp": "Open {{appName}}"
 		},
 		"mcp": {
 			"authorize": {
@@ -609,7 +609,7 @@
 		"notificationsPage": {
 			"pageTitle": "Bildirimler",
 			"title": "Bildirimler",
-			"subtitle": "Kaneo'nun sizi neler hakkında bilgilendirdiği ve size nereden ulaştığı.",
+			"subtitle": "{{appName}}'nun sizi neler hakkında bilgilendirdiği ve size nereden ulaştığı.",
 			"statusConnected": "Bağlı",
 			"statusPaused": "Duraklatıldı",
 			"emailTitle": "E-posta",
@@ -639,10 +639,10 @@
 			"webhookDescription": "Her bildirimi JSON olarak kendi uç noktanıza gönderin.",
 			"endpointUrl": "Uç nokta URL'si",
 			"signingSecret": "İmzalama gizli anahtarı",
-			"webhookUrlPlaceholder": "https://example.com/webhooks/kaneo",
+			"webhookUrlPlaceholder": "https://example.com/webhook",
 			"webhookSecretPlaceholder": "İsteğe bağlı paylaşılan gizli anahtar",
 			"webhookSecretHintConfigured": "Bir imzalama gizli anahtarı zaten yapılandırılmış ({{masked}}). Değiştirmek için yeni bir tane girin.",
-			"webhookSecretHintOptional": "Bir gizli anahtar ayarlandığında Kaneo istek gövdesini imzalar.",
+			"webhookSecretHintOptional": "Bir gizli anahtar ayarlandığında {{appName}} istek gövdesini imzalar.",
 			"connectWebhook": "Webhook bağla",
 			"allProjects": "Tüm projeler",
 			"noProjectsInWorkspace": "Bu çalışma alanında henüz proje yok.",
@@ -680,7 +680,7 @@
 			"saveEventPreferences": "Bildirim türlerini kaydet",
 			"channelNotConnected": "Bağlı değil",
 			"channelOff": "Kapalı",
-			"channelsDescription": "Bildirimler her zaman Kaneo'da görünür. Başka bir yerde de almak için bir kanal bağlayın.",
+			"channelsDescription": "Bildirimler her zaman {{appName}}'da görünür. Başka bir yerde de almak için bir kanal bağlayın.",
 			"channelsTitle": "Kanallar",
 			"configure": "Yapılandır",
 			"configureChannel": "{{channel}} yapılandır",
@@ -696,7 +696,7 @@
 			"eventStatusChangesHint": "Taleplerinizden biri başka bir sütuna taşındığında.",
 			"eventTaskAssignmentsHint": "Biri size bir talep atadığında.",
 			"loadFailed": "Bildirim ayarları yüklenemedi.",
-			"onlyInKaneo": "Yalnızca Kaneo'da",
+			"onlyInKaneo": "Yalnızca {{appName}}'da",
 			"optional": "İsteğe bağlı",
 			"projectCount_one": "{{count}} proje",
 			"projectCount_other": "{{count}} proje",
@@ -722,14 +722,14 @@
 			"statusSending": "Gönderiliyor",
 			"stopping": "Durduruluyor...",
 			"stopSending": "Göndermeyi durdur",
-			"stopSendingDescription": "Bu çalışma alanındaki bildirimler yalnızca Kaneo'da görünecek.",
+			"stopSendingDescription": "Bu çalışma alanındaki bildirimler yalnızca {{appName}}'da görünecek.",
 			"stopSendingTitle": "{{workspaceName}} için gönderim durdurulsun mu?",
 			"workspacesDescription": "Kanallarınızı hangi çalışma alanlarının ve projelerin kullanabileceğini seçin.",
 			"workspacesTitle": "Çalışma alanları"
 		},
 		"preferencesPage": {
 			"title": "Tercihler",
-			"subtitle": "Kaneo'nun sizin için nasıl göründüğü ve çalıştığı.",
+			"subtitle": "{{appName}}'nun sizin için nasıl göründüğü ve çalıştığı.",
 			"appearanceTitle": "Genel",
 			"theme": "Tema",
 			"selectTheme": "Tema seçin",
@@ -766,7 +766,7 @@
 		"developerPage": {
 			"pageTitle": "API anahtarları",
 			"title": "API anahtarları",
-			"subtitle": "Betikler, CLI ve MCP istemcileri Kaneo'yu sizin adınıza kullanabilir.",
+			"subtitle": "Betikler, CLI ve MCP istemcileri {{appName}}'yu sizin adınıza kullanabilir.",
 			"unnamedKey": "Adsız",
 			"emptyDescription": "CLI, bir MCP istemcisi veya kendi betikleriniz için bir anahtar oluşturun.",
 			"emptyTitle": "Henüz API anahtarı yok",
@@ -1009,11 +1009,11 @@
 				"removeError": "GitHub entegrasyonu kaldırılamadı",
 				"issuesImported": "Sorunlar başarıyla içe aktarıldı",
 				"importError": "Sorunlar içe aktarılamadı",
-				"commentOnEnabled": "Kaneo yeni sorunlara talep bağlantısıyla yorum yapacak",
+				"commentOnEnabled": "{{appName}} yeni sorunlara talep bağlantısıyla yorum yapacak",
 				"commentOnDisabled": "Yeni sorunlardaki talep bağlantısı yorumları kapatıldı",
 				"settingsUpdateError": "GitHub entegrasyonu güncellenemedi"
 			},
-			"commentTaskLinkTitle": "Yeni sorunlara Kaneo bağlantısıyla yorum yap",
+			"commentTaskLinkTitle": "Yeni sorunlara {{appName}} bağlantısıyla yorum yap",
 			"commentTaskLinkHint": "Böylece GitHub kullanıcıları doğrudan talebe gidebilir.",
 			"updatePermissions": "İzinleri güncelle",
 			"installGithubApp": "GitHub Uygulamasını Kur",
@@ -1030,9 +1030,9 @@
 			"linkAccountTitle": "GitHub hesabınızı bağlayın",
 			"linked": "Bağlandı",
 			"linkGithub": "GitHub'ı bağla",
-			"verifyMissingPermissions": "Kaneo GitHub uygulamasında eksik izinler var: {{list}}.",
-			"verifyNotInstalled": "Kaneo GitHub uygulaması bu depoya kurulu değil.",
-			"verifyReady": "Kaneo GitHub uygulaması gereken izinlerle kurulu.",
+			"verifyMissingPermissions": "{{appName}} GitHub uygulamasında eksik izinler var: {{list}}.",
+			"verifyNotInstalled": "{{appName}} GitHub uygulaması bu depoya kurulu değil.",
+			"verifyReady": "{{appName}} GitHub uygulaması gereken izinlerle kurulu.",
 			"workflowHint": "Pull request'ler açıldığında veya birleştirildiğinde talepleri taşımak için",
 			"workflowLink": "İş akışı"
 		},
@@ -1050,13 +1050,13 @@
 				"removeError": "Gitea entegrasyonu kaldırılamadı",
 				"issuesImported": "Sorunlar başarıyla içe aktarıldı",
 				"importError": "Sorunlar içe aktarılamadı",
-				"commentOnEnabled": "Kaneo yeni sorunlara talep bağlantısıyla yorum yapacak",
+				"commentOnEnabled": "{{appName}} yeni sorunlara talep bağlantısıyla yorum yapacak",
 				"commentOnDisabled": "Yeni sorunlardaki talep bağlantısı yorumları kapatıldı",
 				"settingsUpdateError": "Gitea entegrasyonu güncellenemedi"
 			},
-			"commentTaskLinkTitle": "Yeni sorunlara Kaneo bağlantısıyla yorum yap",
+			"commentTaskLinkTitle": "Yeni sorunlara {{appName}} bağlantısıyla yorum yap",
 			"commentTaskLinkHint": "Böylece Gitea kullanıcıları doğrudan talebe gidebilir.",
-			"webhookHint": "Değişikliklerin Kaneo'ya yansıması için bu webhook'u depo ayarlarına ekleyin.",
+			"webhookHint": "Değişikliklerin {{appName}}'ya yansıması için bu webhook'u depo ayarlarına ekleyin.",
 			"baseUrlLabel": "Gitea URL'si",
 			"tokenLabel": "Kişisel erişim belirteci",
 			"tokenPlaceholder": "Belirteci yapıştır",
@@ -1120,11 +1120,11 @@
 				"removeError": "Genel webhook entegrasyonu kaldırılamadı"
 			},
 			"webhookLabel": "Uç nokta URL'si",
-			"webhookPlaceholder": "https://example.com/webhooks/kaneo",
-			"webhookHint": "Kaneo, etkinleştirilen her olay için JSON yükü ile POST istekleri gönderir.",
+			"webhookPlaceholder": "https://example.com/webhook",
+			"webhookHint": "{{appName}}, etkinleştirilen her olay için JSON yükü ile POST istekleri gönderir.",
 			"secretLabel": "İmzalama gizli anahtarı",
 			"secretPlaceholder": "Paylaşılan gizli anahtar",
-			"secretHint": "Kaneo her isteği bununla imzalar ve özeti X-Kaneo-Signature başlığında gönderir.",
+			"secretHint": "{{appName}} her isteği bununla imzalar ve özeti X-Kaneo-Signature başlığında gönderir.",
 			"secretHintConfigured": "Mevcut gizli anahtar: {{secret}}. Değiştirmek için yenisini yapıştırın.",
 			"eventsTitle": "Şu durumlarda gönder",
 			"events": {
@@ -1144,7 +1144,7 @@
 			"connect": "Webhook bağla",
 			"reminderLeadTimeLabel": "Talebin bitiş tarihinden kaç saat önce",
 			"activeTitle": "Olaylar gönderiliyor",
-			"disconnectDescription": "Kaneo olay göndermeyi durdurur ve kayıtlı uç noktayı ve gizli anahtarı kaldırır.",
+			"disconnectDescription": "{{appName}} olay göndermeyi durdurur ve kayıtlı uç noktayı ve gizli anahtarı kaldırır.",
 			"disconnectTitle": "Webhook bağlantısı kesilsin mi?",
 			"reminderLeadTimeAfter": "saat önce gönder",
 			"reminderLeadTimeBefore": "Hatırlatmaları talebin bitiş tarihinden"
@@ -1180,7 +1180,7 @@
 		},
 		"repositoryBrowser": {
 			"title": "Bir depo seçin",
-			"description": "Kaneo GitHub uygulamasının görebildiği depolar.",
+			"description": "{{appName}} GitHub uygulamasının görebildiği depolar.",
 			"searchPlaceholder": "Depo ara",
 			"loadError": "Depolar yüklenemedi.",
 			"tryAgain": "Tekrar dene",
@@ -1653,7 +1653,7 @@
 				"active": "Active",
 				"deactivated": "Deactivated"
 			},
-			"subtitle": "Bu Kaneo örneğinde hesabı olan herkes.",
+			"subtitle": "Bu {{appName}} örneğinde hesabı olan herkes.",
 			"title": "Kullanıcılar",
 			"toast": {
 				"actionError": "Failed to update user status",
@@ -1681,7 +1681,7 @@
 			"sectionTitle": "Oturum açma",
 			"submit": "Parolayı değiştir",
 			"submitting": "Değiştiriliyor...",
-			"subtitle": "Kaneo'da nasıl oturum açtığınız.",
+			"subtitle": "{{appName}}'da nasıl oturum açtığınız.",
 			"title": "Security",
 			"updateError": "Failed to update password.",
 			"updateSuccess": "Password updated.",
@@ -1703,14 +1703,14 @@
 			"browseModalHint": "Belirtecinizin üyesi olduğu projeler.",
 			"browseNeedsCredentials": "Göz atmak için GitLab URL'sini ve bir belirteç girin.",
 			"commentTaskLinkHint": "Böylece GitLab kullanıcıları doğrudan talebe gidebilir.",
-			"commentTaskLinkTitle": "Comment a Kaneo link on issues opened in GitLab",
+			"commentTaskLinkTitle": "Comment a {{appName}} link on issues opened in GitLab",
 			"importSectionHint": "Açık sorunları ve merge request'leri talep olarak içe aktarın.",
 			"openInGitlab": "Open {{project}} in GitLab",
 			"projectPathLabel": "Project path",
 			"searchProjects": "Proje ara",
 			"toast": {
 				"commentOnDisabled": "Task link comments on issues opened in GitLab are turned off",
-				"commentOnEnabled": "Kaneo will comment with a task link on issues opened in GitLab",
+				"commentOnEnabled": "{{appName}} will comment with a task link on issues opened in GitLab",
 				"importError": "Failed to import issues",
 				"issuesImported": "Issues imported successfully",
 				"removed": "GitLab integration removed",
@@ -1732,7 +1732,7 @@
 				"baseUrlRequired": "GitLab base URL is required",
 				"pathInvalid": "Enter the full path, e.g. group/project"
 			},
-			"webhookHint": "Değişikliklerin Kaneo'ya yansıması için bu webhook'u proje ayarlarına ekleyin.",
+			"webhookHint": "Değişikliklerin {{appName}}'ya yansıması için bu webhook'u proje ayarlarına ekleyin.",
 			"loadProjectsError": "Projeler yüklenemedi.",
 			"importPermissionHint": "Importing requires permission to create and update tasks.",
 			"browseEmpty": "Bu belirteç hiçbir projenin üyesi değil.",
@@ -1789,7 +1789,7 @@
 			"currentPlan": {
 				"title": "Current plan"
 			},
-			"disabled": "Billing isn't enabled on this instance. Self-hosted Kaneo includes every feature, free forever.",
+			"disabled": "Billing isn't enabled on this instance. Self-hosted {{appName}} includes every feature, free forever.",
 			"expiredCallout": {
 				"action": "Choose a plan",
 				"adminDescription": "You can still view everything, but creating and editing are paused until you choose a plan. Nothing has been deleted.",
@@ -1807,7 +1807,7 @@
 			},
 			"foundingFree": {
 				"badge": "Free",
-				"description": "This workspace has free access to Kaneo Cloud as an early supporter. Thank you for being here from the start.",
+				"description": "This workspace has free access to {{appName}} as an early supporter. Thank you for being here from the start.",
 				"title": "Founding Free"
 			},
 			"interval": {
@@ -1891,8 +1891,8 @@
 			"filtered": "Only matching labels",
 			"impact": "{{matching}} of {{total}} tasks match. {{create}} tasks will be exported, {{pause}} links will pause, and {{review}} links need review to resume.",
 			"impactTitle": "What will change",
-			"incoming": "Repository → Kaneo",
-			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the Kaneo task rule.",
+			"incoming": "Repository → {{appName}}",
+			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the {{appName}} task rule.",
 			"loadError": "Sync rules could not be loaded.",
 			"loading": "Loading sync rules…",
 			"matchLabels": "Label matching",
@@ -1902,8 +1902,8 @@
 			"noDescription": "No description",
 			"noLabels": "Create workspace labels before configuring a task filter.",
 			"open": "Open",
-			"outgoing": "Kaneo → repository",
-			"outgoingHint": "Choose which Kaneo tasks can sync. Losing a matching label pauses both directions for an existing task.",
+			"outgoing": "{{appName}} → repository",
+			"outgoingHint": "Choose which {{appName}} tasks can sync. Losing a matching label pauses both directions for an existing task.",
 			"paused": "Sync paused",
 			"pausedHint": "Records and links are preserved. Tasks that match again need review before syncing resumes.",
 			"preserveHint": "Pausing keeps both records and their link. Resuming requires a comparison; historical comments are never replayed.",
@@ -1925,7 +1925,7 @@
 			"sharedHint": "These rules apply to everyone using this project. Hiding advanced settings does not disable them.",
 			"title": "Neler senkronize edilir",
 			"unavailableLabel": "Unavailable label",
-			"useKaneo": "Keep Kaneo values",
+			"useKaneo": "Keep {{appName}} values",
 			"useRepository": "Keep repository values",
 			"exportPending": "Export matching tasks",
 			"inactiveHint": "This integration is paused. No tasks will be exported until it is reactivated.",
@@ -1938,10 +1938,10 @@
 			"issuesLabelled": "Şu etiketlere sahip sorunlar",
 			"joinAnd": "ve",
 			"joinOr": "veya",
-			"kaneoToProvider": "Kaneo → {{provider}}",
+			"kaneoToProvider": "{{appName}} → {{provider}}",
 			"pausedSummary_one": "{{count}} talep, artık senkronizasyon kurallarıyla eşleşmediği için senkronize edilmiyor.",
 			"pausedSummary_other": "{{count}} talep, artık senkronizasyon kurallarıyla eşleşmediği için senkronize edilmiyor.",
-			"providerToKaneo": "{{provider}} → Kaneo",
+			"providerToKaneo": "{{provider}} → {{appName}}",
 			"reviewPaused": "İncele",
 			"tasksLabelled": "Şu etiketlere sahip talepler"
 		},
@@ -2012,7 +2012,7 @@
 			"searchCount_other": "{{count}} matching workspaces",
 			"searchLabel": "Search workspaces",
 			"searchPlaceholder": "Ad veya slug ile ara",
-			"subtitle": "Üyesi olmadıklarınız dahil, bu Kaneo örneğindeki tüm çalışma alanları.",
+			"subtitle": "Üyesi olmadıklarınız dahil, bu {{appName}} örneğindeki tüm çalışma alanları.",
 			"title": "Çalışma alanları",
 			"toast": {
 				"added": "Member added",
@@ -2035,7 +2035,7 @@
 				"cancel": "Cancel",
 				"continue": "Continue",
 				"hideSecret": "Hide {{field}}",
-				"sectionDescription": "Kaneo only reads from {{source}}. The key is used for this import and never stored.",
+				"sectionDescription": "{{appName}} only reads from {{source}}. The key is used for this import and never stored.",
 				"sectionTitle": "Connect",
 				"showSecret": "Show {{field}}",
 				"title": "Import from {{source}}",
@@ -2064,11 +2064,11 @@
 				"title": "Recent imports"
 			},
 			"kaneo": {
-				"apiKeyDescription": "In that Kaneo, open Settings, then API Keys.",
+				"apiKeyDescription": "In that {{appName}}, open Settings, then API Keys.",
 				"apiKeyLabel": "API key",
 				"apiKeyPlaceholder": "Paste API key",
 				"urlDescription": "The instance you are moving from.",
-				"urlLabel": "Kaneo URL"
+				"urlLabel": "{{appName}} URL"
 			},
 			"linear": {
 				"apiKeyDescription": "Read access is enough. You can revoke it after the import.",
@@ -2155,9 +2155,9 @@
 				"connectTo": "Connect {{source}}",
 				"description": "Pick the tool you are moving from. Each project you choose becomes a new project here.",
 				"kaneo": {
-					"description": "Move projects between Kaneo Cloud and a self-hosted instance.",
+					"description": "Move projects from another {{appName}} instance.",
 					"intro": "Projects from every workspace the key can see. Each one you pick is copied here.",
-					"pickerName": "Another Kaneo"
+					"pickerName": "Another {{appName}}"
 				},
 				"linear": {
 					"description": "Teams, issues, labels, sub-issues and comments. Paste a personal API key.",
@@ -2195,7 +2195,7 @@
 				"import": "Import",
 				"label": "Import steps"
 			},
-			"subtitle": "Bring your projects from another tool into {{workspace}}. Kaneo only reads from the source.",
+			"subtitle": "Bring your projects from another tool into {{workspace}}. {{appName}} only reads from the source.",
 			"title": "Import",
 			"toast": {
 				"failed": "Import from {{source}} failed",
@@ -2208,7 +2208,7 @@
 				"apiKeyPlaceholder": "Paste API key",
 				"authorizeButton": "Authorize on Trello",
 				"authorizeDescription": "Opens Trello in a new tab. Read only, expires after a day.",
-				"authorizeLabel": "Authorize Kaneo",
+				"authorizeLabel": "Authorize {{appName}}",
 				"authorizeNeedsKey": "Enter the API key first. Read only, expires after a day.",
 				"tokenDescription": "Click Allow on Trello, then paste the token it shows you.",
 				"tokenLabel": "Token",
@@ -2296,7 +2296,7 @@
 			"channelLabel": "Kanal",
 			"channelPlaceholder": "#team-updates",
 			"disconnect": "Bağlantıyı kes",
-			"disconnectDescription": "Kaneo, {{provider}} üzerinde paylaşımı durdurur ve kayıtlı ayarları kaldırır.",
+			"disconnectDescription": "{{appName}}, {{provider}} üzerinde paylaşımı durdurur ve kayıtlı ayarları kaldırır.",
 			"disconnecting": "Bağlantı kesiliyor…",
 			"disconnectTitle": "{{provider}} bağlantısı kesilsin mi?",
 			"events": {
@@ -3327,14 +3327,14 @@
 			"rejectSuccess": "Davet reddedildi"
 		},
 		"email": {
-			"subject": "{{inviterName}}, sizi Kaneo'da {{workspaceName}} çalışma alanına davet etti",
-			"preview": "Kaneo'da {{workspaceName}} çalışma alanına davet edildiniz",
+			"subject": "{{inviterName}}, sizi {{appName}}'da {{workspaceName}} çalışma alanına davet etti",
+			"preview": "{{appName}}'da {{workspaceName}} çalışma alanına davet edildiniz",
 			"title": "{{workspaceName}} çalışma alanına katılın",
-			"subtitle": "{{inviterName}} ({{inviterEmail}}) sizi Kaneo'da birlikte çalışmaya davet etti.",
+			"subtitle": "{{inviterName}} ({{inviterEmail}}) sizi {{appName}}'da birlikte çalışmaya davet etti.",
 			"cta": "Daveti kabul et",
 			"sameEmail": "Daveti, bu mesajı alan e-posta adresiyle kabul edebilirsiniz.",
 			"ignore": "Bu davet beklenmedikse bu e-postayı güvenle yok sayabilirsiniz.",
-			"footer": "Kaneo çalışma alanı daveti",
+			"footer": "{{appName}} çalışma alanı daveti",
 			"details": {
 				"title": "Davet ayrıntıları",
 				"sentTo": "Gönderilen adres",
@@ -3805,7 +3805,7 @@
 				"delivery": "İletim ve etkinlikler",
 				"deliveryHint": "E-posta, ntfy, Gotify, webhook'lar",
 				"invitations": "Davetler",
-				"permissionDenied": "Önce sistem ayarlarında Kaneo bildirimlerine izin verin.",
+				"permissionDenied": "Önce sistem ayarlarında {{appName}} bildirimlerine izin verin.",
 				"phone": "Telefon bildirimleri",
 				"phoneHint": "Yaklaşık 15 dakikada bir kontrol edilir",
 				"title": "Bildirimler"
@@ -3853,7 +3853,7 @@
 		},
 		"background": {
 			"channelDescription": "Çalışma alanlarınızdaki atamalar, yorumlar ve bahsetmeler",
-			"channelName": "Kaneo etkinliği",
+			"channelName": "{{appName}} etkinliği",
 			"summary_one": "{{count}} yeni bildirim daha",
 			"summary_other": "{{count}} yeni bildirim daha"
 		},
@@ -3944,10 +3944,10 @@
 			"apiKeyRejected": "Bu API anahtarı reddedildi.",
 			"deviceFailed": "Cihazla giriş başarısız (HTTP {{status}}).",
 			"forbidden": "Bunu yapma izniniz yok.",
-			"noInstance": "{{url}} adresinde Kaneo örneği bulunamadı (HTTP {{status}}).",
+			"noInstance": "{{url}} adresinde {{appName}} örneği bulunamadı (HTTP {{status}}).",
 			"noSession": "Sunucu oturum döndürmedi. Tarayıcı üzerinden giriş yapmayı deneyin.",
 			"notFound": "Bulunamadı.",
-			"notKaneo": "{{url}} bir Kaneo sunucusuna benzemiyor.",
+			"notKaneo": "{{url}} bir {{appName}} sunucusuna benzemiyor.",
 			"notSignedIn": "Giriş yapılmadı",
 			"requestFailed": "İstek başarısız ({{status}}).",
 			"serverProblem": "Sunucuda bir sorun oluştu ({{status}}).",
@@ -4172,7 +4172,7 @@
 				"webhook": "Webhook",
 				"webhookHint": "Bildirimleri bir URL'ye POST ile gönder"
 			},
-			"description": "Kaneo'nun size nereden ve ne hakkında ulaşacağı.",
+			"description": "{{appName}}'nun size nereden ve ne hakkında ulaşacağı.",
 			"events": {
 				"assignments": "Atamalar",
 				"assignmentsHint": "Size bir talep atandığında",
@@ -4367,7 +4367,7 @@
 				"expired": "Giriş kodunun süresi doldu. Yeni bir kod almak için tekrar başlayın.",
 				"gettingCode": "Kod alınıyor…",
 				"linkCopied": "Bağlantı kopyalandı",
-				"message": "Bu cihazı Kaneo web sitesinden onaylayın. GitHub, Google, Discord ve SSO orada çalışır.",
+				"message": "Bu cihazı {{appName}} web sitesinden onaylayın. GitHub, Google, Discord ve SSO orada çalışır.",
 				"openBrowser": "Tarayıcıyı aç",
 				"openFailed": "Tarayıcı açılamadı. Bağlantıyı kopyalayın.",
 				"tryAgain": "Tekrar dene",
@@ -4377,7 +4377,7 @@
 			"email": "E-posta",
 			"emailCode": "E-postayla giriş kodu gönder",
 			"invalidClient": "Bu sunucu cihazla girişe izin vermiyor. Yöneticisinden DEVICE_AUTH_CLIENT_IDS içine “kaneo-cli” eklemesini isteyin veya parola ya da API anahtarıyla giriş yapın.",
-			"newToKaneo": "Kaneo'da yeni misiniz?",
+			"newToKaneo": "{{appName}}'da yeni misiniz?",
 			"noPassword": "Parola gerekmez",
 			"or": "veya",
 			"password": "Parola",
@@ -4385,13 +4385,14 @@
 			"selfHosted": "Kendi sunucunuzda",
 			"sendTo": "{{email}} adresine gönder",
 			"serverAddress": "Sunucu adresi",
-			"serverAddressHint": "Kaneo'yu açtığınız adres. TLS olmayan sunucular için http:// kullanın. API başka bir sunucuda çalışıyorsa API adresini girin.",
+			"serverAddressHint": "{{appName}}'yu açtığınız adres. TLS olmayan sunucular için http:// kullanın. API başka bir sunucuda çalışıyorsa API adresini girin.",
 			"signIn": "Giriş yap",
 			"signUp": {
 				"name": "Ad Soyad",
 				"passwordHint": "En az 8 karakter"
 			},
 			"tagline": "Basit proje yönetimi. Kaneo Cloud'a veya kendi örneğinize bağlanın.",
+			"taglineOwnServer": "Simple project management. Connect to your {{appName}} server.",
 			"togglePassword": "Parola görünürlüğünü değiştir",
 			"useApiKey": "API anahtarı kullan"
 		},
@@ -4612,7 +4613,7 @@
 			"title": "Çalışma alanları"
 		},
 		"permissions": {
-			"photos": "Kaneo, taleplere ve yorumlara görsel eklemek ve profil fotoğrafınız için fotoğraflarınızı kullanır."
+			"photos": "{{appName}}, taleplere ve yorumlara görsel eklemek ve profil fotoğrafınız için fotoğraflarınızı kullanır."
 		}
 	}
 }

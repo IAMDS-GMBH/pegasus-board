@@ -80,7 +80,7 @@ describe("active imports", () => {
     expect(refused).toBeInstanceOf(HTTPException);
     expect(refused).toMatchObject({
       status: 503,
-      message: "Kaneo is restarting. Start the import again in a minute.",
+      message: "The server is restarting. Start the import again in a minute.",
     });
     expect(registry.activeImportSlots()).toEqual([]);
   });

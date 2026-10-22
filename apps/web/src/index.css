@@ -389,15 +389,6 @@ input:-webkit-autofill:active {
     system-ui,
     sans-serif;
   --radius: 0.25rem;
-  --foreground: var(--brand-text);
-  --card-foreground: var(--brand-text);
-  --popover-foreground: var(--brand-text);
-  --accent-foreground: var(--brand-text);
-  --secondary-foreground: var(--brand-text);
-  --muted: var(--brand-surface);
-  --secondary: var(--brand-surface);
-  --border: var(--brand-line);
-  --input: var(--brand-line-strong);
   --primary: var(--brand-green);
   --primary-foreground: var(--color-white);
   --ring: var(--brand-green);
@@ -413,6 +404,20 @@ input:-webkit-autofill:active {
   --sidebar-primary: var(--brand-green);
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-ring: var(--brand-green);
+}
+
+/* wwk.de has no dark mode, so its greys stay out of `.dark`: in dark mode the
+   neutral text, surface and border tokens remain the base dark values. */
+.theme-wwk:not(.dark) {
+  --foreground: var(--brand-text);
+  --card-foreground: var(--brand-text);
+  --popover-foreground: var(--brand-text);
+  --accent-foreground: var(--brand-text);
+  --secondary-foreground: var(--brand-text);
+  --muted: var(--brand-surface);
+  --secondary: var(--brand-surface);
+  --border: var(--brand-line);
+  --input: var(--brand-line-strong);
 }
 
 .theme-wwk.dark {

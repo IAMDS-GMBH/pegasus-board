@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+import { appName } from "@kaneo/email";
 import db from "../../database";
 import {
   projectTable,
@@ -138,7 +139,7 @@ async function sendMattermostMessage(
           },
           {
             title: "Triggered by",
-            value: data.actorName ? escapeText(data.actorName) : "Kaneo",
+            value: data.actorName ? escapeText(data.actorName) : appName(),
             short: true,
           },
         ],

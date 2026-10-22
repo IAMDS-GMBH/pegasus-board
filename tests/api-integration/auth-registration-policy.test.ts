@@ -253,7 +253,7 @@ describe("auth registration and bootstrap boundaries", () => {
     const data = send.mock.lastCall?.[2] as { otp: string } | undefined;
     expect(data?.otp).toBeTruthy();
     expect(send.mock.lastCall?.[1]).toBe(
-      `${data?.otp} is your Kaneo sign-in code`,
+      `${data?.otp} is your WWK Board sign-in code`,
     );
     const requestContext = expect.objectContaining({
       device: { browser: "Safari", os: "iPhone" },

@@ -46,7 +46,7 @@ function describeHttpStatus(
   if (status === 404) {
     return {
       status: 400,
-      message: `${sourceName} could not find what Kaneo asked for (HTTP 404). Check the URL.`,
+      message: `${sourceName} could not find what the import asked for (HTTP 404). Check the URL.`,
     };
   }
   if (status === 429) {
@@ -120,6 +120,6 @@ export function describeImportError(
 
   return {
     status: 502,
-    message: `${sourceName} sent a response Kaneo could not read.`,
+    message: `${sourceName} sent a response the import could not read.`,
   };
 }

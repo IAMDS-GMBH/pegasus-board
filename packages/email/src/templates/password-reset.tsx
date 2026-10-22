@@ -12,6 +12,7 @@ import {
 } from "../components/request-details";
 import { passwordResetReason } from "../components/security-reasons";
 import { emailHtmlLang, resolveEmailLocale } from "./resolve-locale";
+import { withAppName } from "../components/app-name";
 
 void React;
 
@@ -110,7 +111,7 @@ const PasswordResetEmail = ({
   device,
 }: PasswordResetEmailProps) => {
   const emailLocale = resolveEmailLocale(locale);
-  const copy = messages[emailLocale];
+  const copy = withAppName(messages[emailLocale]);
 
   return (
     <EmailShell

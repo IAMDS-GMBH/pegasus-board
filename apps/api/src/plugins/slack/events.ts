@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+import { appName } from "@kaneo/email";
 import db from "../../database";
 import {
   projectTable,
@@ -153,7 +154,7 @@ async function sendSlackMessage(
             type: "mrkdwn",
             text: data.actorName
               ? `Triggered by ${escapeSlack(data.actorName)}`
-              : "Triggered by Kaneo",
+              : `Triggered by ${appName()}`,
           },
         ],
       },

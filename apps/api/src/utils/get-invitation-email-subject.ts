@@ -1,3 +1,4 @@
+import { appName } from "@kaneo/email";
 import { getWorkspaceInvitationEmailCopy } from "./get-workspace-invitation-email-copy";
 
 export function getInvitationEmailSubject(
@@ -5,7 +6,11 @@ export function getInvitationEmailSubject(
   inviterName: string,
   workspaceName: string,
 ) {
-  const values: Record<string, string> = { inviterName, workspaceName };
+  const values: Record<string, string> = {
+    appName: appName(),
+    inviterName,
+    workspaceName,
+  };
 
   return getWorkspaceInvitationEmailCopy(locale).subject.replace(
     /\{\{(\w+)\}\}/g,

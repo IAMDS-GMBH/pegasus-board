@@ -53,7 +53,7 @@ export async function verifyRepositoryOwner(
     // Do not expose installation or repository existence to unauthorized users.
     throw new HTTPException(403, {
       message:
-        "Repository access could not be verified. GitHub repository admin permission and an installed Kaneo App are required",
+        "Repository access could not be verified. GitHub repository admin permission and an installed GitHub App are required",
     });
   }
 }

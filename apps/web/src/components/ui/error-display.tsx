@@ -1,3 +1,4 @@
+import { brand } from "@/brand";
 import { AlertTriangle, ExternalLink, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -88,7 +89,7 @@ export function ErrorDisplay({
               </Button>
             )}
 
-            {parsedError.type === "cors" && (
+            {parsedError.type === "cors" && brand.upstreamLinks && (
               <Button
                 onClick={() => window.open("https://kaneo.app/docs", "_blank")}
                 variant="outline"

@@ -90,7 +90,7 @@ function CreateWorkspaceModal({ open, onClose }: CreateWorkspaceModalProps) {
           <DialogTitle asChild>
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="text-muted-foreground font-semibold tracking-wider text-sm">
+                <BreadcrumbItem className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">
                   {t("common:modals.createWorkspace.breadcrumbKaneo")}
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />

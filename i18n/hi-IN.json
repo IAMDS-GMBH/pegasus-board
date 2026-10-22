@@ -1,6 +1,6 @@
 {
 	"common": {
-		"appName": "Kaneo",
+		"appName": "{{appName}}",
 		"actions": {
 			"cancel": "रद्द करें",
 			"close": "बंद करें",
@@ -96,7 +96,7 @@
 				"errorToast": "प्रोजेक्ट बनाने में विफल"
 			},
 			"createWorkspace": {
-				"breadcrumbKaneo": "KANEO",
+				"breadcrumbKaneo": "{{appName}}",
 				"title": "नया वर्कस्पेस बनाएँ",
 				"description": "अपने वर्कस्पेस के लिए नाम देकर एक नया वर्कस्पेस बनाएँ।",
 				"namePlaceholder": "वर्कस्पेस का नाम",
@@ -182,7 +182,7 @@
 				"use_a_permanent_email_address_disposable_addresses_cannot_create_accounts_": "स्थायी ईमेल पते का उपयोग करें। अस्थायी पतों से खाते नहीं बनाए जा सकते।"
 			},
 			"instanceStatusError": "सर्वर से संपर्क नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।",
-			"heading": "Kaneo में साइन इन करें",
+			"heading": "{{appName}} में साइन इन करें",
 			"submitPassword": "साइन इन करें",
 			"invitation": {
 				"title": "{{inviterName}} ने आपको {{workspaceName}} में निमंत्रित किया है",
@@ -190,7 +190,7 @@
 				"description": "उसी ईमेल से साइन इन करें जिस पर निमंत्रण मिला था। इसके तुरंत बाद आप वर्कस्पेस में शामिल हो जाएँगे।"
 			},
 			"footer": {
-				"newHere": "Kaneo पर नए हैं?",
+				"newHere": "{{appName}} पर नए हैं?",
 				"createAccount": "खाता बनाएँ",
 				"inviteOnly": "यहाँ खाते केवल निमंत्रण से बनते हैं। किसी व्यवस्थापक से निमंत्रण माँगें।",
 				"providerSignUp": "नए हैं? खाता बनाने के लिए ऊपर दिए किसी प्रदाता से साइन इन करें।",
@@ -245,7 +245,7 @@
 			"toggleMessage": "पहले से खाता है?",
 			"toggleLink": "साइन इन करें",
 			"instanceStatusError": "सर्वर से संपर्क नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।",
-			"instanceAdminTitle": "अपना Kaneo इंस्टेंस सेट अप करें",
+			"instanceAdminTitle": "अपना {{appName}} इंस्टेंस सेट अप करें",
 			"instanceAdminSubtitle": "यह खाता पूर्ण पहुँच के साथ इंस्टेंस व्यवस्थापक बन जाता है।",
 			"heading": "अपना खाता बनाएँ",
 			"submitPassword": "खाता बनाएँ",
@@ -297,7 +297,7 @@
 				"acceptFailed": "निमंत्रण स्वीकार करने में विफल",
 				"acceptSuccess": "निमंत्रण स्वीकार किया! टीम में स्वागत है।"
 			},
-			"description": "{{inviterName}} ने आपको Kaneo पर इस वर्कस्पेस में निमंत्रित किया है।",
+			"description": "{{inviterName}} ने आपको {{appName}} पर इस वर्कस्पेस में निमंत्रित किया है।",
 			"invitedBy": "निमंत्रण भेजने वाले",
 			"sentTo": "इस पते पर भेजा गया",
 			"signedInAs": "साइन इन किया गया खाता",
@@ -305,7 +305,7 @@
 			"notNow": "अभी नहीं",
 			"join": "वर्कस्पेस में शामिल हों",
 			"switchAccount": "खाता बदलें",
-			"goToKaneo": "Kaneo पर जाएँ",
+			"goToKaneo": "{{appName}} पर जाएँ",
 			"mismatch": {
 				"title": "आपने किसी दूसरे ईमेल से साइन इन किया है",
 				"description": "यह निमंत्रण {{invitedEmail}} पर भेजा गया था। आपने {{email}} से साइन इन किया है।"
@@ -324,7 +324,7 @@
 			}
 		},
 		"onboarding": {
-			"pageTitle": "Kaneo में आपका स्वागत है",
+			"pageTitle": "{{appName}} में आपका स्वागत है",
 			"workspaceName": "वर्कस्पेस का नाम",
 			"workspaceNamePlaceholder": "जैसे Acme Inc, मेरी टीम",
 			"toast": {
@@ -372,7 +372,7 @@
 				},
 				"invite": {
 					"title": "अपनी टीम को आमंत्रित करें",
-					"description": "Kaneo तब सबसे अच्छा काम करता है जब सभी इसमें हों। लोगों को ईमेल से आमंत्रित करने के लिए साइडबार में **सदस्य** खोलें।"
+					"description": "{{appName}} तब सबसे अच्छा काम करता है जब सभी इसमें हों। लोगों को ईमेल से आमंत्रित करने के लिए साइडबार में **सदस्य** खोलें।"
 				},
 				"integrations": {
 					"title": "GitHub, GitLab या Gitea कनेक्ट करें",
@@ -502,7 +502,7 @@
 		"device": {
 			"connect": {
 				"title": "डिवाइस कनेक्ट करें",
-				"description": "अपने Kaneo खाते से लिंक करने के लिए अपने टर्मिनल या ऐप में दिखाया गया कोड दर्ज करें।",
+				"description": "अपने {{appName}} खाते से लिंक करने के लिए अपने टर्मिनल या ऐप में दिखाया गया कोड दर्ज करें।",
 				"label": "डिवाइस कोड",
 				"submit": "जारी रखें",
 				"noCode": "अभी तक कोड नहीं है? पहले अपने ऐप से साइन इन शुरू करें।",
@@ -536,7 +536,7 @@
 				"description": "इसे स्वीकृत करने के लिए आप तुरंत यहीं वापस आएँगे।",
 				"submit": "साइन इन करें"
 			},
-			"openApp": "Open Kaneo"
+			"openApp": "Open {{appName}}"
 		},
 		"mcp": {
 			"authorize": {
@@ -609,7 +609,7 @@
 		"notificationsPage": {
 			"pageTitle": "सूचनाएँ",
 			"title": "सूचनाएँ",
-			"subtitle": "Kaneo आपको किन बातों की सूचना देता है, और कहाँ।",
+			"subtitle": "{{appName}} आपको किन बातों की सूचना देता है, और कहाँ।",
 			"statusConnected": "जुड़ा हुआ",
 			"statusPaused": "रुका हुआ",
 			"emailTitle": "ईमेल",
@@ -639,10 +639,10 @@
 			"webhookDescription": "हर सूचना JSON के रूप में अपने एंडपॉइंट पर भेजें।",
 			"endpointUrl": "एंडपॉइंट URL",
 			"signingSecret": "साइनिंग सीक्रेट",
-			"webhookUrlPlaceholder": "https://example.com/webhooks/kaneo",
+			"webhookUrlPlaceholder": "https://example.com/webhook",
 			"webhookSecretPlaceholder": "वैकल्पिक शेयर्ड सीक्रेट",
 			"webhookSecretHintConfigured": "साइनिंग सीक्रेट पहले से कॉन्फ़िगर है ({{masked}})। बदलने के लिए नया दर्ज करें।",
-			"webhookSecretHintOptional": "सीक्रेट सेट होने पर Kaneo अनुरोध बॉडी पर हस्ताक्षर करता है।",
+			"webhookSecretHintOptional": "सीक्रेट सेट होने पर {{appName}} अनुरोध बॉडी पर हस्ताक्षर करता है।",
 			"connectWebhook": "वेबहुक कनेक्ट करें",
 			"eventPreferencesTitle": "इन विषयों पर सूचित करें",
 			"eventPreferencesDescription": "आपकी अपनी टिप्पणियों, उल्लेखों और स्थिति परिवर्तनों की सूचना आपको कभी नहीं मिलती।",
@@ -680,7 +680,7 @@
 			"toastRuleRemovedGeneric": "वर्कस्पेस सूचना नियम हटाया गया",
 			"channelNotConnected": "कनेक्ट नहीं है",
 			"channelOff": "बंद",
-			"channelsDescription": "सूचनाएँ हमेशा Kaneo में दिखती हैं। उन्हें कहीं और भी पाने के लिए कोई चैनल कनेक्ट करें।",
+			"channelsDescription": "सूचनाएँ हमेशा {{appName}} में दिखती हैं। उन्हें कहीं और भी पाने के लिए कोई चैनल कनेक्ट करें।",
 			"channelsTitle": "चैनल",
 			"configure": "कॉन्फ़िगर करें",
 			"configureChannel": "{{channel}} कॉन्फ़िगर करें",
@@ -696,7 +696,7 @@
 			"eventStatusChangesHint": "जब आपका कोई कार्य दूसरे कॉलम में जाता है।",
 			"eventTaskAssignmentsHint": "जब कोई आपको कार्य असाइन करता है।",
 			"loadFailed": "सूचना सेटिंग लोड नहीं हो सकीं।",
-			"onlyInKaneo": "केवल Kaneo में",
+			"onlyInKaneo": "केवल {{appName}} में",
 			"optional": "वैकल्पिक",
 			"projectCount_one": "{{count}} प्रोजेक्ट",
 			"projectCount_other": "{{count}} प्रोजेक्ट",
@@ -722,14 +722,14 @@
 			"statusSending": "भेज रहा है",
 			"stopping": "बंद किया जा रहा है...",
 			"stopSending": "भेजना बंद करें",
-			"stopSendingDescription": "इस वर्कस्पेस की सूचनाएँ केवल Kaneo में दिखेंगी।",
+			"stopSendingDescription": "इस वर्कस्पेस की सूचनाएँ केवल {{appName}} में दिखेंगी।",
 			"stopSendingTitle": "{{workspaceName}} से भेजना बंद करें?",
 			"workspacesDescription": "चुनें कि कौन से वर्कस्पेस और प्रोजेक्ट आपके चैनल उपयोग कर सकते हैं।",
 			"workspacesTitle": "वर्कस्पेस"
 		},
 		"preferencesPage": {
 			"title": "प्राथमिकताएँ",
-			"subtitle": "Kaneo आपके लिए कैसा दिखता और काम करता है।",
+			"subtitle": "{{appName}} आपके लिए कैसा दिखता और काम करता है।",
 			"appearanceTitle": "सामान्य",
 			"theme": "थीम",
 			"selectTheme": "थीम चुनें",
@@ -766,7 +766,7 @@
 		"developerPage": {
 			"pageTitle": "API कुंजियाँ",
 			"title": "API कुंजियाँ",
-			"subtitle": "स्क्रिप्ट, CLI और MCP क्लाइंट को आपकी ओर से Kaneo उपयोग करने दें।",
+			"subtitle": "स्क्रिप्ट, CLI और MCP क्लाइंट को आपकी ओर से {{appName}} उपयोग करने दें।",
 			"unnamedKey": "अनाम",
 			"emptyDescription": "CLI, MCP क्लाइंट या अपनी स्क्रिप्ट उपयोग करने के लिए एक कुंजी बनाएँ।",
 			"emptyTitle": "अभी कोई API कुंजी नहीं",
@@ -1258,11 +1258,11 @@
 				"removeError": "GitHub एकीकरण हटाने में विफल",
 				"issuesImported": "Issues सफलतापूर्वक आयात किए गए",
 				"importError": "Issues आयात करने में विफल",
-				"commentOnEnabled": "Kaneo नई issues पर कार्य लिंक के साथ टिप्पणी करेगा",
+				"commentOnEnabled": "{{appName}} नई issues पर कार्य लिंक के साथ टिप्पणी करेगा",
 				"commentOnDisabled": "नई issues पर कार्य लिंक टिप्पणियाँ बंद हैं",
 				"settingsUpdateError": "GitHub एकीकरण अपडेट करने में विफल"
 			},
-			"commentTaskLinkTitle": "नए इश्यू पर Kaneo लिंक की टिप्पणी करें",
+			"commentTaskLinkTitle": "नए इश्यू पर {{appName}} लिंक की टिप्पणी करें",
 			"commentTaskLinkHint": "ताकि GitHub पर लोग सीधे कार्य तक पहुँच सकें।",
 			"updatePermissions": "अनुमतियाँ अपडेट करें",
 			"installGithubApp": "GitHub App इंस्टॉल करें",
@@ -1279,9 +1279,9 @@
 			"linkAccountTitle": "अपना GitHub खाता लिंक करें",
 			"linked": "लिंक किया गया",
 			"linkGithub": "GitHub लिंक करें",
-			"verifyMissingPermissions": "Kaneo GitHub App में ये अनुमतियाँ नहीं हैं: {{list}}।",
-			"verifyNotInstalled": "Kaneo GitHub App इस रिपॉज़िटरी पर इंस्टॉल नहीं है।",
-			"verifyReady": "Kaneo GitHub App ज़रूरी अनुमतियों के साथ इंस्टॉल है।",
+			"verifyMissingPermissions": "{{appName}} GitHub App में ये अनुमतियाँ नहीं हैं: {{list}}।",
+			"verifyNotInstalled": "{{appName}} GitHub App इस रिपॉज़िटरी पर इंस्टॉल नहीं है।",
+			"verifyReady": "{{appName}} GitHub App ज़रूरी अनुमतियों के साथ इंस्टॉल है।",
 			"workflowHint": "पुल रिक्वेस्ट खुलने या मर्ज होने पर कार्य आगे बढ़ाने के लिए देखें:",
 			"workflowLink": "वर्कफ़्लो"
 		},
@@ -1299,13 +1299,13 @@
 				"removeError": "Gitea एकीकरण हटाने में विफल",
 				"issuesImported": "Issues सफलतापूर्वक आयात किए गए",
 				"importError": "Issues आयात करने में विफल",
-				"commentOnEnabled": "Kaneo नई issues पर कार्य लिंक के साथ टिप्पणी करेगा",
+				"commentOnEnabled": "{{appName}} नई issues पर कार्य लिंक के साथ टिप्पणी करेगा",
 				"commentOnDisabled": "नई issues पर कार्य लिंक टिप्पणियाँ बंद हैं",
 				"settingsUpdateError": "Gitea एकीकरण अपडेट करने में विफल"
 			},
-			"commentTaskLinkTitle": "नए इश्यू पर Kaneo लिंक की टिप्पणी करें",
+			"commentTaskLinkTitle": "नए इश्यू पर {{appName}} लिंक की टिप्पणी करें",
 			"commentTaskLinkHint": "ताकि Gitea पर लोग सीधे कार्य तक पहुँच सकें।",
-			"webhookHint": "यह वेबहुक रिपॉज़िटरी सेटिंग में जोड़ें ताकि बदलाव Kaneo में वापस आएँ।",
+			"webhookHint": "यह वेबहुक रिपॉज़िटरी सेटिंग में जोड़ें ताकि बदलाव {{appName}} में वापस आएँ।",
 			"baseUrlLabel": "Gitea URL",
 			"tokenLabel": "व्यक्तिगत एक्सेस टोकन",
 			"tokenPlaceholder": "टोकन चिपकाएँ",
@@ -1369,11 +1369,11 @@
 				"removeError": "सामान्य वेबहुक एकीकरण हटाने में विफल"
 			},
 			"webhookLabel": "एंडपॉइंट URL",
-			"webhookPlaceholder": "https://example.com/webhooks/kaneo",
-			"webhookHint": "Kaneo प्रत्येक सक्षम इवेंट के लिए JSON पेलोड के साथ POST अनुरोध भेजता है।",
+			"webhookPlaceholder": "https://example.com/webhook",
+			"webhookHint": "{{appName}} प्रत्येक सक्षम इवेंट के लिए JSON पेलोड के साथ POST अनुरोध भेजता है।",
 			"secretLabel": "साइनिंग सीक्रेट",
 			"secretPlaceholder": "शेयर्ड सीक्रेट",
-			"secretHint": "Kaneo हर अनुरोध पर इससे हस्ताक्षर करता है और डाइजेस्ट को X-Kaneo-Signature हेडर में भेजता है।",
+			"secretHint": "{{appName}} हर अनुरोध पर इससे हस्ताक्षर करता है और डाइजेस्ट को X-Kaneo-Signature हेडर में भेजता है।",
 			"secretHintConfigured": "मौजूदा सीक्रेट: {{secret}}। बदलने के लिए नया चिपकाएँ।",
 			"eventsTitle": "कब भेजें",
 			"events": {
@@ -1393,7 +1393,7 @@
 			"reminderLeadTimeLabel": "कार्य की नियत तारीख से पहले के घंटे",
 			"connect": "वेबहुक कनेक्ट करें",
 			"activeTitle": "इवेंट भेजना",
-			"disconnectDescription": "Kaneo इवेंट भेजना बंद कर देगा और सहेजा गया एंडपॉइंट और सीक्रेट हटा देगा।",
+			"disconnectDescription": "{{appName}} इवेंट भेजना बंद कर देगा और सहेजा गया एंडपॉइंट और सीक्रेट हटा देगा।",
 			"disconnectTitle": "वेबहुक डिस्कनेक्ट करें?",
 			"reminderLeadTimeAfter": "घंटे पहले, कार्य की नियत तारीख से",
 			"reminderLeadTimeBefore": "अनुस्मारक भेजें"
@@ -1429,7 +1429,7 @@
 		},
 		"repositoryBrowser": {
 			"title": "रिपॉज़िटरी चुनें",
-			"description": "वे रिपॉज़िटरी जिन्हें Kaneo GitHub App देख सकता है।",
+			"description": "वे रिपॉज़िटरी जिन्हें {{appName}} GitHub App देख सकता है।",
 			"searchPlaceholder": "रिपॉज़िटरी खोजें",
 			"loadError": "रिपॉज़िटरी लोड नहीं हो सकीं।",
 			"tryAgain": "पुनः प्रयास करें",
@@ -1653,7 +1653,7 @@
 				"active": "Active",
 				"deactivated": "Deactivated"
 			},
-			"subtitle": "इस Kaneo इंस्टेंस पर खाता रखने वाले सभी लोग।",
+			"subtitle": "इस {{appName}} इंस्टेंस पर खाता रखने वाले सभी लोग।",
 			"title": "उपयोगकर्ता",
 			"toast": {
 				"actionError": "Failed to update user status",
@@ -1681,7 +1681,7 @@
 			"sectionTitle": "साइन इन",
 			"submit": "पासवर्ड बदलें",
 			"submitting": "बदला जा रहा है...",
-			"subtitle": "आप Kaneo में कैसे साइन इन करते हैं।",
+			"subtitle": "आप {{appName}} में कैसे साइन इन करते हैं।",
 			"title": "Security",
 			"updateError": "Failed to update password.",
 			"updateSuccess": "Password updated.",
@@ -1703,14 +1703,14 @@
 			"browseModalHint": "वे प्रोजेक्ट जिनका आपका टोकन सदस्य है।",
 			"browseNeedsCredentials": "ब्राउज़ करने के लिए GitLab URL और टोकन दर्ज करें।",
 			"commentTaskLinkHint": "ताकि GitLab पर लोग सीधे कार्य तक पहुँच सकें।",
-			"commentTaskLinkTitle": "Comment a Kaneo link on issues opened in GitLab",
+			"commentTaskLinkTitle": "Comment a {{appName}} link on issues opened in GitLab",
 			"importSectionHint": "खुले इश्यू और मर्ज रिक्वेस्ट को कार्यों के रूप में आयात करें।",
 			"openInGitlab": "Open {{project}} in GitLab",
 			"projectPathLabel": "Project path",
 			"searchProjects": "प्रोजेक्ट खोजें",
 			"toast": {
 				"commentOnDisabled": "Task link comments on issues opened in GitLab are turned off",
-				"commentOnEnabled": "Kaneo will comment with a task link on issues opened in GitLab",
+				"commentOnEnabled": "{{appName}} will comment with a task link on issues opened in GitLab",
 				"importError": "Failed to import issues",
 				"issuesImported": "Issues imported successfully",
 				"removed": "GitLab integration removed",
@@ -1732,7 +1732,7 @@
 				"baseUrlRequired": "GitLab base URL is required",
 				"pathInvalid": "Enter the full path, e.g. group/project"
 			},
-			"webhookHint": "यह वेबहुक प्रोजेक्ट सेटिंग में जोड़ें ताकि बदलाव Kaneo में वापस आएँ।",
+			"webhookHint": "यह वेबहुक प्रोजेक्ट सेटिंग में जोड़ें ताकि बदलाव {{appName}} में वापस आएँ।",
 			"loadProjectsError": "प्रोजेक्ट लोड नहीं हो सके।",
 			"importPermissionHint": "Importing requires permission to create and update tasks.",
 			"browseEmpty": "यह टोकन किसी भी प्रोजेक्ट का सदस्य नहीं है।",
@@ -1789,7 +1789,7 @@
 			"currentPlan": {
 				"title": "Current plan"
 			},
-			"disabled": "Billing isn't enabled on this instance. Self-hosted Kaneo includes every feature, free forever.",
+			"disabled": "Billing isn't enabled on this instance. Self-hosted {{appName}} includes every feature, free forever.",
 			"expiredCallout": {
 				"action": "Choose a plan",
 				"adminDescription": "You can still view everything, but creating and editing are paused until you choose a plan. Nothing has been deleted.",
@@ -1807,7 +1807,7 @@
 			},
 			"foundingFree": {
 				"badge": "Free",
-				"description": "This workspace has free access to Kaneo Cloud as an early supporter. Thank you for being here from the start.",
+				"description": "This workspace has free access to {{appName}} as an early supporter. Thank you for being here from the start.",
 				"title": "Founding Free"
 			},
 			"interval": {
@@ -1891,8 +1891,8 @@
 			"filtered": "Only matching labels",
 			"impact": "{{matching}} of {{total}} tasks match. {{create}} tasks will be exported, {{pause}} links will pause, and {{review}} links need review to resume.",
 			"impactTitle": "What will change",
-			"incoming": "Repository → Kaneo",
-			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the Kaneo task rule.",
+			"incoming": "Repository → {{appName}}",
+			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the {{appName}} task rule.",
 			"loadError": "Sync rules could not be loaded.",
 			"loading": "Loading sync rules…",
 			"matchLabels": "Label matching",
@@ -1902,8 +1902,8 @@
 			"noDescription": "No description",
 			"noLabels": "Create workspace labels before configuring a task filter.",
 			"open": "Open",
-			"outgoing": "Kaneo → repository",
-			"outgoingHint": "Choose which Kaneo tasks can sync. Losing a matching label pauses both directions for an existing task.",
+			"outgoing": "{{appName}} → repository",
+			"outgoingHint": "Choose which {{appName}} tasks can sync. Losing a matching label pauses both directions for an existing task.",
 			"paused": "Sync paused",
 			"pausedHint": "Records and links are preserved. Tasks that match again need review before syncing resumes.",
 			"preserveHint": "Pausing keeps both records and their link. Resuming requires a comparison; historical comments are never replayed.",
@@ -1925,7 +1925,7 @@
 			"sharedHint": "These rules apply to everyone using this project. Hiding advanced settings does not disable them.",
 			"title": "क्या सिंक होता है",
 			"unavailableLabel": "Unavailable label",
-			"useKaneo": "Keep Kaneo values",
+			"useKaneo": "Keep {{appName}} values",
 			"useRepository": "Keep repository values",
 			"exportPending": "Export matching tasks",
 			"inactiveHint": "This integration is paused. No tasks will be exported until it is reactivated.",
@@ -1938,10 +1938,10 @@
 			"issuesLabelled": "इन लेबल वाले इश्यू:",
 			"joinAnd": "और",
 			"joinOr": "या",
-			"kaneoToProvider": "Kaneo से {{provider}} में",
+			"kaneoToProvider": "{{appName}} से {{provider}} में",
 			"pausedSummary_one": "{{count}} कार्य का सिंक रुक गया क्योंकि वह अब सिंक नियमों से मेल नहीं खाता।",
 			"pausedSummary_other": "{{count}} कार्यों का सिंक रुक गया क्योंकि वे अब सिंक नियमों से मेल नहीं खाते।",
-			"providerToKaneo": "{{provider}} से Kaneo में",
+			"providerToKaneo": "{{provider}} से {{appName}} में",
 			"reviewPaused": "समीक्षा करें",
 			"tasksLabelled": "इन लेबल वाले कार्य:"
 		},
@@ -2012,7 +2012,7 @@
 			"searchCount_other": "{{count}} matching workspaces",
 			"searchLabel": "Search workspaces",
 			"searchPlaceholder": "नाम या स्लग से खोजें",
-			"subtitle": "इस Kaneo इंस्टेंस के सभी वर्कस्पेस, उनके सहित जिनके आप सदस्य नहीं हैं।",
+			"subtitle": "इस {{appName}} इंस्टेंस के सभी वर्कस्पेस, उनके सहित जिनके आप सदस्य नहीं हैं।",
 			"title": "वर्कस्पेस",
 			"toast": {
 				"added": "Member added",
@@ -2035,7 +2035,7 @@
 				"cancel": "Cancel",
 				"continue": "Continue",
 				"hideSecret": "Hide {{field}}",
-				"sectionDescription": "Kaneo only reads from {{source}}. The key is used for this import and never stored.",
+				"sectionDescription": "{{appName}} only reads from {{source}}. The key is used for this import and never stored.",
 				"sectionTitle": "Connect",
 				"showSecret": "Show {{field}}",
 				"title": "Import from {{source}}",
@@ -2064,11 +2064,11 @@
 				"title": "Recent imports"
 			},
 			"kaneo": {
-				"apiKeyDescription": "In that Kaneo, open Settings, then API Keys.",
+				"apiKeyDescription": "In that {{appName}}, open Settings, then API Keys.",
 				"apiKeyLabel": "API key",
 				"apiKeyPlaceholder": "Paste API key",
 				"urlDescription": "The instance you are moving from.",
-				"urlLabel": "Kaneo URL"
+				"urlLabel": "{{appName}} URL"
 			},
 			"linear": {
 				"apiKeyDescription": "Read access is enough. You can revoke it after the import.",
@@ -2155,9 +2155,9 @@
 				"connectTo": "Connect {{source}}",
 				"description": "Pick the tool you are moving from. Each project you choose becomes a new project here.",
 				"kaneo": {
-					"description": "Move projects between Kaneo Cloud and a self-hosted instance.",
+					"description": "Move projects from another {{appName}} instance.",
 					"intro": "Projects from every workspace the key can see. Each one you pick is copied here.",
-					"pickerName": "Another Kaneo"
+					"pickerName": "Another {{appName}}"
 				},
 				"linear": {
 					"description": "Teams, issues, labels, sub-issues and comments. Paste a personal API key.",
@@ -2195,7 +2195,7 @@
 				"import": "Import",
 				"label": "Import steps"
 			},
-			"subtitle": "Bring your projects from another tool into {{workspace}}. Kaneo only reads from the source.",
+			"subtitle": "Bring your projects from another tool into {{workspace}}. {{appName}} only reads from the source.",
 			"title": "Import",
 			"toast": {
 				"failed": "Import from {{source}} failed",
@@ -2208,7 +2208,7 @@
 				"apiKeyPlaceholder": "Paste API key",
 				"authorizeButton": "Authorize on Trello",
 				"authorizeDescription": "Opens Trello in a new tab. Read only, expires after a day.",
-				"authorizeLabel": "Authorize Kaneo",
+				"authorizeLabel": "Authorize {{appName}}",
 				"authorizeNeedsKey": "Enter the API key first. Read only, expires after a day.",
 				"tokenDescription": "Click Allow on Trello, then paste the token it shows you.",
 				"tokenLabel": "Token",
@@ -2296,7 +2296,7 @@
 			"channelLabel": "चैनल",
 			"channelPlaceholder": "#team-updates",
 			"disconnect": "डिस्कनेक्ट करें",
-			"disconnectDescription": "Kaneo {{provider}} पर पोस्ट करना बंद कर देगा और सहेजी गई सेटिंग हटा देगा।",
+			"disconnectDescription": "{{appName}} {{provider}} पर पोस्ट करना बंद कर देगा और सहेजी गई सेटिंग हटा देगा।",
 			"disconnecting": "डिस्कनेक्ट हो रहा है…",
 			"disconnectTitle": "{{provider}} डिस्कनेक्ट करें?",
 			"events": {
@@ -3309,14 +3309,14 @@
 	},
 	"invitations": {
 		"email": {
-			"subject": "{{inviterName}} ने आपको Kaneo पर {{workspaceName}} में शामिल होने के लिए आमंत्रित किया है",
-			"preview": "आपको Kaneo पर {{workspaceName}} में आमंत्रित किया गया है",
+			"subject": "{{inviterName}} ने आपको {{appName}} पर {{workspaceName}} में शामिल होने के लिए आमंत्रित किया है",
+			"preview": "आपको {{appName}} पर {{workspaceName}} में आमंत्रित किया गया है",
 			"title": "{{workspaceName}} में शामिल हों",
-			"subtitle": "{{inviterName}} ({{inviterEmail}}) ने आपको Kaneo में सहयोग करने के लिए आमंत्रित किया है।",
+			"subtitle": "{{inviterName}} ({{inviterEmail}}) ने आपको {{appName}} में सहयोग करने के लिए आमंत्रित किया है।",
 			"cta": "निमंत्रण स्वीकार करें",
 			"sameEmail": "आप उसी ईमेल से स्वीकार कर सकते हैं जिस पर यह संदेश मिला।",
 			"ignore": "यदि यह अपेक्षित नहीं था, तो आप इस ईमेल को सुरक्षित रूप से अनदेखा कर सकते हैं।",
-			"footer": "Kaneo वर्कस्पेस निमंत्रण",
+			"footer": "{{appName}} वर्कस्पेस निमंत्रण",
 			"details": {
 				"title": "निमंत्रण विवरण",
 				"sentTo": "भेजा गया",
@@ -3808,8 +3808,8 @@
 			"tooManyRequests": "बहुत अधिक अनुरोध। कृपया थोड़ा रुकें।",
 			"serverProblem": "सर्वर में कोई समस्या हुई ({{status}})।",
 			"requestFailed": "अनुरोध विफल रहा ({{status}})।",
-			"notKaneo": "{{url}} Kaneo सर्वर नहीं लगता।",
-			"noInstance": "{{url}} पर कोई Kaneo इंस्टेंस नहीं मिला (HTTP {{status}})।",
+			"notKaneo": "{{url}} {{appName}} सर्वर नहीं लगता।",
+			"noInstance": "{{url}} पर कोई {{appName}} इंस्टेंस नहीं मिला (HTTP {{status}})।",
 			"noSession": "सर्वर ने कोई सत्र नहीं लौटाया। ब्राउज़र से साइन इन करके देखें।",
 			"deviceFailed": "डिवाइस साइन-इन विफल रहा (HTTP {{status}})।",
 			"apiKeyRejected": "यह API कुंजी अस्वीकार कर दी गई।",
@@ -3818,12 +3818,13 @@
 		},
 		"signIn": {
 			"tagline": "सरल प्रोजेक्ट प्रबंधन। Kaneo Cloud या अपने खुद के इंस्टेंस से कनेक्ट करें।",
+			"taglineOwnServer": "Simple project management. Connect to your {{appName}} server.",
 			"cloud": "Kaneo Cloud",
 			"selfHosted": "सेल्फ़-होस्टेड",
 			"captcha": "इस चरण के लिए यह सर्वर ब्राउज़र जाँच माँगता है। इसके बजाय “ब्राउज़र में जारी रखें” का उपयोग करें।",
 			"invalidClient": "यह सर्वर डिवाइस साइन-इन की अनुमति नहीं देता। इसके एडमिन से DEVICE_AUTH_CLIENT_IDS में “kaneo-cli” जोड़ने को कहें, या पासवर्ड या API कुंजी से साइन इन करें।",
 			"serverAddress": "सर्वर का पता",
-			"serverAddressHint": "वह पता जिस पर आप Kaneo खोलते हैं। बिना TLS वाले सर्वर के लिए http:// का उपयोग करें। अगर API किसी दूसरे होस्ट पर चलता है, तो API का पता डालें।",
+			"serverAddressHint": "वह पता जिस पर आप {{appName}} खोलते हैं। बिना TLS वाले सर्वर के लिए http:// का उपयोग करें। अगर API किसी दूसरे होस्ट पर चलता है, तो API का पता डालें।",
 			"connect": "कनेक्ट करें",
 			"recent": "हाल के",
 			"change": "बदलें",
@@ -3838,7 +3839,7 @@
 			"sendTo": "{{email}} पर भेजें",
 			"noPassword": "पासवर्ड की ज़रूरत नहीं",
 			"useApiKey": "API कुंजी का उपयोग करें",
-			"newToKaneo": "Kaneo पर नए हैं?",
+			"newToKaneo": "{{appName}} पर नए हैं?",
 			"createAccount": "खाता बनाएँ",
 			"code": {
 				"title": "कोड से साइन इन करें",
@@ -3854,7 +3855,7 @@
 				"denied": "ब्राउज़र में साइन-इन अस्वीकार कर दिया गया।",
 				"expired": "साइन-इन कोड की समय-सीमा खत्म हो गई। नया कोड पाने के लिए फिर से शुरू करें।",
 				"openFailed": "ब्राउज़र नहीं खुल सका। इसके बजाय लिंक कॉपी करें।",
-				"message": "Kaneo वेबसाइट से इस डिवाइस को स्वीकृत करें। वहाँ GitHub, Google, Discord और SSO सभी काम करते हैं।",
+				"message": "{{appName}} वेबसाइट से इस डिवाइस को स्वीकृत करें। वहाँ GitHub, Google, Discord और SSO सभी काम करते हैं।",
 				"yourCode": "आपका कोड",
 				"copyCode": "कोड कॉपी करें",
 				"codeCopied": "कोड कॉपी हो गया",
@@ -4327,7 +4328,7 @@
 		"background": {
 			"summary_one": "{{count}} और नई सूचना",
 			"summary_other": "{{count}} और नई सूचनाएँ",
-			"channelName": "Kaneo गतिविधि",
+			"channelName": "{{appName}} गतिविधि",
 			"channelDescription": "आपके वर्कस्पेस से असाइनमेंट, टिप्पणियाँ और उल्लेख"
 		},
 		"ui": {
@@ -4417,7 +4418,7 @@
 				"delivery": "डिलीवरी और इवेंट",
 				"deliveryHint": "ईमेल, ntfy, Gotify, वेबहुक",
 				"invitations": "निमंत्रण",
-				"permissionDenied": "पहले सिस्टम सेटिंग में Kaneo के लिए सूचनाओं की अनुमति दें।"
+				"permissionDenied": "पहले सिस्टम सेटिंग में {{appName}} के लिए सूचनाओं की अनुमति दें।"
 			},
 			"connection": {
 				"title": "कनेक्शन",
@@ -4454,7 +4455,7 @@
 		},
 		"notificationSettings": {
 			"title": "सूचनाएँ",
-			"description": "Kaneo आपसे कहाँ और किन बातों के बारे में संपर्क करे।",
+			"description": "{{appName}} आपसे कहाँ और किन बातों के बारे में संपर्क करे।",
 			"on": "चालू",
 			"off": "बंद",
 			"notSet": "सेट नहीं",
@@ -4612,7 +4613,7 @@
 			}
 		},
 		"permissions": {
-			"photos": "Kaneo आपकी फ़ोटो का उपयोग कार्यों और टिप्पणियों में चित्र जोड़ने और आपकी प्रोफ़ाइल फ़ोटो के लिए करता है।"
+			"photos": "{{appName}} आपकी फ़ोटो का उपयोग कार्यों और टिप्पणियों में चित्र जोड़ने और आपकी प्रोफ़ाइल फ़ोटो के लिए करता है।"
 		}
 	}
 }

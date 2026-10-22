@@ -1,6 +1,6 @@
 {
 	"common": {
-		"appName": "Kaneo",
+		"appName": "{{appName}}",
 		"actions": {
 			"cancel": "Ακύρωση",
 			"close": "Κλείσιμο",
@@ -96,7 +96,7 @@
 				"errorToast": "Αποτυχία δημιουργίας έργου"
 			},
 			"createWorkspace": {
-				"breadcrumbKaneo": "KANEO",
+				"breadcrumbKaneo": "{{appName}}",
 				"title": "Δημιουργία νέου χώρου εργασίας",
 				"description": "Δημιουργήστε έναν νέο χώρο εργασίας ορίζοντας ένα όνομα.",
 				"namePlaceholder": "Όνομα χώρου εργασίας",
@@ -182,7 +182,7 @@
 				"use_a_permanent_email_address_disposable_addresses_cannot_create_accounts_": "Χρησιμοποιήστε μια μόνιμη διεύθυνση email. Με προσωρινές διευθύνσεις δεν μπορούν να δημιουργηθούν λογαριασμοί."
 			},
 			"instanceStatusError": "Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Δοκιμάστε ξανά σε λίγο.",
-			"heading": "Σύνδεση στο Kaneo",
+			"heading": "Σύνδεση στο {{appName}}",
 			"submitPassword": "Σύνδεση",
 			"invitation": {
 				"title": "Ο/Η {{inviterName}} σας προσκάλεσε στο {{workspaceName}}",
@@ -190,7 +190,7 @@
 				"description": "Συνδεθείτε με το email που έλαβε την πρόσκληση. Θα μπείτε στον χώρο εργασίας αμέσως μετά."
 			},
 			"footer": {
-				"newHere": "Πρώτη φορά στο Kaneo;",
+				"newHere": "Πρώτη φορά στο {{appName}};",
 				"createAccount": "Δημιουργία λογαριασμού",
 				"inviteOnly": "Οι λογαριασμοί εδώ δημιουργούνται μόνο με πρόσκληση. Ζητήστε πρόσκληση από έναν διαχειριστή.",
 				"providerSignUp": "Πρώτη φορά εδώ; Συνδεθείτε με έναν από τους παρόχους παραπάνω για να δημιουργήσετε λογαριασμό.",
@@ -245,7 +245,7 @@
 			"toggleMessage": "Έχετε ήδη λογαριασμό;",
 			"toggleLink": "Σύνδεση",
 			"instanceStatusError": "Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Δοκιμάστε ξανά σε λίγο.",
-			"instanceAdminTitle": "Ρυθμίστε την εγκατάσταση Kaneo σας",
+			"instanceAdminTitle": "Ρυθμίστε την εγκατάσταση {{appName}} σας",
 			"instanceAdminSubtitle": "Αυτός ο λογαριασμός γίνεται ο διαχειριστής της εγκατάστασης με πλήρη πρόσβαση.",
 			"heading": "Δημιουργήστε τον λογαριασμό σας",
 			"submitPassword": "Δημιουργία λογαριασμού",
@@ -297,7 +297,7 @@
 				"acceptFailed": "Αποτυχία αποδοχής πρόσκλησης",
 				"acceptSuccess": "Η πρόσκληση έγινε αποδεκτή! Καλώς ήρθατε στην ομάδα."
 			},
-			"description": "Ο/Η {{inviterName}} σας προσκάλεσε σε αυτόν τον χώρο εργασίας στο Kaneo.",
+			"description": "Ο/Η {{inviterName}} σας προσκάλεσε σε αυτόν τον χώρο εργασίας στο {{appName}}.",
 			"invitedBy": "Πρόσκληση από",
 			"sentTo": "Στάλθηκε στο",
 			"signedInAs": "Σύνδεση ως",
@@ -305,7 +305,7 @@
 			"notNow": "Όχι τώρα",
 			"join": "Συμμετοχή στον χώρο εργασίας",
 			"switchAccount": "Αλλαγή λογαριασμού",
-			"goToKaneo": "Μετάβαση στο Kaneo",
+			"goToKaneo": "Μετάβαση στο {{appName}}",
 			"mismatch": {
 				"title": "Έχετε συνδεθεί με διαφορετικό email",
 				"description": "Αυτή η πρόσκληση στάλθηκε στο {{invitedEmail}}. Έχετε συνδεθεί ως {{email}}."
@@ -324,7 +324,7 @@
 			}
 		},
 		"onboarding": {
-			"pageTitle": "Καλώς ήρθατε στο Kaneo",
+			"pageTitle": "Καλώς ήρθατε στο {{appName}}",
 			"workspaceName": "Όνομα χώρου εργασίας",
 			"workspaceNamePlaceholder": "π.χ. Acme Inc, My Team",
 			"toast": {
@@ -372,7 +372,7 @@
 				},
 				"invite": {
 					"title": "Προσκαλέστε την ομάδα σας",
-					"description": "Το Kaneo λειτουργεί καλύτερα όταν συμμετέχουν όλοι. Ανοίξτε τα **Μέλη** στην πλαϊνή στήλη για να προσκαλέσετε άτομα μέσω email."
+					"description": "Το {{appName}} λειτουργεί καλύτερα όταν συμμετέχουν όλοι. Ανοίξτε τα **Μέλη** στην πλαϊνή στήλη για να προσκαλέσετε άτομα μέσω email."
 				},
 				"integrations": {
 					"title": "Συνδέστε GitHub, GitLab ή Gitea",
@@ -502,7 +502,7 @@
 		"device": {
 			"connect": {
 				"title": "Σύνδεση συσκευής",
-				"description": "Εισάγετε τον κωδικό που εμφανίζεται στο τερματικό ή στην εφαρμογή σας για να τη συνδέσετε με τον λογαριασμό σας στο Kaneo.",
+				"description": "Εισάγετε τον κωδικό που εμφανίζεται στο τερματικό ή στην εφαρμογή σας για να τη συνδέσετε με τον λογαριασμό σας στο {{appName}}.",
 				"label": "Κωδικός συσκευής",
 				"submit": "Συνέχεια",
 				"noCode": "Δεν έχετε κωδικό ακόμη; Ξεκινήστε πρώτα τη σύνδεση από την εφαρμογή σας.",
@@ -536,7 +536,7 @@
 				"description": "Θα επιστρέψετε αμέσως εδώ για να την εγκρίνετε.",
 				"submit": "Σύνδεση"
 			},
-			"openApp": "Open Kaneo"
+			"openApp": "Open {{appName}}"
 		},
 		"mcp": {
 			"authorize": {
@@ -609,7 +609,7 @@
 		"notificationsPage": {
 			"pageTitle": "Ειδοποιήσεις",
 			"title": "Ειδοποιήσεις",
-			"subtitle": "Για τι σας ειδοποιεί το Kaneo και πού.",
+			"subtitle": "Για τι σας ειδοποιεί το {{appName}} και πού.",
 			"statusConnected": "Connected",
 			"statusPaused": "Paused",
 			"emailTitle": "Email",
@@ -639,10 +639,10 @@
 			"webhookDescription": "Στείλτε κάθε ειδοποίηση στο δικό σας endpoint ως JSON.",
 			"endpointUrl": "Endpoint URL",
 			"signingSecret": "Μυστικό υπογραφής",
-			"webhookUrlPlaceholder": "https://example.com/webhooks/kaneo",
+			"webhookUrlPlaceholder": "https://example.com/webhook",
 			"webhookSecretPlaceholder": "Προαιρετικό κοινόχρηστο μυστικό",
 			"webhookSecretHintConfigured": "Ένα μυστικό υπογραφής έχει ήδη ρυθμιστεί ({{masked}}). Εισαγάγετε νέο για να το αντικαταστήσετε.",
-			"webhookSecretHintOptional": "Το Kaneo υπογράφει το σώμα του αιτήματος όταν έχει οριστεί μυστικό.",
+			"webhookSecretHintOptional": "Το {{appName}} υπογράφει το σώμα του αιτήματος όταν έχει οριστεί μυστικό.",
 			"connectWebhook": "Σύνδεση webhook",
 			"allProjects": "All projects",
 			"noProjectsInWorkspace": "Δεν υπάρχουν ακόμα διαθέσιμα έργα για αυτόν τον χώρο εργασίας.",
@@ -680,7 +680,7 @@
 			"saveEventPreferences": "Αποθήκευση τύπων ειδοποιήσεων",
 			"channelNotConnected": "Μη συνδεδεμένο",
 			"channelOff": "Ανενεργό",
-			"channelsDescription": "Οι ειδοποιήσεις εμφανίζονται πάντα στο Kaneo. Συνδέστε ένα κανάλι για να τις λαμβάνετε και αλλού.",
+			"channelsDescription": "Οι ειδοποιήσεις εμφανίζονται πάντα στο {{appName}}. Συνδέστε ένα κανάλι για να τις λαμβάνετε και αλλού.",
 			"channelsTitle": "Κανάλια",
 			"configure": "Ρύθμιση",
 			"configureChannel": "Ρύθμιση {{channel}}",
@@ -696,7 +696,7 @@
 			"eventStatusChangesHint": "Όταν μια εργασία σας μετακινείται σε άλλη στήλη.",
 			"eventTaskAssignmentsHint": "Όταν κάποιος σας αναθέτει μια εργασία.",
 			"loadFailed": "Δεν ήταν δυνατή η φόρτωση των ρυθμίσεων ειδοποιήσεων.",
-			"onlyInKaneo": "Μόνο στο Kaneo",
+			"onlyInKaneo": "Μόνο στο {{appName}}",
 			"optional": "Προαιρετικό",
 			"projectCount_one": "{{count}} έργο",
 			"projectCount_other": "{{count}} έργα",
@@ -722,14 +722,14 @@
 			"statusSending": "Ενεργό",
 			"stopping": "Γίνεται διακοπή...",
 			"stopSending": "Διακοπή αποστολής",
-			"stopSendingDescription": "Οι ειδοποιήσεις από αυτόν τον χώρο εργασίας θα εμφανίζονται μόνο στο Kaneo.",
+			"stopSendingDescription": "Οι ειδοποιήσεις από αυτόν τον χώρο εργασίας θα εμφανίζονται μόνο στο {{appName}}.",
 			"stopSendingTitle": "Διακοπή αποστολής από το {{workspaceName}};",
 			"workspacesDescription": "Επιλέξτε ποιοι χώροι εργασίας και ποια έργα μπορούν να χρησιμοποιούν τα κανάλια σας.",
 			"workspacesTitle": "Χώροι εργασίας"
 		},
 		"preferencesPage": {
 			"title": "Προτιμήσεις",
-			"subtitle": "Πώς φαίνεται και λειτουργεί το Kaneo για εσάς.",
+			"subtitle": "Πώς φαίνεται και λειτουργεί το {{appName}} για εσάς.",
 			"appearanceTitle": "Γενικά",
 			"theme": "Θέμα",
 			"selectTheme": "Επιλέξτε θέμα",
@@ -766,7 +766,7 @@
 		"developerPage": {
 			"pageTitle": "Κλειδιά API",
 			"title": "Κλειδιά API",
-			"subtitle": "Επιτρέψτε σε scripts, στο CLI και σε clients MCP να χρησιμοποιούν το Kaneo εκ μέρους σας.",
+			"subtitle": "Επιτρέψτε σε scripts, στο CLI και σε clients MCP να χρησιμοποιούν το {{appName}} εκ μέρους σας.",
 			"unnamedKey": "Χωρίς όνομα",
 			"emptyDescription": "Δημιουργήστε ένα κλειδί για να χρησιμοποιήσετε το CLI, έναν client MCP ή τα δικά σας scripts.",
 			"emptyTitle": "Δεν υπάρχουν ακόμη κλειδιά API",
@@ -1009,11 +1009,11 @@
 				"removeError": "Αποτυχία αφαίρεσης ενσωμάτωσης GitHub",
 				"issuesImported": "Τα issues εισήχθησαν με επιτυχία",
 				"importError": "Αποτυχία εισαγωγής issues",
-				"commentOnEnabled": "Το Kaneo θα δημοσιεύει σχόλιο με σύνδεσμο εργασίας στα νέα issues",
+				"commentOnEnabled": "Το {{appName}} θα δημοσιεύει σχόλιο με σύνδεσμο εργασίας στα νέα issues",
 				"commentOnDisabled": "Τα σχόλια με σύνδεσμο εργασίας στα νέα issues είναι απενεργοποιημένα",
 				"settingsUpdateError": "Αποτυχία ενημέρωσης ενσωμάτωσης GitHub"
 			},
-			"commentTaskLinkTitle": "Σχόλιο με σύνδεσμο Kaneo σε νέα issues",
+			"commentTaskLinkTitle": "Σχόλιο με σύνδεσμο {{appName}} σε νέα issues",
 			"commentTaskLinkHint": "Για να μπορούν όσοι είναι στο GitHub να μεταβαίνουν στην εργασία.",
 			"updatePermissions": "Ενημέρωση δικαιωμάτων",
 			"installGithubApp": "Εγκατάσταση εφαρμογής GitHub",
@@ -1030,9 +1030,9 @@
 			"linkAccountTitle": "Σύνδεση του λογαριασμού σας GitHub",
 			"linked": "Συνδέθηκε",
 			"linkGithub": "Σύνδεση GitHub",
-			"verifyMissingPermissions": "Λείπουν δικαιώματα από την εφαρμογή Kaneo GitHub: {{list}}.",
-			"verifyNotInstalled": "Η εφαρμογή Kaneo GitHub δεν είναι εγκατεστημένη σε αυτό το αποθετήριο.",
-			"verifyReady": "Η εφαρμογή Kaneo GitHub είναι εγκατεστημένη με τα δικαιώματα που χρειάζεται.",
+			"verifyMissingPermissions": "Λείπουν δικαιώματα από την εφαρμογή {{appName}} GitHub: {{list}}.",
+			"verifyNotInstalled": "Η εφαρμογή {{appName}} GitHub δεν είναι εγκατεστημένη σε αυτό το αποθετήριο.",
+			"verifyReady": "Η εφαρμογή {{appName}} GitHub είναι εγκατεστημένη με τα δικαιώματα που χρειάζεται.",
 			"workflowHint": "Μετακινήστε εργασίες όταν ανοίγουν ή συγχωνεύονται pull requests στη",
 			"workflowLink": "Ροή εργασίας"
 		},
@@ -1050,13 +1050,13 @@
 				"removeError": "Αποτυχία αφαίρεσης ενσωμάτωσης Gitea",
 				"issuesImported": "Τα issues εισήχθησαν με επιτυχία",
 				"importError": "Αποτυχία εισαγωγής issues",
-				"commentOnEnabled": "Το Kaneo θα δημοσιεύει σχόλιο με σύνδεσμο εργασίας στα νέα issues",
+				"commentOnEnabled": "Το {{appName}} θα δημοσιεύει σχόλιο με σύνδεσμο εργασίας στα νέα issues",
 				"commentOnDisabled": "Τα σχόλια με σύνδεσμο εργασίας στα νέα issues είναι απενεργοποιημένα",
 				"settingsUpdateError": "Αποτυχία ενημέρωσης ενσωμάτωσης Gitea"
 			},
-			"commentTaskLinkTitle": "Σχόλιο με σύνδεσμο Kaneo σε νέα issues",
+			"commentTaskLinkTitle": "Σχόλιο με σύνδεσμο {{appName}} σε νέα issues",
 			"commentTaskLinkHint": "Για να μπορούν όσοι είναι στο Gitea να μεταβαίνουν στην εργασία.",
-			"webhookHint": "Προσθέστε αυτό το webhook στις ρυθμίσεις του αποθετηρίου, ώστε οι αλλαγές να επιστρέφουν στο Kaneo.",
+			"webhookHint": "Προσθέστε αυτό το webhook στις ρυθμίσεις του αποθετηρίου, ώστε οι αλλαγές να επιστρέφουν στο {{appName}}.",
 			"baseUrlLabel": "Gitea URL",
 			"tokenLabel": "Προσωπικό token πρόσβασης",
 			"tokenPlaceholder": "Paste token",
@@ -1122,7 +1122,7 @@
 				"dueDateReminder": "Υπενθύμιση ημερομηνίας λήξης"
 			},
 			"eventsTitle": "Αποστολή όταν",
-			"secretHint": "Το Kaneo υπογράφει κάθε αίτημα με αυτό και στέλνει το digest στην κεφαλίδα X-Kaneo-Signature.",
+			"secretHint": "Το {{appName}} υπογράφει κάθε αίτημα με αυτό και στέλνει το digest στην κεφαλίδα X-Kaneo-Signature.",
 			"secretHintConfigured": "Τρέχον μυστικό: {{secret}}. Επικολλήστε νέο για να το αντικαταστήσετε.",
 			"secretLabel": "Μυστικό υπογραφής",
 			"secretPlaceholder": "Κοινόχρηστο μυστικό",
@@ -1139,12 +1139,12 @@
 				"webhookInvalid": "Εισαγάγετε ένα έγκυρο URL webhook",
 				"leadTimeRange": "Επιλέξτε χρόνο μεταξύ 5 λεπτών και 720 ωρών."
 			},
-			"webhookHint": "Το Kaneo στέλνει αιτήματα POST με JSON payload για κάθε ενεργοποιημένο γεγονός.",
+			"webhookHint": "Το {{appName}} στέλνει αιτήματα POST με JSON payload για κάθε ενεργοποιημένο γεγονός.",
 			"webhookLabel": "URL endpoint",
-			"webhookPlaceholder": "https://example.com/webhooks/kaneo",
+			"webhookPlaceholder": "https://example.com/webhook",
 			"reminderLeadTimeLabel": "Ώρες πριν από τη λήξη μιας εργασίας",
 			"activeTitle": "Αποστολή γεγονότων",
-			"disconnectDescription": "Το Kaneo σταματά να στέλνει γεγονότα και αφαιρεί το αποθηκευμένο endpoint και το μυστικό.",
+			"disconnectDescription": "Το {{appName}} σταματά να στέλνει γεγονότα και αφαιρεί το αποθηκευμένο endpoint και το μυστικό.",
 			"disconnectTitle": "Αποσύνδεση webhook;",
 			"reminderLeadTimeAfter": "ώρες πριν από τη λήξη μιας εργασίας",
 			"reminderLeadTimeBefore": "Αποστολή υπενθυμίσεων"
@@ -1180,7 +1180,7 @@
 		},
 		"repositoryBrowser": {
 			"title": "Επιλέξτε αποθετήριο",
-			"description": "Αποθετήρια στα οποία έχει πρόσβαση η εφαρμογή Kaneo GitHub.",
+			"description": "Αποθετήρια στα οποία έχει πρόσβαση η εφαρμογή {{appName}} GitHub.",
 			"searchPlaceholder": "Αναζήτηση αποθετηρίων",
 			"loadError": "Δεν ήταν δυνατή η φόρτωση των αποθετηρίων.",
 			"tryAgain": "Επανάληψη",
@@ -1653,7 +1653,7 @@
 				"active": "Active",
 				"deactivated": "Deactivated"
 			},
-			"subtitle": "Όλοι όσοι έχουν λογαριασμό σε αυτήν την εγκατάσταση Kaneo.",
+			"subtitle": "Όλοι όσοι έχουν λογαριασμό σε αυτήν την εγκατάσταση {{appName}}.",
 			"title": "Χρήστες",
 			"toast": {
 				"actionError": "Failed to update user status",
@@ -1681,7 +1681,7 @@
 			"sectionTitle": "Σύνδεση",
 			"submit": "Αλλαγή κωδικού πρόσβασης",
 			"submitting": "Γίνεται αλλαγή...",
-			"subtitle": "Πώς συνδέεστε στο Kaneo.",
+			"subtitle": "Πώς συνδέεστε στο {{appName}}.",
 			"title": "Security",
 			"updateError": "Failed to update password.",
 			"updateSuccess": "Password updated.",
@@ -1703,14 +1703,14 @@
 			"browseModalHint": "Έργα στα οποία είναι μέλος το token σας.",
 			"browseNeedsCredentials": "Εισαγάγετε το URL του GitLab και ένα token για περιήγηση.",
 			"commentTaskLinkHint": "Για να μπορούν όσοι είναι στο GitLab να μεταβαίνουν στην εργασία.",
-			"commentTaskLinkTitle": "Comment a Kaneo link on issues opened in GitLab",
+			"commentTaskLinkTitle": "Comment a {{appName}} link on issues opened in GitLab",
 			"importSectionHint": "Εισαγάγετε ανοιχτά issues και merge requests ως εργασίες.",
 			"openInGitlab": "Open {{project}} in GitLab",
 			"projectPathLabel": "Project path",
 			"searchProjects": "Αναζήτηση έργων",
 			"toast": {
 				"commentOnDisabled": "Task link comments on issues opened in GitLab are turned off",
-				"commentOnEnabled": "Kaneo will comment with a task link on issues opened in GitLab",
+				"commentOnEnabled": "{{appName}} will comment with a task link on issues opened in GitLab",
 				"importError": "Failed to import issues",
 				"issuesImported": "Issues imported successfully",
 				"removed": "GitLab integration removed",
@@ -1732,7 +1732,7 @@
 				"baseUrlRequired": "GitLab base URL is required",
 				"pathInvalid": "Enter the full path, e.g. group/project"
 			},
-			"webhookHint": "Προσθέστε αυτό το webhook στις ρυθμίσεις του έργου, ώστε οι αλλαγές να επιστρέφουν στο Kaneo.",
+			"webhookHint": "Προσθέστε αυτό το webhook στις ρυθμίσεις του έργου, ώστε οι αλλαγές να επιστρέφουν στο {{appName}}.",
 			"loadProjectsError": "Δεν ήταν δυνατή η φόρτωση των έργων.",
 			"importPermissionHint": "Importing requires permission to create and update tasks.",
 			"browseEmpty": "Αυτό το token δεν είναι μέλος σε κανένα έργο.",
@@ -1789,7 +1789,7 @@
 			"currentPlan": {
 				"title": "Current plan"
 			},
-			"disabled": "Billing isn't enabled on this instance. Self-hosted Kaneo includes every feature, free forever.",
+			"disabled": "Billing isn't enabled on this instance. Self-hosted {{appName}} includes every feature, free forever.",
 			"expiredCallout": {
 				"action": "Choose a plan",
 				"adminDescription": "You can still view everything, but creating and editing are paused until you choose a plan. Nothing has been deleted.",
@@ -1807,7 +1807,7 @@
 			},
 			"foundingFree": {
 				"badge": "Free",
-				"description": "This workspace has free access to Kaneo Cloud as an early supporter. Thank you for being here from the start.",
+				"description": "This workspace has free access to {{appName}} as an early supporter. Thank you for being here from the start.",
 				"title": "Founding Free"
 			},
 			"interval": {
@@ -1891,8 +1891,8 @@
 			"filtered": "Only matching labels",
 			"impact": "{{matching}} of {{total}} tasks match. {{create}} tasks will be exported, {{pause}} links will pause, and {{review}} links need review to resume.",
 			"impactTitle": "What will change",
-			"incoming": "Repository → Kaneo",
-			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the Kaneo task rule.",
+			"incoming": "Repository → {{appName}}",
+			"incomingHint": "Choose which issues can be imported or create tasks. Use exact repository label names. Existing links follow the {{appName}} task rule.",
 			"loadError": "Sync rules could not be loaded.",
 			"loading": "Loading sync rules…",
 			"matchLabels": "Label matching",
@@ -1902,8 +1902,8 @@
 			"noDescription": "No description",
 			"noLabels": "Create workspace labels before configuring a task filter.",
 			"open": "Open",
-			"outgoing": "Kaneo → repository",
-			"outgoingHint": "Choose which Kaneo tasks can sync. Losing a matching label pauses both directions for an existing task.",
+			"outgoing": "{{appName}} → repository",
+			"outgoingHint": "Choose which {{appName}} tasks can sync. Losing a matching label pauses both directions for an existing task.",
 			"paused": "Sync paused",
 			"pausedHint": "Records and links are preserved. Tasks that match again need review before syncing resumes.",
 			"preserveHint": "Pausing keeps both records and their link. Resuming requires a comparison; historical comments are never replayed.",
@@ -1925,7 +1925,7 @@
 			"sharedHint": "These rules apply to everyone using this project. Hiding advanced settings does not disable them.",
 			"title": "Τι συγχρονίζεται",
 			"unavailableLabel": "Unavailable label",
-			"useKaneo": "Keep Kaneo values",
+			"useKaneo": "Keep {{appName}} values",
 			"useRepository": "Keep repository values",
 			"exportPending": "Export matching tasks",
 			"inactiveHint": "This integration is paused. No tasks will be exported until it is reactivated.",
@@ -1938,10 +1938,10 @@
 			"issuesLabelled": "Issues με ετικέτα",
 			"joinAnd": "και",
 			"joinOr": "ή",
-			"kaneoToProvider": "Από το Kaneo στο {{provider}}",
+			"kaneoToProvider": "Από το {{appName}} στο {{provider}}",
 			"pausedSummary_one": "{{count}} εργασία σταμάτησε να συγχρονίζεται επειδή δεν ταιριάζει πλέον με τους κανόνες συγχρονισμού.",
 			"pausedSummary_other": "{{count}} εργασίες σταμάτησαν να συγχρονίζονται επειδή δεν ταιριάζουν πλέον με τους κανόνες συγχρονισμού.",
-			"providerToKaneo": "Από το {{provider}} στο Kaneo",
+			"providerToKaneo": "Από το {{provider}} στο {{appName}}",
 			"reviewPaused": "Έλεγχος",
 			"tasksLabelled": "Εργασίες με ετικέτα"
 		},
@@ -2012,7 +2012,7 @@
 			"searchCount_other": "{{count}} matching workspaces",
 			"searchLabel": "Search workspaces",
 			"searchPlaceholder": "Αναζήτηση με όνομα ή slug",
-			"subtitle": "Όλοι οι χώροι εργασίας σε αυτήν την εγκατάσταση Kaneo, ακόμη και αυτοί στους οποίους δεν ανήκετε.",
+			"subtitle": "Όλοι οι χώροι εργασίας σε αυτήν την εγκατάσταση {{appName}}, ακόμη και αυτοί στους οποίους δεν ανήκετε.",
 			"title": "Χώροι εργασίας",
 			"toast": {
 				"added": "Member added",
@@ -2035,7 +2035,7 @@
 				"cancel": "Cancel",
 				"continue": "Continue",
 				"hideSecret": "Hide {{field}}",
-				"sectionDescription": "Kaneo only reads from {{source}}. The key is used for this import and never stored.",
+				"sectionDescription": "{{appName}} only reads from {{source}}. The key is used for this import and never stored.",
 				"sectionTitle": "Connect",
 				"showSecret": "Show {{field}}",
 				"title": "Import from {{source}}",
@@ -2064,11 +2064,11 @@
 				"title": "Recent imports"
 			},
 			"kaneo": {
-				"apiKeyDescription": "In that Kaneo, open Settings, then API Keys.",
+				"apiKeyDescription": "In that {{appName}}, open Settings, then API Keys.",
 				"apiKeyLabel": "API key",
 				"apiKeyPlaceholder": "Paste API key",
 				"urlDescription": "The instance you are moving from.",
-				"urlLabel": "Kaneo URL"
+				"urlLabel": "{{appName}} URL"
 			},
 			"linear": {
 				"apiKeyDescription": "Read access is enough. You can revoke it after the import.",
@@ -2155,9 +2155,9 @@
 				"connectTo": "Connect {{source}}",
 				"description": "Pick the tool you are moving from. Each project you choose becomes a new project here.",
 				"kaneo": {
-					"description": "Move projects between Kaneo Cloud and a self-hosted instance.",
+					"description": "Move projects from another {{appName}} instance.",
 					"intro": "Projects from every workspace the key can see. Each one you pick is copied here.",
-					"pickerName": "Another Kaneo"
+					"pickerName": "Another {{appName}}"
 				},
 				"linear": {
 					"description": "Teams, issues, labels, sub-issues and comments. Paste a personal API key.",
@@ -2195,7 +2195,7 @@
 				"import": "Import",
 				"label": "Import steps"
 			},
-			"subtitle": "Bring your projects from another tool into {{workspace}}. Kaneo only reads from the source.",
+			"subtitle": "Bring your projects from another tool into {{workspace}}. {{appName}} only reads from the source.",
 			"title": "Import",
 			"toast": {
 				"failed": "Import from {{source}} failed",
@@ -2208,7 +2208,7 @@
 				"apiKeyPlaceholder": "Paste API key",
 				"authorizeButton": "Authorize on Trello",
 				"authorizeDescription": "Opens Trello in a new tab. Read only, expires after a day.",
-				"authorizeLabel": "Authorize Kaneo",
+				"authorizeLabel": "Authorize {{appName}}",
 				"authorizeNeedsKey": "Enter the API key first. Read only, expires after a day.",
 				"tokenDescription": "Click Allow on Trello, then paste the token it shows you.",
 				"tokenLabel": "Token",
@@ -2296,7 +2296,7 @@
 			"channelLabel": "Κανάλι",
 			"channelPlaceholder": "#team-updates",
 			"disconnect": "Αποσύνδεση",
-			"disconnectDescription": "Το Kaneo σταματά να δημοσιεύει στο {{provider}} και αφαιρεί τις αποθηκευμένες ρυθμίσεις.",
+			"disconnectDescription": "Το {{appName}} σταματά να δημοσιεύει στο {{provider}} και αφαιρεί τις αποθηκευμένες ρυθμίσεις.",
 			"disconnecting": "Γίνεται αποσύνδεση…",
 			"disconnectTitle": "Αποσύνδεση του {{provider}};",
 			"events": {
@@ -3309,14 +3309,14 @@
 	},
 	"invitations": {
 		"email": {
-			"subject": "Ο/Η {{inviterName}} σας προσκάλεσε να συμμετάσχετε στο {{workspaceName}} στο Kaneo",
-			"preview": "Έχετε πρόσκληση για το {{workspaceName}} στο Kaneo",
+			"subject": "Ο/Η {{inviterName}} σας προσκάλεσε να συμμετάσχετε στο {{workspaceName}} στο {{appName}}",
+			"preview": "Έχετε πρόσκληση για το {{workspaceName}} στο {{appName}}",
 			"title": "Συμμετοχή στο {{workspaceName}}",
-			"subtitle": "Ο/Η {{inviterName}} ({{inviterEmail}}) σας προσκάλεσε να συνεργαστείτε στο Kaneo.",
+			"subtitle": "Ο/Η {{inviterName}} ({{inviterEmail}}) σας προσκάλεσε να συνεργαστείτε στο {{appName}}.",
 			"cta": "Αποδοχή πρόσκλησης",
 			"sameEmail": "Μπορείτε να αποδεχτείτε την πρόσκληση με το ίδιο email που έλαβε αυτό το μήνυμα.",
 			"ignore": "Αν δεν το περιμένατε, μπορείτε να αγνοήσετε με ασφάλεια αυτό το email.",
-			"footer": "Πρόσκληση χώρου εργασίας Kaneo",
+			"footer": "Πρόσκληση χώρου εργασίας {{appName}}",
 			"details": {
 				"title": "Λεπτομέρειες πρόσκλησης",
 				"sentTo": "Στάλθηκε σε",
@@ -3808,8 +3808,8 @@
 			"tooManyRequests": "Πάρα πολλά αιτήματα. Περιμένετε λίγο.",
 			"serverProblem": "Ο διακομιστής αντιμετώπισε πρόβλημα ({{status}}).",
 			"requestFailed": "Το αίτημα απέτυχε ({{status}}).",
-			"notKaneo": "Το {{url}} δεν μοιάζει με διακομιστή Kaneo.",
-			"noInstance": "Δεν βρέθηκε εγκατάσταση Kaneo στο {{url}} (HTTP {{status}}).",
+			"notKaneo": "Το {{url}} δεν μοιάζει με διακομιστή {{appName}}.",
+			"noInstance": "Δεν βρέθηκε εγκατάσταση {{appName}} στο {{url}} (HTTP {{status}}).",
 			"noSession": "Ο διακομιστής δεν επέστρεψε συνεδρία. Δοκιμάστε να συνδεθείτε μέσω του προγράμματος περιήγησης.",
 			"deviceFailed": "Η σύνδεση συσκευής απέτυχε (HTTP {{status}}).",
 			"apiKeyRejected": "Το κλειδί API απορρίφθηκε.",
@@ -3818,12 +3818,13 @@
 		},
 		"signIn": {
 			"tagline": "Απλή διαχείριση έργων. Συνδεθείτε στο Kaneo Cloud ή στη δική σας εγκατάσταση.",
+			"taglineOwnServer": "Simple project management. Connect to your {{appName}} server.",
 			"cloud": "Kaneo Cloud",
 			"selfHosted": "Αυτο-φιλοξενούμενο",
 			"captcha": "Αυτός ο διακομιστής απαιτεί έλεγχο μέσω προγράμματος περιήγησης για αυτό το βήμα. Χρησιμοποιήστε το «Συνέχεια στο πρόγραμμα περιήγησης».",
 			"invalidClient": "Αυτός ο διακομιστής δεν επιτρέπει σύνδεση συσκευής. Ζητήστε από τον διαχειριστή να προσθέσει το «kaneo-cli» στο DEVICE_AUTH_CLIENT_IDS ή συνδεθείτε με κωδικό πρόσβασης ή κλειδί API.",
 			"serverAddress": "Διεύθυνση διακομιστή",
-			"serverAddressHint": "Η διεύθυνση όπου ανοίγετε το Kaneo. Χρησιμοποιήστε http:// για διακομιστές χωρίς TLS. Αν το API τρέχει σε άλλο host, εισαγάγετε τη διεύθυνση του API.",
+			"serverAddressHint": "Η διεύθυνση όπου ανοίγετε το {{appName}}. Χρησιμοποιήστε http:// για διακομιστές χωρίς TLS. Αν το API τρέχει σε άλλο host, εισαγάγετε τη διεύθυνση του API.",
 			"connect": "Σύνδεση",
 			"recent": "Πρόσφατα",
 			"change": "Αλλαγή",
@@ -3838,7 +3839,7 @@
 			"sendTo": "Αποστολή στο {{email}}",
 			"noPassword": "Χωρίς κωδικό πρόσβασης",
 			"useApiKey": "Χρήση κλειδιού API",
-			"newToKaneo": "Νέος στο Kaneo;",
+			"newToKaneo": "Νέος στο {{appName}};",
 			"createAccount": "Δημιουργία λογαριασμού",
 			"code": {
 				"title": "Σύνδεση με κωδικό",
@@ -3854,7 +3855,7 @@
 				"denied": "Η σύνδεση απορρίφθηκε στο πρόγραμμα περιήγησης.",
 				"expired": "Ο κωδικός σύνδεσης έληξε. Ξεκινήστε ξανά για να λάβετε νέο.",
 				"openFailed": "Δεν ήταν δυνατό το άνοιγμα προγράμματος περιήγησης. Αντιγράψτε τον σύνδεσμο.",
-				"message": "Εγκρίνετε αυτή τη συσκευή από τον ιστότοπο του Kaneo. Εκεί λειτουργούν τα GitHub, Google, Discord και SSO.",
+				"message": "Εγκρίνετε αυτή τη συσκευή από τον ιστότοπο του {{appName}}. Εκεί λειτουργούν τα GitHub, Google, Discord και SSO.",
 				"yourCode": "Ο κωδικός σας",
 				"copyCode": "Αντιγραφή κωδικού",
 				"codeCopied": "Ο κωδικός αντιγράφηκε",
@@ -4327,7 +4328,7 @@
 		"background": {
 			"summary_one": "{{count}} ακόμα νέα ειδοποίηση",
 			"summary_other": "{{count}} ακόμα νέες ειδοποιήσεις",
-			"channelName": "Δραστηριότητα Kaneo",
+			"channelName": "Δραστηριότητα {{appName}}",
 			"channelDescription": "Αναθέσεις, σχόλια και αναφορές από τους χώρους εργασίας σας"
 		},
 		"ui": {
@@ -4417,7 +4418,7 @@
 				"delivery": "Παράδοση και συμβάντα",
 				"deliveryHint": "Email, ntfy, Gotify, webhooks",
 				"invitations": "Προσκλήσεις",
-				"permissionDenied": "Επιτρέψτε πρώτα τις ειδοποιήσεις για το Kaneo στις ρυθμίσεις συστήματος."
+				"permissionDenied": "Επιτρέψτε πρώτα τις ειδοποιήσεις για το {{appName}} στις ρυθμίσεις συστήματος."
 			},
 			"connection": {
 				"title": "Σύνδεση",
@@ -4454,7 +4455,7 @@
 		},
 		"notificationSettings": {
 			"title": "Ειδοποιήσεις",
-			"description": "Πού σας ειδοποιεί το Kaneo και για ποια θέματα.",
+			"description": "Πού σας ειδοποιεί το {{appName}} και για ποια θέματα.",
 			"on": "Ενεργό",
 			"off": "Ανενεργό",
 			"notSet": "Δεν έχει οριστεί",
@@ -4612,7 +4613,7 @@
 			}
 		},
 		"permissions": {
-			"photos": "Το Kaneo χρησιμοποιεί τις φωτογραφίες σας για να επισυνάπτει εικόνες σε εργασίες και σχόλια, καθώς και για τη φωτογραφία προφίλ σας."
+			"photos": "Το {{appName}} χρησιμοποιεί τις φωτογραφίες σας για να επισυνάπτει εικόνες σε εργασίες και σχόλια, καθώς και για τη φωτογραφία προφίλ σας."
 		}
 	}
 }

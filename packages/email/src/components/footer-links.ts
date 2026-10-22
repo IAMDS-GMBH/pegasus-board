@@ -1,5 +1,6 @@
 import type { EmailLocale } from "../templates/resolve-locale";
 import type { FooterLink } from "./email-footer";
+import { isKaneo } from "./app-name";
 
 const labels: Record<EmailLocale, { help: string; privacy: string }> = {
   en: { help: "Help", privacy: "Privacy" },
@@ -14,6 +15,9 @@ export function footerLinks(
   leading: FooterLink[] = [],
 ): FooterLink[] {
   const copy = labels[locale];
+
+  // Help and privacy live on kaneo.app; other brands have none yet.
+  if (!isKaneo()) return leading;
 
   return [
     ...leading,

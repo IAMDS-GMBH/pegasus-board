@@ -119,7 +119,7 @@ describe("describeImportError", () => {
       ),
     ).toEqual({
       status: 502,
-      message: "PLANKA sent a response Kaneo could not read.",
+      message: "PLANKA sent a response the import could not read.",
     });
     expect(describeImportError("boom", context).status).toBe(502);
   });

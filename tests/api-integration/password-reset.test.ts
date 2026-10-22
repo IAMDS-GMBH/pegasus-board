@@ -76,7 +76,7 @@ async function requestReset() {
   expect(link.origin).toBe("http://localhost:1337");
   expect(link.searchParams.get("callbackURL")).toBe(redirectTo);
   expect(vi.mocked(email.sendPasswordResetEmail).mock.calls.at(-1)?.[1]).toBe(
-    "Kaneo-Passwort zurücksetzen",
+    "WWK Board-Passwort zurücksetzen",
   );
   return { link, token: link.pathname.split("/").at(-1) };
 }

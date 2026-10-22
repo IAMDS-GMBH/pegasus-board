@@ -24,7 +24,7 @@ import {
   View,
 } from "react-native";
 
-import { KaneoLogo } from "@/components/brand";
+import { BrandLogo } from "@/components/brand";
 import { BackButton, Screen } from "@/components/screen";
 import { Txt } from "@/components/text";
 import { useToast } from "@/components/toast";
@@ -37,6 +37,7 @@ import {
 } from "@/lib/api/client";
 import type { DeviceCodeResponse, InstanceConfig } from "@/lib/api/types";
 import * as auth from "@/lib/auth";
+import { brand } from "@/lib/brand";
 import { reachableDeviceLink } from "@/lib/device-link";
 import { i18n } from "@/lib/i18n";
 import { usePrefs } from "@/lib/session";
@@ -59,7 +60,10 @@ function friendly(e: unknown): string {
 export default function SignInScreen() {
   const prefs = usePrefs();
   const [mode, setMode] = useState<"cloud" | "self">(
-    prefs.lastServerUrl && prefs.lastServerUrl !== CLOUD_URL ? "self" : "cloud",
+    !brand.offersCloud ||
+      (prefs.lastServerUrl && prefs.lastServerUrl !== CLOUD_URL)
+      ? "self"
+      : "cloud",
   );
   const [serverUrl, setServerUrl] = useState<string | null>(
     mode === "cloud" ? CLOUD_URL : null,
@@ -287,20 +291,24 @@ function StartStep(props: {
   return (
     <View style={{ gap: 28, paddingTop: 56, flexGrow: 1 }}>
       <View style={{ gap: 12 }}>
-        <KaneoLogo height={34} />
+        <BrandLogo height={56} />
         <Txt variant="body" tone="muted" style={{ lineHeight: 22 }}>
-          {t("mobile:signIn.tagline")}
+          {brand.offersCloud
+            ? t("mobile:signIn.tagline")
+            : t("mobile:signIn.taglineOwnServer")}
         </Txt>
       </View>
 
-      <Segmented
-        value={mode}
-        onChange={props.setMode}
-        options={[
-          { value: "cloud", label: t("mobile:signIn.cloud") },
-          { value: "self", label: t("mobile:signIn.selfHosted") },
-        ]}
-      />
+      {brand.offersCloud ? (
+        <Segmented
+          value={mode}
+          onChange={props.setMode}
+          options={[
+            { value: "cloud", label: t("mobile:signIn.cloud") },
+            { value: "self", label: t("mobile:signIn.selfHosted") },
+          ]}
+        />
+      ) : null}
 
       {mode === "self" && !config ? (
         <View style={{ gap: 28 }}>
@@ -309,7 +317,7 @@ function StartStep(props: {
               label={t("mobile:signIn.serverAddress")}
               value={address}
               onChangeText={setAddress}
-              placeholder="kaneo.example.com"
+              placeholder="board.example.com"
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="url"

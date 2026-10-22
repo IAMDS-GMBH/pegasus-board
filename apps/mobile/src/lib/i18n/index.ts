@@ -5,6 +5,8 @@ import { defaultLocale, loadLocale } from "@i18n/resources";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import { brand } from "@/lib/brand";
+
 import { resolveLocale } from "./resolve-locale";
 
 // English is bundled so the first frame already has copy; the device's locale loads before the
@@ -15,7 +17,10 @@ void i18n.use(initReactI18next).init({
   resources: { [defaultLocale]: en },
   ns: Object.keys(en),
   defaultNS: "mobile",
-  interpolation: { escapeValue: false },
+  interpolation: {
+    escapeValue: false,
+    defaultVariables: { appName: brand.name },
+  },
   initAsync: false,
 });
 

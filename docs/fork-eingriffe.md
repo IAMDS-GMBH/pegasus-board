@@ -18,7 +18,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-6 | Rolle „nur zugewiesene Karten“ (`workspace_role.assigned_only`) | Datenmodell, API-Scope, Rollen-Editor, i18n | `tests/api-integration/task-view-assigned-only.test.ts`, `workspace-role-assigned-only.test.ts`, `tests/api/utils/assigned-only-scope.test.ts`, `apps/web/.../settings/workspace/roles.test.tsx` |
 | PEGA-5 | Custom-Field-Werte je Projekt unter dem Zeilenfilter | API-Scope | `task-view-assigned-only.test.ts` („custom field values“) |
 | PEGA-29 | Stabile Event-ID in generischen Webhooks | API | `tests/api/events/publish-event.test.ts`, `tests/api/plugins/generic-webhook/events.test.ts`, `tests/api/scheduler/reminder-event-id.test.ts` |
-| WWK | Theming und Markenname | Web, i18n | `apps/web/src/brand/index.test.ts` |
+| WWK, PEGA-92 | Theming, Markenname, Build-Artefakte (Titel, Manifest, Icons), E-Mails, Mobile-App | Web, API, E-Mail, Mobile, i18n | `apps/web/src/brand/{brands,brand-index-html}.test.ts`, `packages/email/src/components/app-name.test.ts`, `tests/api/utils/get-invitation-email-subject.test.ts` |
 | PEGA-87 | Custom-Field-Typ `url` (Link) | API, Web, Mobile, CLI, MCP, i18n | `tests/api-integration/custom-field-url.test.ts`, `tests/api/custom-field/url-value.test.ts`, `apps/web/src/components/custom-fields/custom-field-url.test.ts`, `card-field-list.test.tsx` |
 | PEGA-88 | Felder auf der Kartenvorschau (`custom_field_definition.show_on_card`) | Datenmodell, API, Web, i18n | `tests/api-integration/custom-field.test.ts` („stores whether a field shows on the card…“), `tests/api/custom-field/resolve-field-update.test.ts`, `apps/web/src/components/custom-fields/{card-fields,card-field-rows}.test.ts(x)`, `kanban-board/task-card.test.tsx`, `project/display/custom-field-toggles.test.tsx` |
 | PEGA-89 | Serverseitiger Board-Filter nach Feldwerten und Labels | API, Web, MCP, Tests, Dev-Seed | `tests/api-integration/task-list-filters.test.ts` (1.000 Karten, < 2 s), `tests/api/task/task-filter-params.test.ts`, `tests/e2e/filter-performance.spec.ts`, Web: `server-filters.test.ts`, `board-server-filters.test.ts`, `use-get-tasks.test.tsx`, `task-matches-filters.test.ts`, `use-task-filters-with-labels-support.test.tsx`, `filtered-drag.test.tsx`, MCP: `register.test.ts` |
@@ -57,9 +57,21 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 
 ### WWK — Theming
 
-**Dateien:** `apps/web/src/brand/*`, `apps/web/public/brands/wwk/*`, `components/common/logo.tsx`, `components/page-title.tsx`, `index.css`, `main.tsx` (`applyBrand()`), `store/user-preferences.ts` (Standard hell), `apps/web/package.json` (`@fontsource/ubuntu`), `i18n/en-US.json` (`{{appName}}` in `auth.signUp.instanceAdminTitle` und `auth.onboarding.pageTitle`). Details: [theming-wwk.md](theming-wwk.md).
+**Zweck:** Die Plattform zeigt durchgängig das WWK-Erscheinungsbild, auch am Smartphone und in E-Mails (PEGA-92, [Review](review/2026-10-branding-wwk.md)). Details: [theming-wwk.md](theming-wwk.md).
 
-**Beim Sync beachten:** `en-US.json` von Upstream übernehmen und die zwei `{{appName}}`-Titel wieder einsetzen. Neue Upstream-Texte mit „Kaneo“ bleiben unverändert.
+**Dateien:**
+- Web: `apps/web/src/brand/*` (`brands.ts` reine Daten, `index.ts` liest `VITE_BRAND`, `brand-index-html.ts`, `apply.ts`), `apps/web/brand-html-plugin.ts`, `vite.config.ts`, `tsconfig.node.json`, `apps/web/public/brands/wwk/*`, `index.css` (Grautöne nur in `.theme-wwk:not(.dark)`), `store/user-preferences.ts` (Standard hell), `apps/web/package.json` (`@fontsource/ubuntu`)
+- Web-Komponenten mit `brand`: `components/common/logo.tsx`, `page-title.tsx`, `auth/auth-page.tsx`, `onboarding/onboarding-shell.tsx`, `auth/auth-legal-footer.tsx`, `public-project/kaneo-branding.tsx`, `ui/error-display.tsx`, `activity/comment-card.tsx`, `import/{import-source-definitions,trello-authorize-url}.ts`, `import/source-logos/kaneo-logo.tsx`, `import/connect-forms/kaneo-connect-form.tsx`, `shared/modals/create-workspace-modal.tsx` (`uppercase`)
+- i18n: `{{appName}}` statt „Kaneo“ in `common`, `auth`, `settings`, `invitations`, `mobile`, alle 21 Sprachen; Webhook-Platzhalter `https://example.com/webhook`; neuer Schlüssel `mobile.signIn.taglineOwnServer` (in `schema.json` von Hand)
+- E-Mail und API: `packages/email/src/components/app-name.ts` (`APP_NAME`, Standard „WWK Board“; `withAppName()` ersetzt „Kaneo“ in der Template-Kopie beim Rendern), `email-shell.tsx`, `footer-links.ts`, `security-reasons.ts`, Templates `magic-link`, `otp`, `password-reset`, `notification`, `workspace-invitation`; `vitest.config.ts` (Upstream-Tests mit `APP_NAME=Kaneo`); `apps/web/public/email/mark-wwk.png`; `apps/api/src/auth.ts` (Betreffzeilen), `utils/get-invitation-email-subject.ts`, `notification-preferences/delivery.ts`, `plugins/{slack,discord,telegram,mattermost}/events.ts`; Import-Meldungen ohne Produktnamen (`import/*`, `verify-repository-owner.ts`)
+- Mobile: `app.json` (Name, Farben, Foto-Text), `assets/images/*`, `src/components/brand.tsx` (WWK-Logo), `src/lib/brand.ts` (Name, kein Kaneo-Cloud-Angebot), `src/app/sign-in.tsx`, `src/lib/i18n/index.ts` (`appName`), `plugins/with-permission-locales.js`
+- Doku und Skripte: `.env.sample`, `ENVIRONMENT_SETUP.md`, `scripts/i18n/brand-app-name.mjs`, `package.json` (`i18n:brand`)
+
+**Beim Sync beachten:**
+- i18n: Upstream-Dateien übernehmen, dann `pnpm i18n:brand` (`scripts/i18n/brand-app-name.mjs`, idempotent). Neue Upstream-Texte mit „Kaneo“ in den genannten Namensräumen bekommen so `{{appName}}`. Danach `settings.workspaceImport.sources.kaneo.description` prüfen (von Hand umformuliert).
+- `brand-index-html.test.ts` schlägt fehl, wenn Upstream `index.html` so ändert, dass wieder „Kaneo“ im Kopf steht.
+- Neue E-Mail-Templates brauchen `withAppName()` auf ihrer Kopie.
+- Neue hart codierte Nennungen findet `grep -rn '"Kaneo\|kaneo\.app' apps/web/src apps/mobile/src`.
 
 ### PEGA-87 — Custom-Field-Typ `url` (Link)
 

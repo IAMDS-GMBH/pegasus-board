@@ -15478,6 +15478,9 @@
 						"tagline": {
 							"type": "string"
 						},
+						"taglineOwnServer": {
+							"type": "string"
+						},
 						"cloud": {
 							"type": "string"
 						},
@@ -15673,6 +15676,7 @@
 					},
 					"required": [
 						"tagline",
+						"taglineOwnServer",
 						"cloud",
 						"selfHosted",
 						"captcha",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { brands, resolveBrand } from "./index";
+import { brands, resolveBrand } from "./brands";
 
 describe("resolveBrand", () => {
   it("falls back to WWK when no brand is configured", () => {

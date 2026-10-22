@@ -1,3 +1,4 @@
+export { appName, withAppName } from "./components/app-name";
 export { OTP_EXPIRY_SECONDS } from "./otp-expiry";
 export {
   sendMagicLinkEmail,

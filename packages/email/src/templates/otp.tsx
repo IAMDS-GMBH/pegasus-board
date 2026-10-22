@@ -12,6 +12,7 @@ import {
 import { signInReason } from "../components/security-reasons";
 import { OTP_EXPIRY_SECONDS } from "../otp-expiry";
 import { emailHtmlLang, resolveEmailLocale } from "./resolve-locale";
+import { withAppName } from "../components/app-name";
 
 void React;
 
@@ -98,7 +99,7 @@ const OtpEmail = ({
   device,
 }: OtpEmailProps) => {
   const emailLocale = resolveEmailLocale(locale);
-  const copy = messages[emailLocale];
+  const copy = withAppName(messages[emailLocale]);
 
   return (
     <EmailShell
