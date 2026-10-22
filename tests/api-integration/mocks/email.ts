@@ -1,5 +1,9 @@
 import type { EmailResult } from "../../../packages/email/src/send-email";
 
+export {
+  appName,
+  withAppName,
+} from "../../../packages/email/src/components/app-name";
 export { OTP_EXPIRY_SECONDS } from "../../../packages/email/src/otp-expiry";
 
 export async function sendMagicLinkEmail(
