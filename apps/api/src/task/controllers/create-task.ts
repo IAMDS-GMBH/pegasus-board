@@ -222,6 +222,8 @@ async function createTask({
     currentUserId: currentUserId,
     type: "created",
     content: null,
+    // Pegasus fork (PEGA-90): other boards refresh the new card's fields.
+    ...(mergedCustomFields.length > 0 ? { customFieldsChanged: true } : {}),
   });
 
   return {

@@ -182,9 +182,11 @@ export function useFilterSubjects({
         value,
         label:
           field.type === "boolean"
-            ? value === "true"
-              ? "True"
-              : "False"
+            ? t(
+                value === "true"
+                  ? "settings:customFields.checked"
+                  : "settings:customFields.unchecked",
+              )
             : field.type === "date"
               ? (formatCustomFieldValue("date", value, "medium")?.text ?? value)
               : value,

@@ -2,6 +2,7 @@ import { eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import db from "../../database";
+import { publishEvent } from "../../events";
 import {
   customFieldDefinitionTable,
   customFieldValueTable,
@@ -147,6 +148,12 @@ async function setCustomFieldValue(
       },
     })
     .returning();
+
+  await publishEvent("task.updated", {
+    taskId,
+    projectId: task.projectId,
+    customFieldsChanged: true,
+  });
 
   return result;
 }

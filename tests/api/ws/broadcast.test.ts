@@ -32,6 +32,10 @@ const taskTitleHandler = vi
   .mocked(subscribeToEvent)
   .mock.calls.find(([eventName]) => eventName === "task.title_changed")![1];
 
+const taskUpdateHandler = vi
+  .mocked(subscribeToEvent)
+  .mock.calls.find(([eventName]) => eventName === "task.updated")![1];
+
 function makeFakeWs() {
   return {
     send: vi.fn(),
@@ -233,6 +237,48 @@ describe("broadcastToProject", () => {
     });
     expect(send.mock.calls[0][0]).not.toContain("Current");
     expect(send.mock.calls[0][0]).not.toContain("First");
+    removeConnection("proj-1", conn);
+  });
+
+  // Pegasus fork (PEGA-90): custom field changes reach other clients live.
+  it("keeps the custom field hint on project updates", async () => {
+    const ws = makeFakeWs();
+    const conn = addConnection("proj-1", ws, "user-1", "init-1", "workspace");
+    await projectUpdateHandler?.({
+      projectId: "proj-1",
+      customFieldsChanged: true,
+    });
+    await projectUpdateHandler?.({ projectId: "proj-1" });
+    const send = (ws as { send: ReturnType<typeof vi.fn> }).send;
+    await vi.waitFor(() => expect(send).toHaveBeenCalledOnce(), {
+      timeout: 300,
+    });
+    expect(JSON.parse(send.mock.calls[0][0])).toMatchObject({
+      type: "PROJECT_UPDATED",
+      projectId: "proj-1",
+      customFieldsChanged: true,
+    });
+    removeConnection("proj-1", conn);
+  });
+
+  it("keeps the custom field hint on task updates within a batch", async () => {
+    const ws = makeFakeWs();
+    const conn = addConnection("proj-1", ws, "user-1", "init-1", "workspace");
+    await taskUpdateHandler({
+      projectId: "proj-1",
+      taskId: "t1",
+      customFieldsChanged: true,
+    });
+    await taskUpdateHandler({ projectId: "proj-1", taskId: "t1" });
+    const send = (ws as { send: ReturnType<typeof vi.fn> }).send;
+    await vi.waitFor(() => expect(send).toHaveBeenCalledOnce(), {
+      timeout: 300,
+    });
+    expect(JSON.parse(send.mock.calls[0][0])).toMatchObject({
+      type: "TASK_UPDATED",
+      taskId: "t1",
+      customFieldsChanged: true,
+    });
     removeConnection("proj-1", conn);
   });
 

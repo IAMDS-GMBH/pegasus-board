@@ -619,6 +619,9 @@ export function broadcastToProject(
       ...message,
       ...(previous?.message.linksChanged ? { linksChanged: true } : {}),
       ...(previous?.message.taskTitleChanged ? { taskTitleChanged: true } : {}),
+      ...(previous?.message.customFieldsChanged
+        ? { customFieldsChanged: true }
+        : {}),
     },
     excludeInitiatorId,
   });
@@ -659,6 +662,7 @@ export function broadcastToProject(
 
 type TaskEvent = {
   titleChanged?: boolean;
+  customFieldsChanged?: boolean;
   skipSubtaskParentRefresh?: boolean;
   id: string | undefined;
   projectId: string;
@@ -827,6 +831,7 @@ subscribeToEvent<{
   projectId: string;
   initiatorId?: string;
   linksChanged?: boolean;
+  customFieldsChanged?: boolean;
 }>("project.updated", async (data) => {
   const { projectId, initiatorId } = data;
   if (!projectId) return;
@@ -837,6 +842,7 @@ subscribeToEvent<{
       type: "PROJECT_UPDATED",
       projectId,
       ...(data.linksChanged ? { linksChanged: true } : {}),
+      ...(data.customFieldsChanged ? { customFieldsChanged: true } : {}),
     },
     initiatorId,
   );
@@ -898,6 +904,7 @@ for (const eventName of taskUpdateEvents) {
         ...(eventName === "task.title_changed" || data.titleChanged
           ? { taskTitleChanged: true }
           : {}),
+        ...(data.customFieldsChanged ? { customFieldsChanged: true } : {}),
       },
       initiatorId,
     );

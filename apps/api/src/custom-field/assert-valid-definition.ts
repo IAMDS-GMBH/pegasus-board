@@ -1,8 +1,8 @@
-import { HTTPException } from "hono/http-exception";
 import {
   isCustomFieldValueEmpty,
   validateCustomFieldValue,
 } from "../task/validate-task-fields";
+import { fieldError } from "./field-error";
 
 const NUMBER_PATTERN = /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i;
 
@@ -14,8 +14,8 @@ type CustomFieldDefinitionInput = {
   options?: string[] | null;
 };
 
-function badRequest(message: string): never {
-  throw new HTTPException(400, { message });
+function invalidDefault(message: string): never {
+  fieldError("CUSTOM_FIELD_INVALID_DEFAULT", message);
 }
 
 function assertValidDefaultForType(
@@ -29,14 +29,16 @@ function assertValidDefaultForType(
       Number.isNaN(parsed) ||
       !Number.isFinite(parsed)
     ) {
-      badRequest("Default value must be a valid number for number type fields");
+      invalidDefault(
+        "Default value must be a valid number for number type fields",
+      );
     }
     return;
   }
 
   if (type === "boolean") {
     if (trimmedValue !== "true" && trimmedValue !== "false") {
-      badRequest(
+      invalidDefault(
         "Default value must be 'true' or 'false' for boolean type fields",
       );
     }
@@ -45,20 +47,20 @@ function assertValidDefaultForType(
 
   if (type === "date") {
     const error = validateCustomFieldValue(trimmedValue, "date", name);
-    if (error) badRequest(error);
+    if (error) invalidDefault(error);
     return;
   }
 
   if (type === "url") {
     const error = validateCustomFieldValue(trimmedValue, "url", name);
-    if (error) badRequest(error);
+    if (error) invalidDefault(error);
     return;
   }
 
   if (type === "dropdown" && options && options.length > 0) {
     const normalizedOptions = options.map((option) => option.trim());
     if (!normalizedOptions.includes(trimmedValue)) {
-      badRequest("Default value must be one of the dropdown options");
+      invalidDefault("Default value must be one of the dropdown options");
     }
   }
 }
@@ -67,7 +69,10 @@ export function assertValidDefinition(input: CustomFieldDefinitionInput) {
   const { name, type, required, defaultValue, options } = input;
 
   if (required && (defaultValue == null || defaultValue.trim() === "")) {
-    badRequest("Required fields must have a default value");
+    fieldError(
+      "CUSTOM_FIELD_DEFAULT_REQUIRED",
+      "Required fields must have a default value",
+    );
   }
 
   const trimmedValue = defaultValue?.trim();
@@ -76,7 +81,10 @@ export function assertValidDefinition(input: CustomFieldDefinitionInput) {
   }
 
   if (type === "dropdown" && (!options || options.length < 1)) {
-    badRequest("Dropdown fields must have at least one option");
+    fieldError(
+      "CUSTOM_FIELD_TOO_FEW_OPTIONS",
+      "Dropdown fields must have at least one option",
+    );
   }
 
   if (type === "multiselect") {
@@ -84,14 +92,20 @@ export function assertValidDefinition(input: CustomFieldDefinitionInput) {
       (options ?? []).map((option) => option.trim()).filter(Boolean),
     );
     if (normalizedOptions.size < 2) {
-      badRequest("Multiselect fields must have at least 2 options");
+      fieldError(
+        "CUSTOM_FIELD_TOO_FEW_OPTIONS",
+        "Multiselect fields must have at least 2 options",
+      );
     }
   }
 
   if (type === "multiselect" && defaultValue != null) {
     const empty = isCustomFieldValueEmpty(defaultValue, "multiselect");
     if (required && empty) {
-      badRequest("Required fields must have a default value");
+      fieldError(
+        "CUSTOM_FIELD_DEFAULT_REQUIRED",
+        "Required fields must have a default value",
+      );
     }
     if (!empty) {
       const error = validateCustomFieldValue(
@@ -100,7 +114,7 @@ export function assertValidDefinition(input: CustomFieldDefinitionInput) {
         name,
         options,
       );
-      if (error) badRequest(error);
+      if (error) invalidDefault(error);
     }
   }
 }

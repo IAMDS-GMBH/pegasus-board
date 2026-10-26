@@ -5,6 +5,7 @@ import {
   customFieldDefinitionTable,
   customFieldValueTable,
 } from "../../database/schema";
+import { publishEvent } from "../../events";
 import { isChoiceType } from "../choice-options";
 import { fillEmptyValues } from "../fill-default-values";
 import { planChoiceValueChanges } from "../plan-choice-value-changes";
@@ -14,7 +15,7 @@ import {
 } from "../resolve-field-update";
 
 async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
-  return db.transaction(async (tx) => {
+  const updated = await db.transaction(async (tx) => {
     const [field] = await tx
       .select()
       .from(customFieldDefinitionTable)
@@ -92,6 +93,13 @@ async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
 
     return updated;
   });
+
+  await publishEvent("project.updated", {
+    projectId: updated.projectId,
+    customFieldsChanged: true,
+  });
+
+  return updated;
 }
 
 export default updateCustomField;

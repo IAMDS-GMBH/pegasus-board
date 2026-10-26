@@ -1577,7 +1577,18 @@
 			"updateSuccess": "사용자 정의 필드가 저장되었습니다.",
 			"onCard": "On card",
 			"showOnCard": "Show on card",
-			"showOnCardDescription": "The value appears on the card in the board and on list rows."
+			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
+			"errors": {
+				"defaultRequired": "Required fields need a default.",
+				"invalidDefault": "The default doesn't fit this field type.",
+				"nameRequired": "Give the field a name.",
+				"notFound": "This field no longer exists. Someone may have deleted it.",
+				"optionInUse": "Tasks still use an option you removed. Pick a different option on those tasks first.",
+				"optionsNotAllowed": "Only dropdown fields have options.",
+				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
+				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks."
+			}
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3038,7 +3049,8 @@
 			"loadError": "작업을 불러오지 못했습니다.",
 			"dayTasksAriaLabel": "{{date}}의 모든 작업 보기",
 			"taskAriaLabel": "{{title}}, {{range}}: 작업 열기",
-			"noTasksThisMonth": "이번 달 예정된 항목이 없습니다"
+			"noTasksThisMonth": "이번 달 예정된 항목이 없습니다",
+			"monthNavigation": "Month navigation"
 		},
 		"gantt": {
 			"searchPlaceholder": "예약된 티켓 검색...",

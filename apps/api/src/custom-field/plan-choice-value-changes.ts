@@ -1,4 +1,4 @@
-import { HTTPException } from "hono/http-exception";
+import { fieldError } from "./field-error";
 import {
   type ChoiceType,
   convertChoiceValue,
@@ -29,9 +29,10 @@ export function planChoiceValueChanges({
 }: PlanInput): ChoiceValueChange[] {
   const used = findUsedOptions(values, from, removedOptions);
   if (used.length > 0) {
-    throw new HTTPException(400, {
-      message: `Can't remove ${quote(used)} because tasks still use ${used.length === 1 ? "it" : "them"}. Pick a different option on those tasks first.`,
-    });
+    fieldError(
+      "CUSTOM_FIELD_OPTION_IN_USE",
+      `Can't remove ${quote(used)} because tasks still use ${used.length === 1 ? "it" : "them"}. Pick a different option on those tasks first.`,
+    );
   }
 
   if (from === to) return [];
@@ -42,10 +43,10 @@ export function planChoiceValueChanges({
 
     const converted = convertChoiceValue(value, from, to);
     if (converted === undefined) {
-      throw new HTTPException(400, {
-        message:
-          "Some tasks have more than one option picked. Leave one option on those tasks first.",
-      });
+      fieldError(
+        "CUSTOM_FIELD_TASKS_HAVE_MULTIPLE_OPTIONS",
+        "Some tasks have more than one option picked. Leave one option on those tasks first.",
+      );
     }
     if (converted !== value) changes.push({ from: value, to: converted });
   }

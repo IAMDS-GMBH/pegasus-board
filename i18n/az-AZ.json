@@ -1586,7 +1586,18 @@
 			"updateSuccess": "Fərdi sahə yadda saxlanıldı.",
 			"onCard": "On card",
 			"showOnCard": "Show on card",
-			"showOnCardDescription": "The value appears on the card in the board and on list rows."
+			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
+			"errors": {
+				"defaultRequired": "Required fields need a default.",
+				"invalidDefault": "The default doesn't fit this field type.",
+				"nameRequired": "Give the field a name.",
+				"notFound": "This field no longer exists. Someone may have deleted it.",
+				"optionInUse": "Tasks still use an option you removed. Pick a different option on those tasks first.",
+				"optionsNotAllowed": "Only dropdown fields have options.",
+				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
+				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks."
+			}
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3085,7 +3096,8 @@
 			"loadError": "Tapşırıqları yükləmək alınmadı.",
 			"dayTasksAriaLabel": "{{date}} tarixi üçün bütün tapşırıqları göstər",
 			"taskAriaLabel": "{{title}}, {{range}}: tapşırığı aç",
-			"noTasksThisMonth": "Bu ay heç nə planlaşdırılmayıb"
+			"noTasksThisMonth": "Bu ay heç nə planlaşdırılmayıb",
+			"monthNavigation": "Month navigation"
 		},
 		"gantt": {
 			"searchPlaceholder": "Tarixi təyin edilmiş tapşırıqları axtar...",

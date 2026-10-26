@@ -15,6 +15,7 @@ import getLabelsByTask from "@/fetchers/label/get-labels-by-task";
 import getExternalLinks from "@/fetchers/external-link/get-external-links";
 import type { ResumePreview } from "@/fetchers/integration-sync/types";
 import { patchBoardTask } from "@/lib/patch-board-task";
+import { invalidateCustomFieldCaches } from "./invalidate-custom-field-caches";
 import type { ProjectWithTasks } from "@/types/project";
 import {
   hasSyncTaskSample,
@@ -77,7 +78,10 @@ export function useProjectWebSocket(projectId: string) {
       sourceTaskId?: string;
       targetTaskId?: string;
       linksChanged?: boolean;
+      customFieldsChanged?: boolean;
     }) {
+      if (message.customFieldsChanged)
+        invalidateCustomFieldCaches(queryClient, projectId, message);
       if (["PROJECT_UPDATED", "TASK_LABEL_UPDATED"].includes(message.type)) {
         queryClient.invalidateQueries({
           queryKey: ["integration-sync", projectId],

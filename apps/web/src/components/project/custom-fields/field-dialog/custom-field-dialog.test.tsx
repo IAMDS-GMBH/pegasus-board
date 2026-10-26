@@ -16,6 +16,7 @@ import {
 } from "vite-plus/test";
 import { CustomFieldDialog } from "@/components/project/custom-fields/field-dialog/custom-field-dialog";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
+import { HttpError } from "@/lib/http-error";
 import { toast } from "@/lib/toast";
 
 const m = vi.hoisted(() => ({
@@ -238,21 +239,29 @@ describe("CustomFieldDialog", () => {
     expect(m.createField).not.toHaveBeenCalled();
   });
 
-  it("keeps the dialog open and shows the API error", async () => {
-    m.updateField.mockRejectedValue(
-      new Error('Can\'t remove "Web" because tasks still use it.'),
-    );
+  // Pegasus fork (PEGA-90): the reason shows in the user's language.
+  it.each([
+    [
+      "the translated reason",
+      new HttpError(400, 'Can\'t remove "Web" because tasks still use it.', {
+        code: "CUSTOM_FIELD_OPTION_IN_USE",
+      }),
+      "settings:customFields.errors.optionInUse",
+    ],
+    [
+      "the translated fallback",
+      new Error("Network down"),
+      "settings:customFields.updateError",
+    ],
+  ])("keeps the dialog open and shows %s", async (_name, error, text) => {
+    m.updateField.mockRejectedValue(error);
     const { dialog, onOpenChange } = renderDialog(platforms);
     fireEvent.click(
       within(dialog).getByRole("button", {
         name: "settings:customFields.save",
       }),
     );
-    await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith(
-        'Can\'t remove "Web" because tasks still use it.',
-      ),
-    );
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith(text));
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });

@@ -7262,6 +7262,50 @@
 						},
 						"onCard": {
 							"type": "string"
+						},
+						"errors": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"nameRequired": {
+									"type": "string"
+								},
+								"defaultRequired": {
+									"type": "string"
+								},
+								"invalidDefault": {
+									"type": "string"
+								},
+								"tooFewOptions": {
+									"type": "string"
+								},
+								"typeLocked": {
+									"type": "string"
+								},
+								"optionsNotAllowed": {
+									"type": "string"
+								},
+								"optionInUse": {
+									"type": "string"
+								},
+								"tasksHaveMultipleOptions": {
+									"type": "string"
+								},
+								"notFound": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"nameRequired",
+								"defaultRequired",
+								"invalidDefault",
+								"tooFewOptions",
+								"typeLocked",
+								"optionsNotAllowed",
+								"optionInUse",
+								"tasksHaveMultipleOptions",
+								"notFound"
+							]
 						}
 					},
 					"required": [
@@ -7291,7 +7335,8 @@
 						"multiple",
 						"showOnCard",
 						"showOnCardDescription",
-						"onCard"
+						"onCard",
+						"errors"
 					]
 				},
 				"githubIntegration": {
@@ -12724,6 +12769,9 @@
 						},
 						"noTasksThisMonth": {
 							"type": "string"
+						},
+						"monthNavigation": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -12737,7 +12785,8 @@
 						"loadError",
 						"dayTasksAriaLabel",
 						"taskAriaLabel",
-						"noTasksThisMonth"
+						"noTasksThisMonth",
+						"monthNavigation"
 					]
 				},
 				"gantt": {
