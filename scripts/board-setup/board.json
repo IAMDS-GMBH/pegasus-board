@@ -1,0 +1,66 @@
+{
+	"project": {
+		"name": "Bewerber-Pool",
+		"slug": "BEW",
+		"icon": "Users"
+	},
+	"columns": [
+		{ "name": "Eingang", "icon": "CircleDashed" },
+		{ "name": "Pegasus-Pool", "icon": "Layers" },
+		{ "name": "Telefonqualifizierung", "icon": "Phone" },
+		{ "name": "Zugeordnet", "icon": "User" },
+		{ "name": "Kontaktiert", "icon": "MessageSquare" },
+		{ "name": "Termin vereinbart", "icon": "Calendar" },
+		{ "name": "Wiedervorlage", "icon": "Clock" },
+		{
+			"name": "Einstellungsbereit / Übergabe BSI",
+			"icon": "CheckCircle2",
+			"isFinal": true
+		},
+		{ "name": "Rückgabe an Pegasus", "icon": "Flag" },
+		{ "name": "Ablage", "icon": "Archive", "isFinal": true }
+	],
+	"labels": [
+		{ "name": "Quelle: Meta", "color": "teal" },
+		{ "name": "Quelle: LinkedIn", "color": "teal" },
+		{ "name": "Quelle: Formular", "color": "teal" },
+		{ "name": "Quelle: Import", "color": "teal" },
+		{ "name": "Paket 1", "color": "orange" },
+		{ "name": "Paket 2", "color": "orange" },
+		{ "name": "Paket 3", "color": "orange" },
+		{ "name": "Vertriebsweg: WWK", "color": "purple" },
+		{ "name": "Vertriebsweg: 1zu1", "color": "purple" },
+		{ "name": "Vertriebsweg: Clarus", "color": "purple" },
+		{ "name": "Kampagne: ohne Kampagne", "color": "dark-gray" },
+		{ "name": "Dublette?", "color": "yellow" },
+		{ "name": "unvollständig", "color": "yellow" },
+		{ "name": "verwertbar", "color": "green" },
+		{ "name": "Rückläufer", "color": "pink" },
+		{ "name": "keine Zuordnung", "color": "red" }
+	],
+	"fields": [
+		{ "name": "Telefon", "type": "text" },
+		{ "name": "E-Mail", "type": "text" },
+		{ "name": "PLZ", "type": "text" },
+		{ "name": "Ort", "type": "text", "showOnCard": true },
+		{ "name": "Geburtsjahr", "type": "number" },
+		{ "name": "Aktuelle Tätigkeit", "type": "text", "showOnCard": true },
+		{
+			"name": "Quelle",
+			"type": "dropdown",
+			"options": ["Meta", "LinkedIn", "Formular", "Import"]
+		},
+		{ "name": "Kampagne", "type": "text", "showOnCard": true },
+		{
+			"name": "Paket",
+			"type": "dropdown",
+			"options": ["Paket 1", "Paket 2", "Paket 3"],
+			"showOnCard": true
+		},
+		{
+			"name": "Vertriebsweg",
+			"type": "dropdown",
+			"options": ["WWK", "1zu1", "Clarus"]
+		}
+	]
+}

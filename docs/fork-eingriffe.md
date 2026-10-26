@@ -23,6 +23,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-88 | Felder auf der Kartenvorschau (`custom_field_definition.show_on_card`) | Datenmodell, API, Web, i18n | `tests/api-integration/custom-field.test.ts` („stores whether a field shows on the card…“), `tests/api/custom-field/resolve-field-update.test.ts`, `apps/web/src/components/custom-fields/{card-fields,card-field-rows}.test.ts(x)`, `kanban-board/task-card.test.tsx`, `project/display/custom-field-toggles.test.tsx` |
 | PEGA-89 | Serverseitiger Board-Filter nach Feldwerten und Labels | API, Web, MCP, Tests, Dev-Seed | `tests/api-integration/task-list-filters.test.ts` (1.000 Karten, < 2 s), `tests/api/task/task-filter-params.test.ts`, `tests/e2e/filter-performance.spec.ts`, Web: `server-filters.test.ts`, `board-server-filters.test.ts`, `use-get-tasks.test.tsx`, `task-matches-filters.test.ts`, `use-task-filters-with-labels-support.test.tsx`, `filtered-drag.test.tsx`, MCP: `register.test.ts` |
 | PEGA-90 | Feldänderungen live (`customFieldsChanged`), Fehlercodes der Feldverwaltung, deutsche Feldverwaltung | API, WebSocket, Web, i18n | `tests/api-integration/custom-field-live-updates.test.ts`, `custom-field-error-codes.test.ts`, `tests/api/ws/broadcast.test.ts`, `redis-link-refresh.test.ts`, Web: `use-project-websocket-cache.test.tsx` („custom field live updates“), `custom-field-error-key.test.ts`, `custom-field-dialog.test.tsx`, `custom-field-list.test.tsx`, `use-filter-subjects.test.tsx`, `month-grid.test.tsx`, `lib/i18n/custom-field-translations.test.ts` |
+| PEGA-84 | Board „Bewerber-Pool“ per Skript einrichten (Spalten, Labels, Standardfelder) | Konfiguration (Skript), keine Anwendungsdatei | `scripts/board-setup/*.test.mjs` (`node --test`), Probelauf gegen die Testumgebung |
 
 ---
 
@@ -133,6 +134,16 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - `ws/index.ts`, `broadcast-adapter.ts`, `redis-broadcast-adapter.ts` und `use-project-websocket.ts` ändert Upstream häufig. Der Hinweis muss an allen vier Stellen erhalten bleiben (Valibot im Redis-Adapter verwirft unbekannte Felder); `broadcast.test.ts` und `redis-link-refresh.test.ts` melden den Verlust.
 - Neue Upstream-Fehler in `custom-field/*` bekommen nur dann einen deutschen Text, wenn sie über `fieldError()` einen Code tragen und der Code in `custom-field-error-key.ts` und `settings.customFields.errors` steht.
 - `en-US.json`/`de-DE.json`: Upstream-Änderungen an `settings.customFields.types` gegen die deutschen Typnamen prüfen; `custom-field-translations.test.ts` schlägt fehl, wenn ein Text der Feldverwaltung englisch bleibt.
+
+### PEGA-84 — Board per Skript einrichten
+
+**Zweck:** Das Board „Bewerber-Pool“ ist auf jeder Umgebung gleich und lässt sich reproduzierbar aufbauen: zehn Prozessspalten, Workspace-Labels für Quelle, Paket, Vertriebsweg und Prüfung sowie die Grundfelder ([Review](review/2026-10-board-einrichtung.md), [Betriebshandbuch](board-einrichtung.md)). Das ist Konfiguration über die REST-API; der Code der Anwendung ändert sich nicht.
+
+**Dateien:** `scripts/board-setup/` (neu; Vorgabe `board.json`, Einstieg `setup-board.mjs`, Planer und Tests), Kommando `board:setup` in `package.json`
+
+**Beim Sync beachten:**
+- `scripts/board-setup/to-slug.mjs` kopiert `apps/api/src/column/to-slug.ts`, und `DEFAULT_COLUMN_SLUGS` in `plan-columns.mjs` spiegelt `DEFAULT_PROJECT_COLUMNS` in `apps/api/src/project/controllers/insert-project.ts`. Ändert Upstream eines davon, die Kopie nachziehen.
+- Nach jedem Sync einen Probelauf (`--dry-run`) gegen die Testumgebung ausführen. Er muss „keine Änderungen“ ergeben. Geänderte Pfade oder Felder der API für Projekte, Spalten, Labels oder Custom Fields fallen dort auf.
 
 ---
 
