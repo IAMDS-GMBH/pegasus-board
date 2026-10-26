@@ -7,6 +7,8 @@ export type ProjectBroadcastMessage = {
   targetTaskId?: string;
   linksChanged?: boolean;
   taskTitleChanged?: boolean;
+  // Pegasus fork (PEGA-90): tells clients to refresh custom field caches.
+  customFieldsChanged?: boolean;
 };
 
 export type BroadcastMessage = {

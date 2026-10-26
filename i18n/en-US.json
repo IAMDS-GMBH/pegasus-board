@@ -1802,7 +1802,18 @@
 			"save": "Save",
 			"saving": "Saving...",
 			"updateSuccess": "Custom field saved.",
-			"updateError": "Failed to save custom field."
+			"updateError": "Failed to save custom field.",
+			"errors": {
+				"nameRequired": "Give the field a name.",
+				"defaultRequired": "Required fields need a default.",
+				"invalidDefault": "The default doesn't fit this field type.",
+				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
+				"optionsNotAllowed": "Only dropdown fields have options.",
+				"optionInUse": "Tasks still use an option you removed. Pick a different option on those tasks first.",
+				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
+				"notFound": "This field no longer exists. Someone may have deleted it."
+			}
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3086,7 +3097,8 @@
 			"loadError": "Failed to load tasks.",
 			"dayTasksAriaLabel": "Show all tasks for {{date}}",
 			"taskAriaLabel": "{{title}}, {{range}}: open task",
-			"noTasksThisMonth": "Nothing scheduled this month"
+			"noTasksThisMonth": "Nothing scheduled this month",
+			"monthNavigation": "Month navigation"
 		},
 		"gantt": {
 			"searchPlaceholder": "Search scheduled tickets...",

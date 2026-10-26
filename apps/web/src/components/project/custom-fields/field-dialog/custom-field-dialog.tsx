@@ -17,7 +17,7 @@ import { FieldOptionsEditor } from "@/components/project/custom-fields/field-dia
 import { FieldSettingsBox } from "@/components/project/custom-fields/field-dialog/field-settings-box";
 import { FieldTypePicker } from "@/components/project/custom-fields/field-dialog/field-type-picker";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
-import { errorMessage } from "@/components/project/error-message";
+import { customFieldErrorKey } from "@/components/project/custom-fields/custom-field-error-key";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -90,13 +90,11 @@ export function CustomFieldDialog({
       onOpenChange(false);
     } catch (error) {
       toast.error(
-        errorMessage(
-          error,
-          t(
-            field
+        t(
+          customFieldErrorKey(error) ??
+            (field
               ? "settings:customFields.updateError"
-              : "settings:customFields.createError",
-          ),
+              : "settings:customFields.createError"),
         ),
       );
     }

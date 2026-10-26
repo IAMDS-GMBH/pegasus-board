@@ -1,4 +1,4 @@
-import { HTTPException } from "hono/http-exception";
+import { fieldError } from "./field-error";
 import { assertValidDefinition } from "./assert-valid-definition";
 import {
   convertChoiceValue,
@@ -36,16 +36,13 @@ export type ResolvedFieldUpdate = {
   removedOptions: string[];
 };
 
-function badRequest(message: string): never {
-  throw new HTTPException(400, { message });
-}
-
 function resolveType(field: CurrentCustomField, requested?: string) {
   const type = requested ?? field.type;
   if (type === field.type) return type;
   if (isChoiceType(type) && isChoiceType(field.type)) return type;
 
-  badRequest(
+  fieldError(
+    "CUSTOM_FIELD_TYPE_LOCKED",
     "The type of a custom field can't change. Only dropdown and multiselect fields can switch between each other.",
   );
 }
@@ -72,7 +69,8 @@ function resolveDefault(
 
   const converted = convertChoiceValue(field.defaultValue, field.type, type);
   if (converted === undefined) {
-    badRequest(
+    fieldError(
+      "CUSTOM_FIELD_INVALID_DEFAULT",
       "The default has more than one option picked. Send a default with one option.",
     );
   }
@@ -86,10 +84,13 @@ export function resolveFieldUpdate(
   const type = resolveType(field, input.type);
 
   const name = input.name === undefined ? field.name : input.name.trim();
-  if (!name) badRequest("Name cannot be empty");
+  if (!name) fieldError("CUSTOM_FIELD_NAME_REQUIRED", "Name cannot be empty");
 
   if (input.options !== undefined && !isChoiceType(type)) {
-    badRequest("Only dropdown and multiselect fields have options");
+    fieldError(
+      "CUSTOM_FIELD_OPTIONS_NOT_ALLOWED",
+      "Only dropdown and multiselect fields have options",
+    );
   }
 
   const previousOptions = readOptions(field.options);

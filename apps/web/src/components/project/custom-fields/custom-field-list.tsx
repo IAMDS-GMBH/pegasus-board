@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CustomFieldListSkeleton } from "@/components/project/custom-fields/custom-field-list-skeleton";
 import { CustomFieldRow } from "@/components/project/custom-fields/custom-field-row";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
-import { errorMessage } from "@/components/project/error-message";
+import { customFieldErrorKey } from "@/components/project/custom-fields/custom-field-error-key";
 import { toPositions } from "@/components/project/sortable/apply-order";
 import { SortableList } from "@/components/project/sortable/sortable-list";
 import { useSortableOrder } from "@/components/project/sortable/use-sortable-order";
@@ -45,7 +45,9 @@ export function CustomFieldList({
     try {
       await reorderFields({ projectId, fields: toPositions(next) });
     } catch (error) {
-      toast.error(errorMessage(error, t("settings:customFields.reorderError")));
+      toast.error(
+        t(customFieldErrorKey(error) ?? "settings:customFields.reorderError"),
+      );
     }
   });
 
@@ -58,7 +60,9 @@ export function CustomFieldList({
         icon: Trash2Icon,
       });
     } catch (error) {
-      toast.error(errorMessage(error, t("settings:customFields.deleteError")));
+      toast.error(
+        t(customFieldErrorKey(error) ?? "settings:customFields.deleteError"),
+      );
     }
   };
 

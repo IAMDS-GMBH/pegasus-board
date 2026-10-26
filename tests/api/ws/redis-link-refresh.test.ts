@@ -13,6 +13,7 @@ vi.mock("../../../apps/api/src/redis", () => ({
   closeRedis: async () => {},
 }));
 
+// Pegasus fork (PEGA-90): also carries the custom field hint.
 it("retains the link-refresh flag when receiving a Redis project broadcast", async () => {
   const adapter = new RedisBroadcastAdapter();
   const receive = vi.fn();
@@ -30,6 +31,7 @@ it("retains the link-refresh flag when receiving a Redis project broadcast", asy
         projectId: "project",
         linksChanged: true,
         taskTitleChanged: true,
+        customFieldsChanged: true,
       },
     }),
   );
@@ -38,6 +40,7 @@ it("retains the link-refresh flag when receiving a Redis project broadcast", asy
       message: expect.objectContaining({
         linksChanged: true,
         taskTitleChanged: true,
+        customFieldsChanged: true,
       }),
     }),
   );

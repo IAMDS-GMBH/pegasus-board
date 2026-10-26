@@ -22,6 +22,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-87 | Custom-Field-Typ `url` (Link) | API, Web, Mobile, CLI, MCP, i18n | `tests/api-integration/custom-field-url.test.ts`, `tests/api/custom-field/url-value.test.ts`, `apps/web/src/components/custom-fields/custom-field-url.test.ts`, `card-field-list.test.tsx` |
 | PEGA-88 | Felder auf der Kartenvorschau (`custom_field_definition.show_on_card`) | Datenmodell, API, Web, i18n | `tests/api-integration/custom-field.test.ts` („stores whether a field shows on the card…“), `tests/api/custom-field/resolve-field-update.test.ts`, `apps/web/src/components/custom-fields/{card-fields,card-field-rows}.test.ts(x)`, `kanban-board/task-card.test.tsx`, `project/display/custom-field-toggles.test.tsx` |
 | PEGA-89 | Serverseitiger Board-Filter nach Feldwerten und Labels | API, Web, MCP, Tests, Dev-Seed | `tests/api-integration/task-list-filters.test.ts` (1.000 Karten, < 2 s), `tests/api/task/task-filter-params.test.ts`, `tests/e2e/filter-performance.spec.ts`, Web: `server-filters.test.ts`, `board-server-filters.test.ts`, `use-get-tasks.test.tsx`, `task-matches-filters.test.ts`, `use-task-filters-with-labels-support.test.tsx`, `filtered-drag.test.tsx`, MCP: `register.test.ts` |
+| PEGA-90 | Feldänderungen live (`customFieldsChanged`), Fehlercodes der Feldverwaltung, deutsche Feldverwaltung | API, WebSocket, Web, i18n | `tests/api-integration/custom-field-live-updates.test.ts`, `custom-field-error-codes.test.ts`, `tests/api/ws/broadcast.test.ts`, `redis-link-refresh.test.ts`, Web: `use-project-websocket-cache.test.tsx` („custom field live updates“), `custom-field-error-key.test.ts`, `custom-field-dialog.test.tsx`, `custom-field-list.test.tsx`, `use-filter-subjects.test.tsx`, `month-grid.test.tsx`, `lib/i18n/custom-field-translations.test.ts` |
 
 ---
 
@@ -114,6 +115,24 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 - Der Query-Key `["tasks", projectId]` bleibt unverändert, weil `use-project-websocket.ts` und das Drag-and-drop ihn direkt patchen. Die Serverfilter liegen in einer Registry je QueryClient (`board-server-filters.ts`), damit auch andere Beobachter des Keys (Task-Crumb, Relationen) mit denselben Filtern laden.
 - Upstream-Fehler, die hier mitbehoben sind und beim Sync nicht zurückkommen dürfen: der Feldfilter las Werte aus dem Karten-Cache `["custom-field-values", taskId]` (nur geöffnete Karten) und verglich Multiselect-Werte als ganzen JSON-String.
 - Bekommt Upstream eigene Filterparameter in `listTasksQuery`, die Fork-Parameter darauf abbilden statt beide zu behalten.
+
+### PEGA-90 — Feldänderungen live und deutsche Feldverwaltung
+
+**Zweck:** Ändert ein anderer Nutzer (oder der Hub per API-Key) einen Feldwert oder die Felddefinitionen, sehen offene Boards und Kartenansichten das ohne Neuladen; die Feldverwaltung ist vollständig deutsch, auch die Fehlermeldungen der API ([Review](review/2026-10-live-updates-deutsch.md)). Upstream veröffentlicht für Custom Fields keine Ereignisse und liefert Fehlertexte nur englisch (geprüft 2026-10-22, `upstream/main` @ `2847dbd8`).
+
+**Regel:** Feldwert setzen/leeren → `task.updated` mit `customFieldsChanged: true`; Feld anlegen, bearbeiten, umsortieren, löschen → `project.updated` mit `customFieldsChanged: true`; Karte mit Feldwerten anlegen → `task.created` mit demselben Hinweis. Der Hinweis läuft wie `linksChanged` durch `broadcastToProject` (bleibt beim Bündeln erhalten) und den Redis-Adapter. Nur Nachrichten **mit** Hinweis invalidieren in der Web-App die Feld-Caches (`["custom-fields", p]`, `["custom-field-values", …]`, `["custom-field-filter-values", p]`); gewöhnliche Karten-Updates laden keine Feldwerte nach. Bei aktivem Serverfilter auf Feldern (PEGA-89) lädt das Board zusätzlich `["tasks", p]` neu. Die WebSocket-Nachricht trägt weiter nur IDs, keine Werte.
+Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` unverändert): `CUSTOM_FIELD_NAME_REQUIRED`, `_DEFAULT_REQUIRED`, `_INVALID_DEFAULT`, `_TOO_FEW_OPTIONS`, `_TYPE_LOCKED`, `_OPTIONS_NOT_ALLOWED`, `_OPTION_IN_USE`, `_TASKS_HAVE_MULTIPLE_OPTIONS`. Die Web-App übersetzt diese Codes und `NOT_FOUND`; alles andere zeigt den übersetzten Standardtext des Dialogs, nie den englischen API-Text.
+
+**Dateien:**
+- API: `apps/api/src/custom-field/field-error.ts` (neu), `assert-valid-definition.ts`, `resolve-field-update.ts`, `plan-choice-value-changes.ts`, `controllers/{create,update,delete,reorder}-custom-field.ts`, `controllers/set-custom-field-value.ts`, `task/controllers/create-task.ts`; `ws/index.ts`, `ws/broadcast-adapter.ts`, `ws/redis-broadcast-adapter.ts`
+- Web: `hooks/invalidate-custom-field-caches.ts` (neu), `hooks/use-project-websocket.ts`; `components/project/custom-fields/custom-field-error-key.ts` (neu), `custom-field-list.tsx`, `field-dialog/custom-field-dialog.tsx`; `components/project/task-filters/use-filter-subjects.tsx` („Aktiviert“/„Deaktiviert“ statt „True“/„False“); `components/common/date-picker/day-picker-text.ts` (neu), `month-grid.tsx` (Monats- und Wochentagsnamen per `Intl` in der UI-Sprache, gilt für alle Datumsauswahlen)
+- i18n: `settings.customFields.errors.*`, `tasks.calendar.monthNavigation` (en-US, de-DE; übrige Locales englischer Fallback), de-DE `settings.customFields.types.{dropdown,multiselect}` = „Auswahl“/„Mehrfachauswahl“, `mobile.projectSettings.{checkbox,dropdown}` = „Kontrollkästchen“/„Auswahl“; `i18n/schema.json` von Hand ergänzt
+
+**Beim Sync beachten:**
+- Veröffentlicht Upstream selbst Ereignisse für Custom Fields, die Fork-Aufrufe entfernen statt doppelt zu senden; `custom-field-live-updates.test.ts` erwartet genau ein Ereignis je Änderung.
+- `ws/index.ts`, `broadcast-adapter.ts`, `redis-broadcast-adapter.ts` und `use-project-websocket.ts` ändert Upstream häufig. Der Hinweis muss an allen vier Stellen erhalten bleiben (Valibot im Redis-Adapter verwirft unbekannte Felder); `broadcast.test.ts` und `redis-link-refresh.test.ts` melden den Verlust.
+- Neue Upstream-Fehler in `custom-field/*` bekommen nur dann einen deutschen Text, wenn sie über `fieldError()` einen Code tragen und der Code in `custom-field-error-key.ts` und `settings.customFields.errors` steht.
+- `en-US.json`/`de-DE.json`: Upstream-Änderungen an `settings.customFields.types` gegen die deutschen Typnamen prüfen; `custom-field-translations.test.ts` schlägt fehl, wenn ein Text der Feldverwaltung englisch bleibt.
 
 ---
 

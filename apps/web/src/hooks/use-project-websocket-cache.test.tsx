@@ -7,6 +7,7 @@ import {
   it,
   vi,
 } from "vite-plus/test";
+import { setBoardServerFilters } from "@/lib/board-server-filters";
 import { useProjectWebSocket } from "./use-project-websocket";
 
 const mocks = vi.hoisted(() => ({
@@ -659,4 +660,83 @@ it("shares one authorized task read between the board and sync samples", async (
     expect(mocks.client.setQueriesData).toHaveBeenCalled(),
   );
   expect(mocks.getTask).toHaveBeenCalledOnce();
+});
+
+// Pegasus fork (PEGA-90): another user's field change appears without a reload.
+describe("custom field live updates", () => {
+  const fieldKeys = [
+    ["custom-field-values", "a"],
+    ["custom-field-values", "p"],
+    ["custom-field-filter-values", "p"],
+  ];
+
+  it("refreshes custom field values when another user changes a value", async () => {
+    renderHook(() => useProjectWebSocket("p"));
+    Socket.current.message("TASK_UPDATED", {
+      taskId: "a",
+      customFieldsChanged: true,
+    });
+    await vi.waitFor(() => {
+      for (const queryKey of fieldKeys)
+        expect(mocks.client.invalidateQueries).toHaveBeenCalledWith({
+          queryKey,
+        });
+    });
+  });
+
+  it("leaves custom field values alone for other task updates", async () => {
+    renderHook(() => useProjectWebSocket("p"));
+    Socket.current.message("TASK_UPDATED", { taskId: "a" });
+    await vi.waitFor(() =>
+      expect(mocks.client.invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["task", "a"],
+      }),
+    );
+    const keys = mocks.client.invalidateQueries.mock.calls.map(
+      ([filters]) => (filters as { queryKey: unknown[] }).queryKey[0],
+    );
+    expect(keys).not.toContain("custom-field-values");
+    expect(keys).not.toContain("custom-field-filter-values");
+  });
+
+  it("refreshes field definitions when another user changes the field setup", async () => {
+    renderHook(() => useProjectWebSocket("p"));
+    Socket.current.message("PROJECT_UPDATED", { customFieldsChanged: true });
+    await vi.waitFor(() => {
+      for (const queryKey of [
+        ["custom-fields", "p"],
+        ["custom-field-values"],
+        ["custom-field-filter-values", "p"],
+      ])
+        expect(mocks.client.invalidateQueries).toHaveBeenCalledWith({
+          queryKey,
+        });
+    });
+  });
+
+  it("refetches a server-filtered board when a field value changes", async () => {
+    mocks.getTask.mockReset().mockResolvedValue({
+      id: "a",
+      projectId: "p",
+      status: "todo",
+      position: 0,
+    });
+    setBoardServerFilters(mocks.client as never, "p", {
+      customFields: { plz: ["80331"] },
+    });
+    try {
+      renderHook(() => useProjectWebSocket("p"));
+      Socket.current.message("TASK_UPDATED", {
+        taskId: "a",
+        customFieldsChanged: true,
+      });
+      await vi.waitFor(() =>
+        expect(mocks.client.invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ["tasks", "p"],
+        }),
+      );
+    } finally {
+      setBoardServerFilters(mocks.client as never, "p", null);
+    }
+  });
 });

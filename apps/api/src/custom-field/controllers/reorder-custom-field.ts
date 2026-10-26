@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { customFieldDefinitionTable } from "../../database/schema";
+import { publishEvent } from "../../events";
 
 async function reorderCustomFields(
   projectId: string,
@@ -26,6 +27,11 @@ async function reorderCustomFields(
         });
       }
     }
+  });
+
+  await publishEvent("project.updated", {
+    projectId,
+    customFieldsChanged: true,
   });
 
   const updated = await db.query.customFieldDefinitionTable.findMany({

@@ -5,7 +5,9 @@ import {
   customFieldDefinitionTable,
   projectTable,
 } from "../../database/schema";
+import { publishEvent } from "../../events";
 import { assertValidDefinition } from "../assert-valid-definition";
+import { fieldError } from "../field-error";
 import { insertMissingValues } from "../fill-default-values";
 import { toStoredCustomFieldValue } from "../url-value";
 
@@ -19,7 +21,7 @@ async function createCustomField(
   showOnCard = false,
 ) {
   if (!name.trim())
-    throw new HTTPException(400, { message: "Name cannot be empty" });
+    fieldError("CUSTOM_FIELD_NAME_REQUIRED", "Name cannot be empty");
 
   const [project] = await db
     .select({ id: projectTable.id })
@@ -73,6 +75,11 @@ async function createCustomField(
     }
 
     return created;
+  });
+
+  await publishEvent("project.updated", {
+    projectId,
+    customFieldsChanged: true,
   });
 
   return field;

@@ -1608,10 +1608,10 @@
 			"types": {
 				"boolean": "Kontrollkästchen",
 				"date": "Datum",
-				"dropdown": "Dropdown",
+				"dropdown": "Auswahl",
 				"number": "Zahl",
 				"text": "Text",
-				"multiselect": "Dropdown, Mehrfachauswahl",
+				"multiselect": "Mehrfachauswahl",
 				"url": "Link"
 			},
 			"clearDefault": "Standardwert entfernen",
@@ -1663,7 +1663,18 @@
 			"typeLocked": "Der Typ kann nach dem Erstellen eines Felds nicht mehr geändert werden.",
 			"unchecked": "Deaktiviert",
 			"updateError": "Benutzerdefiniertes Feld konnte nicht gespeichert werden.",
-			"updateSuccess": "Benutzerdefiniertes Feld gespeichert."
+			"updateSuccess": "Benutzerdefiniertes Feld gespeichert.",
+			"errors": {
+				"nameRequired": "Gib dem Feld einen Namen.",
+				"defaultRequired": "Pflichtfelder benötigen einen Standardwert.",
+				"invalidDefault": "Der Standardwert passt nicht zum Feldtyp.",
+				"tooFewOptions": "Füge weitere Optionen hinzu: Eine Auswahl braucht mindestens eine, eine Mehrfachauswahl mindestens zwei.",
+				"typeLocked": "Der Typ kann nach dem Erstellen eines Felds nicht mehr geändert werden. Nur Auswahl und Mehrfachauswahl lassen sich ineinander umwandeln.",
+				"optionsNotAllowed": "Nur Auswahl und Mehrfachauswahl haben Optionen.",
+				"optionInUse": "Aufgaben nutzen noch eine Option, die du entfernt hast. Wähle bei diesen Aufgaben zuerst eine andere Option.",
+				"tasksHaveMultipleOptions": "Bei einigen Aufgaben sind mehrere Optionen gewählt. Lass bei diesen Aufgaben zuerst nur eine Option stehen.",
+				"notFound": "Dieses Feld gibt es nicht mehr. Vielleicht hat es jemand gelöscht."
+			}
 		},
 		"security": "Sicherheit",
 		"securityPage": {
@@ -3219,7 +3230,8 @@
 			"title": "Kalender",
 			"today": "Heute",
 			"loadError": "Aufgaben konnten nicht geladen werden.",
-			"noTasksThisMonth": "Diesen Monat ist nichts geplant"
+			"noTasksThisMonth": "Diesen Monat ist nichts geplant",
+			"monthNavigation": "Monatsnavigation"
 		},
 		"descriptionSearchLoading": "Vollständige Beschreibungen werden durchsucht…",
 		"descriptionSearchError": "Die Suche in Beschreibungen ist fehlgeschlagen. Ergebnisse sind möglicherweise unvollständig.",
@@ -4109,8 +4121,8 @@
 			"text": "Text",
 			"number": "Zahl",
 			"date": "Datum",
-			"checkbox": "Checkbox",
-			"dropdown": "Dropdown",
+			"checkbox": "Kontrollkästchen",
+			"dropdown": "Auswahl",
 			"multiSelect": "Mehrfachauswahl",
 			"url": "Link",
 			"projectUpdated": "Projekt aktualisiert",

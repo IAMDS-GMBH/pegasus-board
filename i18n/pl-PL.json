@@ -2290,7 +2290,18 @@
 			"updateSuccess": "Zapisano pole niestandardowe.",
 			"onCard": "On card",
 			"showOnCard": "Show on card",
-			"showOnCardDescription": "The value appears on the card in the board and on list rows."
+			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
+			"errors": {
+				"defaultRequired": "Required fields need a default.",
+				"invalidDefault": "The default doesn't fit this field type.",
+				"nameRequired": "Give the field a name.",
+				"notFound": "This field no longer exists. Someone may have deleted it.",
+				"optionInUse": "Tasks still use an option you removed. Pick a different option on those tasks first.",
+				"optionsNotAllowed": "Only dropdown fields have options.",
+				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
+				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks."
+			}
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3412,7 +3423,8 @@
 			"loadError": "Nie udało się załadować zadań.",
 			"dayTasksAriaLabel": "Pokaż wszystkie zadania z dnia {{date}}",
 			"taskAriaLabel": "{{title}}, {{range}}: otwórz zadanie",
-			"noTasksThisMonth": "Nic nie zaplanowano w tym miesiącu"
+			"noTasksThisMonth": "Nic nie zaplanowano w tym miesiącu",
+			"monthNavigation": "Month navigation"
 		},
 		"gantt": {
 			"searchPlaceholder": "Szukaj zaplanowanych zadań...",

@@ -33,6 +33,7 @@ const broadcastMessageSchema = v.object({
     targetTaskId: v.optional(v.string()),
     linksChanged: v.optional(v.boolean()),
     taskTitleChanged: v.optional(v.boolean()),
+    customFieldsChanged: v.optional(v.boolean()),
   }),
   excludeInitiatorId: v.optional(v.string()),
   authorizationBatch: v.optional(v.string()),

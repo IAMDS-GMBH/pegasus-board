@@ -16,6 +16,8 @@ import {
 } from "vite-plus/test";
 import { CustomFieldList } from "@/components/project/custom-fields/custom-field-list";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
+import { HttpError } from "@/lib/http-error";
+import { toast } from "@/lib/toast";
 
 const m = vi.hoisted(() => ({
   fields: [] as CustomFieldDefinition[] | undefined,
@@ -177,5 +179,29 @@ describe("CustomFieldList", () => {
     );
     expect(container.querySelector('[aria-busy="true"]')).not.toBeNull();
     expect(screen.queryByText("settings:customFields.emptyTitle")).toBeNull();
+  });
+
+  // Pegasus fork (PEGA-90): e.g. another user deleted the field meanwhile.
+  it("shows a translated reason when a delete fails", async () => {
+    m.deleteField.mockRejectedValue(
+      new HttpError(404, "Custom field not found", { code: "NOT_FOUND" }),
+    );
+    renderList();
+    fireEvent.click(
+      screen.getByRole("button", { name: "settings:customFields.actionsAria" }),
+    );
+    fireEvent.click(
+      await screen.findByRole("menuitem", { name: "common:actions.delete" }),
+    );
+    fireEvent.click(
+      within(await screen.findByRole("alertdialog")).getByRole("button", {
+        name: "settings:customFields.deleteConfirm",
+      }),
+    );
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        "settings:customFields.errors.notFound",
+      ),
+    );
   });
 });

@@ -129,7 +129,7 @@ Screenshots aus der lokalen Entwicklungsumgebung mit 1.000 Karten im Seed-Board 
 
 - Negierte Filter, Fälligkeit, Zuständige, Priorität und Suche filtern weiter im Browser; sie sind im Pool selten das einschränkende Kriterium. Sollten sie es werden, lassen sie sich nach demselben Muster serverseitig ergänzen (`task-filter-params.ts`, `get-tasks.ts`, `server-filters.ts`).
 - Mit aktivem Serverfilter wird in einer Spalte nicht umsortiert, und eine verschobene Karte bekommt `max(sichtbare Positionen)+1`; das kann mit der Position einer ausgeblendeten Karte zusammenfallen (Sortierschlüssel ist `position, id`, also kein Fehler, nur eine unbestimmte Reihenfolge zwischen den beiden).
-- Feldwert-Änderungen durch den Hub lösen weiterhin kein Realtime-Ereignis aus ([Custom Fields](2026-10-custom-fields.md) Abschnitt 4); eine gefilterte Ansicht aktualisiert sich dafür erst beim nächsten Nachladen.
+- ~~Feldwert-Änderungen durch den Hub lösen weiterhin kein Realtime-Ereignis aus~~ — erledigt in PEGA-90 ([Bericht](2026-10-live-updates-deutsch.md)): eine gefilterte Ansicht lädt bei einer Feldänderung neu.
 - Die Label-Filteroptionen des Boards laden alle Label-Zeilen des Workspace (eine je Karte); bei zehntausenden Karten wächst dieser Request. Das ist Upstream-Verhalten und nicht Teil dieser Story.
 
 ---
