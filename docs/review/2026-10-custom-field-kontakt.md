@@ -34,7 +34,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel.
 - **Telefon speichern:** Eingaben werden getrimmt und innere Leerzeichen zusammengefasst. Sonst bleibt die Schreibweise erhalten (`+49 (0) 170 123-4567`), weil Leads in jeder lokalen Notation ankommen. Erlaubt sind Ziffern, Leerzeichen, `+` am Anfang und `( ) / . -`. Nötig sind 5 bis 15 Ziffern; ein führendes `00` und `(0)` nach der Ländervorwahl zählen nicht mit.
 - **Telefon wählen:** Der Link enthält nur `+` und Ziffern. `(0)` nach der Ländervorwahl entfällt, weil es im internationalen Format nicht gewählt wird: `+49 (0) 170 123-4567` → `tel:+491701234567`, `0170 1234567` → `tel:01701234567`.
 - **E-Mail speichern:** getrimmt. Abgelehnt werden fehlendes oder doppeltes `@`, Domains ohne Punkt, Leerzeichen, mehr als 254 Zeichen und die Zeichen `? # & , ; : < > " ( ) [ ] \`. Letztere würden im `mailto:`-Link weitere Empfänger oder Betreff und Text einschleusen (`max@example.org?cc=…`).
-- **Anzeige:** Der Wert steht wie gespeichert an der Karte, unterstrichen als Link. In der Kartenansicht und in Listenzeilen steht neben dem Wert ein Telefon- bzw. Brief-Symbol („Telefon anrufen“, „E-Mail an E-Mail“). Ein Link entsteht nur aus einem gültigen Wert; ein Altwert, der die Regel nicht erfüllt, erscheint als Text.
+- **Anzeige:** Der Wert steht wie gespeichert an der Karte, unterstrichen als Link. In der geöffneten Karte steht neben dem Wert eine umrandete Symbol-Schaltfläche mit Telefon bzw. Brief („Telefon anrufen“, „E-Mail an E-Mail“). Sie ist 32 × 32 px groß (vorher ein 28-px-Symbol ohne Rahmen) und am Smartphone so hoch wie das Feld daneben. Auf Touch-Geräten ist die Tippfläche mindestens 44 px groß. Ein Link entsteht nur aus einem gültigen Wert; ein Altwert, der die Regel nicht erfüllt, erscheint als Text.
 - **Öffnen:** `tel:` und `mailto:` öffnen im selben Tab die Telefon- bzw. Mail-App, ohne neuen Tab. Klick, Zeiger, Maus, Touch und Tastatur auf dem Link öffnen die Karte nicht und starten keinen Ziehvorgang.
 - **Bearbeiten:** Das Eingabefeld hat `type="tel"` bzw. `type="email"`, damit das Smartphone Ziffernblock bzw. @-Tastatur zeigt. Ein ungültiger Wert wird nicht gespeichert, und der Editor nennt den Grund („Gib eine gültige Telefonnummer ein, z. B. 0170 1234567.“).
 - **Typwechsel:** Text, E-Mail und Telefon lassen sich ineinander umwandeln. Im Feld-Dialog sind beim Bearbeiten eines solchen Felds nur diese drei Typen wählbar. Beim Wechsel zu E-Mail oder Telefon werden alle Kartenwerte in die gespeicherte Form gebracht. Passt ein Wert nicht, lehnt die API den Wechsel ab (`CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES`, „Bei einigen Aufgaben passt der Wert nicht zum neuen Typ. Korrigiere oder leere diese Werte zuerst.“), und nichts ändert sich. Zurück zu Text geht immer. Alle anderen Typwechsel bleiben gesperrt.
@@ -55,15 +55,17 @@ Pfadangaben beziehen sich auf die Repo-Wurzel.
 
 ## 3. Nachweis
 
-Playwright gegen die lokale Entwicklungsumgebung (API `:1337`, Web `:5173`, Benutzer `admin@seed.test`, Oberfläche Deutsch). Wegwerfprojekt „PEGA-86 Kontakt“ mit den Feldern Telefon (`phone`), E-Mail (`email`) und „Mobil (alt)“ (`text`), alle auf der Karte, danach wieder gelöscht. 21 Prüfungen, alle grün.
+Playwright gegen die lokale Entwicklungsumgebung (API `:1337`, Web `:5173`, Benutzer `admin@seed.test`, Oberfläche Deutsch). Wegwerfprojekt „PEGA-86 Kontakt“ mit den Feldern Telefon (`phone`), E-Mail (`email`) und „Mobil (alt)“ (`text`), alle auf der Karte, danach wieder gelöscht. 22 Prüfungen, alle grün.
 
 **Board, Smartphone-Ansicht** (iPhone 13, 390 × 844): Telefon und E-Mail sind Links (`tel:+491701234567`, `mailto:erika.musterfrau@example.org`) ohne `target`. Ein Tipp auf den Link öffnet die Karte nicht (URL unverändert). „Mobil (alt)“ ist noch ein Textfeld und bleibt Text. Dieselben Prüfungen laufen in der Desktop-Ansicht (1280 × 800, [Bildschirmfoto](../images/custom-field-kontakt-karte-desktop.png)).
 
 ![Board-Karte in der Smartphone-Ansicht mit Telefon- und E-Mail-Link](../images/custom-field-kontakt-karte-phone.png)
 
-**Kartenansicht:** Neben Telefon und E-Mail stehen die Symbole „Telefon anrufen“ (`tel:`) und „E-Mail an E-Mail“ (`mailto:`).
+**Kartenansicht:** Neben Telefon und E-Mail stehen die Schaltflächen „Telefon anrufen“ (`tel:`) und „E-Mail an E-Mail“ (`mailto:`). Am Desktop sitzen sie in der Seitenleiste, am Smartphone neben den Feldern unter dem Titel; dort sind sie 32 × 32 px groß (gemessen).
 
-![Kartenansicht mit Anruf- und Mail-Symbol](../images/custom-field-kontakt-aufgabe.png)
+![Kartenansicht mit Anruf- und Mail-Schaltfläche](../images/custom-field-kontakt-aufgabe.png)
+
+![Kartenansicht in der Smartphone-Ansicht](../images/custom-field-kontakt-aufgabe-phone.png)
 
 **Feld umwandeln:** Einstellungen → Projekt → Benutzerdefinierte Felder → „Mobil (alt)“ bearbeiten. Wählbar sind nur Text, E-Mail und Telefon; Zahl, Datum, Auswahl, Kontrollkästchen und Link sind gesperrt. Nach „Telefon“ und „Speichern“ ist das Feld vom Typ `phone`, und der Kartenwert `0151  2345678` ist als `0151 2345678` gespeichert (per API geprüft).
 

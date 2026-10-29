@@ -102,12 +102,14 @@ export function CustomFieldChip({
   if (!isLinkFieldType(field.type) || !value) return editable;
 
   return (
-    <span className="inline-flex min-w-0 items-center gap-0.5">
+    <span className="inline-flex min-w-0 items-center gap-1">
       {editable}
       <CustomFieldOpenLink
         fieldName={field.name}
         type={field.type}
         value={value}
+        // Same height as the chip beside it.
+        className="size-8"
       />
     </span>
   );

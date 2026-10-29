@@ -1,6 +1,7 @@
 import { ExternalLink, type LucideIcon, Mail, Phone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { CustomFieldType } from "@/components/project/custom-fields/types";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { customFieldHref } from "./custom-field-href";
 import { CustomFieldLink } from "./custom-field-link";
@@ -45,12 +46,15 @@ export function CustomFieldOpenLink({
       value={value}
       aria-label={label}
       title={label}
+      // An outlined icon button (PEGA-86), so calling or writing reads as an
+      // action next to the value and is a full touch target on phones.
       className={cn(
-        "flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground no-underline transition-colors hover:bg-accent hover:text-foreground",
+        buttonVariants({ variant: "outline", size: "icon" }),
+        "no-underline",
         className,
       )}
     >
-      <Icon className="size-3.5" aria-hidden="true" />
+      <Icon aria-hidden="true" />
     </CustomFieldLink>
   );
 }

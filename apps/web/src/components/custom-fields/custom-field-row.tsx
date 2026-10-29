@@ -79,6 +79,7 @@ export function CustomFieldRow({
         fieldName={field.name}
         type={field.type}
         value={value}
+        className="ml-1"
       />
     </PropertyRow>
   );
