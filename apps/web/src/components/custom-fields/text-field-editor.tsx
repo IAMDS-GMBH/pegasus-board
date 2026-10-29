@@ -2,6 +2,7 @@ import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { Kbd } from "@/components/ui/kbd";
+import { TEXT_FIELD_INPUTS } from "./text-field-inputs";
 
 type TextFieldEditorProps = {
   field: CustomFieldDefinition;
@@ -19,16 +20,15 @@ export function TextFieldEditor({
   onSubmit,
 }: TextFieldEditorProps) {
   const { t } = useTranslation();
-  const isNumber = field.type === "number";
-  const isUrl = field.type === "url";
+  const input = TEXT_FIELD_INPUTS[field.type];
   const errorId = useId();
 
   return (
     <div className="w-64">
       <input
         autoFocus
-        type={isNumber ? "number" : isUrl ? "url" : "text"}
-        inputMode={isNumber ? "decimal" : isUrl ? "url" : undefined}
+        type={input?.type ?? "text"}
+        inputMode={input?.inputMode}
         aria-invalid={invalid || undefined}
         aria-describedby={invalid ? errorId : undefined}
         value={draft}
@@ -49,7 +49,7 @@ export function TextFieldEditor({
             role="alert"
             className="text-destructive-foreground"
           >
-            {t("tasks:customFields.invalidUrl")}
+            {input?.invalidKey && t(input.invalidKey)}
           </span>
         ) : (
           <span>

@@ -1612,7 +1612,9 @@
 				"number": "Zahl",
 				"text": "Text",
 				"multiselect": "Mehrfachauswahl",
-				"url": "Link"
+				"url": "Link",
+				"email": "E-Mail",
+				"phone": "Telefon"
 			},
 			"clearDefault": "Standardwert entfernen",
 			"moreOptions": "+{{hiddenCount}} weitere",
@@ -1640,7 +1642,9 @@
 				"defaultRequired": "Pflichtfelder benötigen einen Standardwert.",
 				"moreOptionsRequired": "Füge mindestens zwei Optionen hinzu, um Mehrfachauswahl zu erlauben.",
 				"optionsRequired": "Füge mindestens eine Option hinzu.",
-				"invalidUrl": "Gib einen Link ein, z. B. example.org oder https://example.org."
+				"invalidUrl": "Gib einen Link ein, z. B. example.org oder https://example.org.",
+				"invalidEmail": "Gib eine E-Mail-Adresse ein, z. B. name@example.org.",
+				"invalidPhone": "Gib eine Telefonnummer ein, z. B. 0170 1234567 oder +49 170 1234567."
 			},
 			"nameLabel": "Name",
 			"newTitle": "Neues Feld",
@@ -1669,12 +1673,14 @@
 				"defaultRequired": "Pflichtfelder benötigen einen Standardwert.",
 				"invalidDefault": "Der Standardwert passt nicht zum Feldtyp.",
 				"tooFewOptions": "Füge weitere Optionen hinzu: Eine Auswahl braucht mindestens eine, eine Mehrfachauswahl mindestens zwei.",
-				"typeLocked": "Der Typ kann nach dem Erstellen eines Felds nicht mehr geändert werden. Nur Auswahl und Mehrfachauswahl lassen sich ineinander umwandeln.",
+				"typeLocked": "Der Typ kann nach dem Erstellen eines Felds nicht mehr geändert werden. Nur Auswahl und Mehrfachauswahl sowie Text, E-Mail und Telefon lassen sich ineinander umwandeln.",
 				"optionsNotAllowed": "Nur Auswahl und Mehrfachauswahl haben Optionen.",
 				"optionInUse": "Aufgaben nutzen noch eine Option, die du entfernt hast. Wähle bei diesen Aufgaben zuerst eine andere Option.",
 				"tasksHaveMultipleOptions": "Bei einigen Aufgaben sind mehrere Optionen gewählt. Lass bei diesen Aufgaben zuerst nur eine Option stehen.",
-				"notFound": "Dieses Feld gibt es nicht mehr. Vielleicht hat es jemand gelöscht."
-			}
+				"notFound": "Dieses Feld gibt es nicht mehr. Vielleicht hat es jemand gelöscht.",
+				"tasksHaveInvalidValues": "Bei einigen Aufgaben passt der Wert nicht zum neuen Typ. Korrigiere oder leere diese Werte zuerst."
+			},
+			"typeSwitchText": "Text, E-Mail und Telefon lassen sich ineinander umwandeln. Werte, die nicht passen, verhindern die Umwandlung."
 		},
 		"security": "Sicherheit",
 		"securityPage": {
@@ -3255,7 +3261,11 @@
 			"moreFields_other": "{{count}} weitere Felder",
 			"manage": "Felder verwalten",
 			"invalidUrl": "Gib einen gültigen Link ein, z. B. linkedin.com/in/name.",
-			"openLink": "{{field}} öffnen"
+			"openLink": "{{field}} öffnen",
+			"invalidEmail": "Gib eine gültige E-Mail-Adresse ein, z. B. name@example.org.",
+			"invalidPhone": "Gib eine gültige Telefonnummer ein, z. B. 0170 1234567.",
+			"sendEmail": "E-Mail an {{field}}",
+			"callNumber": "{{field}} anrufen"
 		},
 		"board": {
 			"reorderFailed": "Die Reihenfolge konnte nicht gespeichert werden.",
@@ -4185,7 +4195,9 @@
 			"defaultValue": "Standardwert",
 			"multiselectOptionsRequired": "Füge mindestens zwei verschiedene Optionen hinzu.",
 			"unchecked": "Deaktiviert",
-			"validDefaultRequired": "Gib einen gültigen Standardwert für dieses Pflichtfeld ein."
+			"validDefaultRequired": "Gib einen gültigen Standardwert für dieses Pflichtfeld ein.",
+			"email": "E-Mail",
+			"phone": "Telefon"
 		},
 		"projectNew": {
 			"newProject": "Neues Projekt",

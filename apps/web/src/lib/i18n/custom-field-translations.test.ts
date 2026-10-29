@@ -24,6 +24,8 @@ const fieldTypes = {
   dropdown: "Auswahl",
   multiselect: "Mehrfachauswahl",
   url: "Link",
+  email: "E-Mail",
+  phone: "Telefon",
 };
 
 // Words that are the same in German and English.
@@ -42,6 +44,8 @@ describe("custom field translations", () => {
       dropdown: mobile.dropdown,
       multiselect: mobile.multiSelect,
       url: mobile.url,
+      email: mobile.email,
+      phone: mobile.phone,
     }).toEqual(fieldTypes);
   });
 
@@ -68,6 +72,7 @@ describe("custom field translations", () => {
         "notFound",
         "optionInUse",
         "optionsNotAllowed",
+        "tasksHaveInvalidValues",
         "tasksHaveMultipleOptions",
         "tooFewOptions",
         "typeLocked",

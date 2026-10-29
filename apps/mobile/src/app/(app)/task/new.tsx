@@ -36,6 +36,10 @@ import { useMembers, useWorkspaceLabels } from "@/lib/hooks";
 import { qk, useAction } from "@/lib/query";
 import { useRequiredSession } from "@/lib/session";
 import { PRIORITIES, priorityLabel, STATUS_PLANNED } from "@/lib/style";
+import {
+  fieldKeyboardType,
+  isTypedField,
+} from "@/features/project/field-keyboard";
 import { font, useColors } from "@/theme";
 
 type Picker =
@@ -678,21 +682,12 @@ export default function NewTaskScreen() {
         }
       />
       <TextInputSheet
-        visible={
-          !!fieldEditing &&
-          ["text", "number", "url"].includes(fieldEditing.type)
-        }
+        visible={!!fieldEditing && isTypedField(fieldEditing.type)}
         onClose={() => setFieldEditing(null)}
         title={fieldEditing?.name ?? ""}
         initial={fieldEditing ? (fieldValues[fieldEditing.id] ?? "") : ""}
         multiline={fieldEditing?.type === "text"}
-        keyboardType={
-          fieldEditing?.type === "number"
-            ? "decimal-pad"
-            : fieldEditing?.type === "url"
-              ? "url"
-              : "default"
-        }
+        keyboardType={fieldKeyboardType(fieldEditing?.type)}
         validate={() => true}
         onSubmit={(v) => fieldEditing && setFieldValue(fieldEditing.id, v)}
       />

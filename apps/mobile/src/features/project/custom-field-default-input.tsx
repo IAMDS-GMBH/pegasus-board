@@ -9,6 +9,7 @@ import { Button, TextField } from "@/components/ui";
 import { formatDate, toIsoDay } from "@/lib/format";
 
 import { selectedDefaults, type CustomFieldType } from "./field-form";
+import { fieldKeyboardType, isTypedField } from "./field-keyboard";
 
 export function CustomFieldDefaultInput({
   type,
@@ -25,7 +26,7 @@ export function CustomFieldDefaultInput({
   const [picking, setPicking] = useState(false);
   const label = t("mobile:projectSettings.defaultValue");
 
-  if (type === "text" || type === "number" || type === "url") {
+  if (isTypedField(type)) {
     return (
       <TextField
         label={label}
@@ -35,9 +36,7 @@ export function CustomFieldDefaultInput({
         keyboardType={
           type === "number"
             ? "numbers-and-punctuation"
-            : type === "url"
-              ? "url"
-              : "default"
+            : fieldKeyboardType(type)
         }
         autoCapitalize="none"
         autoCorrect={false}

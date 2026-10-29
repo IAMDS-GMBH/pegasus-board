@@ -109,6 +109,36 @@ describe("CardFieldList", () => {
     expect(screen.getByText("javascript:alert(1)")).toBeInTheDocument();
   });
 
+  // Pegasus fork (PEGA-86): contact values on list and backlog rows.
+  it("renders phone and email values as tel: and mailto: links", () => {
+    render(
+      <CardFieldList
+        fields={[
+          {
+            fieldId: "phone",
+            name: "Telefon",
+            type: "phone",
+            value: "0170 1234567",
+          },
+          {
+            fieldId: "email",
+            name: "E-Mail",
+            type: "email",
+            value: "max@example.org",
+          },
+        ]}
+        max={2}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "0170 1234567" })).toHaveAttribute(
+      "href",
+      "tel:01701234567",
+    );
+    expect(
+      screen.getByRole("link", { name: "max@example.org" }),
+    ).toHaveAttribute("href", "mailto:max@example.org");
+  });
+
   it("renders nothing without fields", () => {
     const { container } = render(<CardFieldList fields={[]} max={2} />);
     expect(container).toBeEmptyDOMElement();

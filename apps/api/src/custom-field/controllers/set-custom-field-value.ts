@@ -8,7 +8,10 @@ import {
   customFieldValueTable,
   taskTable,
 } from "../../database/schema";
-import { normalizeUrlValue, toStoredCustomFieldValue } from "../url-value";
+import { toStoredCustomFieldValue } from "../stored-value";
+import { normalizeEmailValue } from "../email-value";
+import { normalizePhoneValue } from "../phone-value";
+import { normalizeUrlValue } from "../url-value";
 
 function isMultiselectEmpty(value: string): boolean {
   if (!value || value.trim().length === 0) return true;
@@ -131,6 +134,21 @@ async function setCustomFieldValue(
       throw new HTTPException(400, {
         message: "Value must be an http or https link",
       });
+    }
+  }
+
+  // Pegasus fork (PEGA-86): contact fields.
+  if (field.type === "email" && normalizedValue.length > 0) {
+    if (!normalizeEmailValue(normalizedValue)) {
+      throw new HTTPException(400, {
+        message: "Value must be an email address",
+      });
+    }
+  }
+
+  if (field.type === "phone" && normalizedValue.length > 0) {
+    if (!normalizePhoneValue(normalizedValue)) {
+      throw new HTTPException(400, { message: "Value must be a phone number" });
     }
   }
 
