@@ -1,9 +1,14 @@
-import { toFieldKind } from "@/components/project/custom-fields/field-kinds";
+import {
+  switchableKinds,
+  toFieldKind,
+} from "@/components/project/custom-fields/field-kinds";
 import type {
   CustomFieldDefinition,
   CustomFieldType,
   FieldKind,
 } from "@/components/project/custom-fields/types";
+import { normalizeCustomFieldEmail } from "@/components/custom-fields/custom-field-email";
+import { normalizeCustomFieldPhone } from "@/components/custom-fields/custom-field-phone";
 import { normalizeCustomFieldUrl } from "@/components/custom-fields/custom-field-url";
 import { moveItem } from "@/components/project/sortable/apply-order";
 
@@ -23,7 +28,9 @@ export type FieldFormIssue =
   | "optionsRequired"
   | "moreOptionsRequired"
   | "defaultRequired"
-  | "invalidUrl";
+  | "invalidUrl"
+  | "invalidEmail"
+  | "invalidPhone";
 
 export const EMPTY_FIELD_FORM: FieldFormState = {
   kind: "text",
@@ -34,6 +41,19 @@ export const EMPTY_FIELD_FORM: FieldFormState = {
   defaultValue: "",
   defaultValues: [],
   showOnCard: false,
+};
+
+// Kinds whose default must fit a format, with the issue shown when it doesn't.
+const CHECKED_KINDS: Partial<
+  Record<
+    FieldKind,
+    { normalize: (value: string) => string | null; issue: FieldFormIssue }
+  >
+> = {
+  url: { normalize: normalizeCustomFieldUrl, issue: "invalidUrl" },
+  // Pegasus fork (PEGA-86)
+  email: { normalize: normalizeCustomFieldEmail, issue: "invalidEmail" },
+  phone: { normalize: normalizeCustomFieldPhone, issue: "invalidPhone" },
 };
 
 function parseDefaultValues(value: string | null) {
@@ -74,6 +94,9 @@ export function formFromField(field?: CustomFieldDefinition | null) {
 
 export function setKind(state: FieldFormState, kind: FieldKind) {
   if (kind === state.kind) return state;
+  // Pegasus fork (PEGA-86): text, email and phone keep the typed default; the
+  // form issue says when it doesn't fit the new kind.
+  if (switchableKinds(state.kind).includes(kind)) return { ...state, kind };
   return {
     ...state,
     kind,
@@ -147,7 +170,8 @@ export function toApiDefault(state: FieldFormState): string | null {
 
   const trimmed = state.defaultValue.trim();
   if (!trimmed) return null;
-  if (state.kind === "url") return normalizeCustomFieldUrl(trimmed) ?? trimmed;
+  const checked = CHECKED_KINDS[state.kind];
+  if (checked) return checked.normalize(trimmed) ?? trimmed;
   return state.kind === "text" ? state.defaultValue : trimmed;
 }
 
@@ -161,12 +185,9 @@ export function getFormIssue(state: FieldFormState): FieldFormIssue | null {
   }
   if (state.required && toApiDefault(state) === null) return "defaultRequired";
   const defaultValue = state.defaultValue.trim();
-  if (
-    state.kind === "url" &&
-    defaultValue &&
-    !normalizeCustomFieldUrl(defaultValue)
-  ) {
-    return "invalidUrl";
+  const checked = CHECKED_KINDS[state.kind];
+  if (checked && defaultValue && !checked.normalize(defaultValue)) {
+    return checked.issue;
   }
   return null;
 }

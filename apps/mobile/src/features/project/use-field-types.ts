@@ -10,5 +10,7 @@ export function useFieldTypes() {
     { value: "dropdown", label: t("mobile:projectSettings.dropdown") },
     { value: "multiselect", label: t("mobile:projectSettings.multiSelect") },
     { value: "url", label: t("mobile:projectSettings.url") },
+    { value: "email", label: t("mobile:projectSettings.email") },
+    { value: "phone", label: t("mobile:projectSettings.phone") },
   ] as const;
 }

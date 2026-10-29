@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { TEXT_FIELD_INPUTS } from "@/components/custom-fields/text-field-inputs";
 import { CheckboxDefaultSelect } from "@/components/project/custom-fields/field-dialog/checkbox-default-select";
 import { ChoiceDefaultSelect } from "@/components/project/custom-fields/field-dialog/choice-default-select";
 import { DateDefaultPicker } from "@/components/project/custom-fields/field-dialog/date-default-picker";
@@ -64,13 +65,8 @@ export function FieldDefaultInput({
       return (
         <Input
           size="sm"
-          type={
-            form.kind === "number"
-              ? "number"
-              : form.kind === "url"
-                ? "url"
-                : "text"
-          }
+          type={TEXT_FIELD_INPUTS[form.kind]?.type ?? "text"}
+          inputMode={TEXT_FIELD_INPUTS[form.kind]?.inputMode}
           value={form.defaultValue}
           aria-labelledby={labelledBy}
           placeholder={t("settings:customFields.noDefault")}

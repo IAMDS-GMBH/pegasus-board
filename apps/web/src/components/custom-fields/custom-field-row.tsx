@@ -75,9 +75,12 @@ export function CustomFieldRow({
           {button}
         </CustomFieldPopover>
       )}
-      {field.type === "url" && (
-        <CustomFieldOpenLink fieldName={field.name} value={value} />
-      )}
+      <CustomFieldOpenLink
+        fieldName={field.name}
+        type={field.type}
+        value={value}
+        className="ml-1"
+      />
     </PropertyRow>
   );
 }

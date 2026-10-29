@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { cn } from "@/lib/cn";
 import { CheckboxMark } from "./checkbox-mark";
+import { isLinkFieldType } from "./custom-field-href";
 import { CustomFieldOpenLink } from "./custom-field-open-link";
 import { CustomFieldPopover } from "./custom-field-popover";
 import { CustomFieldTypeIcon } from "./custom-field-type-icon";
@@ -98,12 +99,18 @@ export function CustomFieldChip({
     </CustomFieldPopover>
   );
 
-  if (field.type !== "url" || !value) return editable;
+  if (!isLinkFieldType(field.type) || !value) return editable;
 
   return (
-    <span className="inline-flex min-w-0 items-center gap-0.5">
+    <span className="inline-flex min-w-0 items-center gap-1">
       {editable}
-      <CustomFieldOpenLink fieldName={field.name} value={value} />
+      <CustomFieldOpenLink
+        fieldName={field.name}
+        type={field.type}
+        value={value}
+        // Same height as the chip beside it.
+        className="size-8"
+      />
     </span>
   );
 }

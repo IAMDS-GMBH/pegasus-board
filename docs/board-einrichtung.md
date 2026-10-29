@@ -74,12 +74,12 @@ Im Repository geht auch `pnpm board:setup --workspace …`.
 
 Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne selbst an (Feinkonzept Baustein 2b). Sie stehen nicht in der Vorgabe. „Kampagne: ohne Kampagne“ markiert Leads aus einer unbekannten Quelle.
 
-**Standardfelder** sind alle optional. Pflichtangaben prüft der Hub beim Eingang.
+**Standardfelder** sind alle optional. Pflichtangaben prüft der Hub beim Eingang. Telefon und E-Mail prüft Kaneo selbst (PEGA-86): Eine Karte mit einer ungültigen Telefonnummer oder E-Mail-Adresse lehnt die API mit 400 ab, auch beim Anlegen durch den Hub. An der Karte sind beide Felder Links, die den Anruf oder die Mail mit einem Tipp starten.
 
 | Feld | Typ | Auswahlwerte | Auf Karte |
 |---|---|---|---|
-| Telefon | Text | | |
-| E-Mail | Text | | |
+| Telefon | Telefon (`phone`) | | |
+| E-Mail | E-Mail (`email`) | | |
 | PLZ | Text (führende Null bleibt erhalten) | | |
 | Ort | Text | | ja |
 | Geburtsjahr | Zahl | | |
@@ -100,7 +100,7 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 - Es löscht kein Label und kein Feld.
 - Es entfernt keinen Auswahlwert. Zusätzliche Werte meldet es nur.
 - Es löscht keine Spalte, die nicht zu Kaneos Standardspalten gehört, und keine Spalte mit Karten. Zusätzliche Spalten rücken ans Ende des Boards.
-- Es ändert keinen Feldtyp, außer zwischen Auswahl und Mehrfachauswahl. Weicht der Typ ab, bricht der Lauf mit einer Meldung ab, bevor etwas geschrieben wird.
+- Es ändert keinen Feldtyp, außer zwischen Auswahl und Mehrfachauswahl sowie zwischen Text, E-Mail und Telefon. Weicht der Typ anders ab, bricht der Lauf mit einer Meldung ab, bevor etwas geschrieben wird. Ein Wechsel von Text zu E-Mail oder Telefon scheitert, solange eine Karte einen Wert hat, der nicht passt. Die API nennt dann `CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES`; die Werte müssen erst korrigiert oder geleert werden.
 - Ein archiviertes Projekt `BEW` stellt es nicht wieder her. Der Lauf bricht ab.
 
 **Vorgabe ändern:** `board.json` anpassen, im Review-Prozess freigeben und das Skript auf allen Umgebungen erneut ausführen. Weitere Felder aus Feinkonzept Baustein 3 (Prüfergebnis, Termin, Rückgabegrund und so weiter) werden so ergänzt, sobald sie fachlich abgestimmt sind.

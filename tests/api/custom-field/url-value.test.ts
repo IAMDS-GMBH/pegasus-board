@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import {
-  normalizeUrlValue,
-  toStoredCustomFieldValue,
-} from "../../../apps/api/src/custom-field/url-value";
+import { normalizeUrlValue } from "../../../apps/api/src/custom-field/url-value";
 
 describe("url custom field values", () => {
   it.each([
@@ -27,12 +24,5 @@ describe("url custom field values", () => {
     `https://example.org/${"a".repeat(2048)}`,
   ])("rejects %j", (input) => {
     expect(normalizeUrlValue(input)).toBeNull();
-  });
-
-  it("rewrites only url values for storage", () => {
-    expect(toStoredCustomFieldValue("url", "example.org")).toBe(
-      "https://example.org/",
-    );
-    expect(toStoredCustomFieldValue("text", "example.org")).toBe("example.org");
   });
 });

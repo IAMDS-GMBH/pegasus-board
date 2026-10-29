@@ -9,7 +9,7 @@ import { publishEvent } from "../../events";
 import { assertValidDefinition } from "../assert-valid-definition";
 import { fieldError } from "../field-error";
 import { insertMissingValues } from "../fill-default-values";
-import { toStoredCustomFieldValue } from "../url-value";
+import { toStoredCustomFieldValue } from "../stored-value";
 
 async function createCustomField(
   projectId: string,

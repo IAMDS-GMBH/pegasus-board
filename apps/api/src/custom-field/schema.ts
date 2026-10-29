@@ -21,6 +21,9 @@ const customFieldType = z.enum([
   "multiselect",
   // Pegasus fork (PEGA-87): an http(s) link, stored normalized.
   "url",
+  // Pegasus fork (PEGA-86): contact fields, rendered as mailto: and tel: links.
+  "email",
+  "phone",
 ]);
 
 export const createCustomFieldBody = z.object({
@@ -28,7 +31,7 @@ export const createCustomFieldBody = z.object({
   name: z.string(),
   type: customFieldType.openapi({
     description:
-      "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored.",
+      "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored. `email` holds one email address, stored trimmed. `phone` holds a phone number with digits, spaces, a leading `+` and `( ) / . -`; it is stored as typed with spaces collapsed.",
   }),
   required: z.boolean().optional().default(false),
   defaultValue: z.string().optional(),
@@ -45,7 +48,7 @@ export const updateCustomFieldBody = z.object({
   }),
   type: customFieldType.optional().openapi({
     description:
-      "Only `dropdown` and `multiselect` can switch between each other. Task values are converted, and switching to `dropdown` is rejected while a task has more than one option picked. Any other type change is rejected.",
+      "Only `dropdown` and `multiselect` can switch between each other, and `text`, `email` and `phone` can switch between each other. Task values are converted. Switching to `dropdown` is rejected while a task has more than one option picked, and switching to `email` or `phone` is rejected while a task has a value that doesn't fit. Any other type change is rejected.",
   }),
   required: z.boolean().optional().openapi({
     description:

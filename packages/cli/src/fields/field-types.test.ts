@@ -14,12 +14,16 @@ describe("parseFieldType", () => {
       Result.succeed("multiselect"),
     );
     expect(parseFieldType("checkbox")).toEqual(Result.succeed("boolean"));
+    // Pegasus fork (PEGA-86)
+    expect(parseFieldType("E-Mail")).toEqual(Result.succeed("email"));
+    expect(parseFieldType("mail")).toEqual(Result.succeed("email"));
+    expect(parseFieldType("tel")).toEqual(Result.succeed("phone"));
   });
 
   it("lists the types when the input is unknown", () => {
     const result = parseFieldType("color");
     expect(Result.isFailure(result) && result.failure.hint).toBe(
-      "Use one of: text, number, date, dropdown, multiselect, boolean, url.",
+      "Use one of: text, number, date, dropdown, multiselect, boolean, url, email, phone.",
     );
   });
 });

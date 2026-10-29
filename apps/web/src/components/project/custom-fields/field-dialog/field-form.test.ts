@@ -163,6 +163,20 @@ describe("getFormIssue", () => {
     expect(getFormIssue({ ...link, defaultValue: "example.org" })).toBeNull();
     expect(getFormIssue(link)).toBeNull();
   });
+
+  // Pegasus fork (PEGA-86)
+  it.each([
+    ["email", "max(at)example.org", "max@example.org", "invalidEmail"],
+    ["phone", "keine Angabe", "0170 1234567", "invalidPhone"],
+  ] as const)(
+    "needs a default that fits a %s field",
+    (kind, bad, good, issue) => {
+      const contact = { ...EMPTY_FIELD_FORM, kind, name: "Kontakt" };
+      expect(getFormIssue({ ...contact, defaultValue: bad })).toBe(issue);
+      expect(getFormIssue({ ...contact, defaultValue: good })).toBeNull();
+      expect(getFormIssue(contact)).toBeNull();
+    },
+  );
 });
 
 describe("payloads", () => {
@@ -208,6 +222,20 @@ describe("payloads", () => {
       options: undefined,
       showOnCard: false,
     });
+  });
+
+  it("sends a phone default in its stored form", () => {
+    expect(
+      toCreatePayload(
+        {
+          ...EMPTY_FIELD_FORM,
+          kind: "phone",
+          name: "Telefon",
+          defaultValue: " 089   12345 ",
+        },
+        "p1",
+      ).defaultValue,
+    ).toBe("089 12345");
   });
 
   it("leaves options out of other types and clears empty defaults", () => {

@@ -68,6 +68,10 @@ import {
   type LinkKind,
 } from "./relation-link";
 import { entrySeconds, type TaskExtras } from "./use-task";
+import {
+  fieldKeyboardType,
+  isTypedField,
+} from "@/features/project/field-keyboard";
 
 export function SectionTitle({
   title,
@@ -272,18 +276,12 @@ export function CustomFields({
         onSave={(values) => editing && set(editing.id, JSON.stringify(values))}
       />
       <TextInputSheet
-        visible={!!editing && ["text", "number", "url"].includes(editing.type)}
+        visible={!!editing && isTypedField(editing.type)}
         onClose={() => setEditing(null)}
         title={editing?.name ?? ""}
         initial={editing ? (valueOf(editing.id) ?? "") : ""}
         multiline={editing?.type === "text"}
-        keyboardType={
-          editing?.type === "number"
-            ? "decimal-pad"
-            : editing?.type === "url"
-              ? "url"
-              : "default"
-        }
+        keyboardType={fieldKeyboardType(editing?.type)}
         validate={(v) => !editing?.required || v.trim().length > 0}
         onSubmit={(v) => editing && set(editing.id, v)}
       />

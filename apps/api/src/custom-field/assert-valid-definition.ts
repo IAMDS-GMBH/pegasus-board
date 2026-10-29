@@ -51,8 +51,8 @@ function assertValidDefaultForType(
     return;
   }
 
-  if (type === "url") {
-    const error = validateCustomFieldValue(trimmedValue, "url", name);
+  if (type === "url" || type === "email" || type === "phone") {
+    const error = validateCustomFieldValue(trimmedValue, type, name);
     if (error) invalidDefault(error);
     return;
   }

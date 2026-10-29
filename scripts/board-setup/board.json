@@ -39,8 +39,8 @@
 		{ "name": "keine Zuordnung", "color": "red" }
 	],
 	"fields": [
-		{ "name": "Telefon", "type": "text" },
-		{ "name": "E-Mail", "type": "text" },
+		{ "name": "Telefon", "type": "phone" },
+		{ "name": "E-Mail", "type": "email" },
 		{ "name": "PLZ", "type": "text" },
 		{ "name": "Ort", "type": "text", "showOnCard": true },
 		{ "name": "Geburtsjahr", "type": "number" },
