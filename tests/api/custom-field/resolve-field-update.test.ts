@@ -40,6 +40,56 @@ describe("resolveFieldUpdate", () => {
     ).toThrow("can't change");
   });
 
+  // Pegasus fork (PEGA-86): a text field can become an email or phone field.
+  describe("text, email and phone", () => {
+    const text: CurrentCustomField = {
+      ...dropdown,
+      name: "Telefon",
+      type: "text",
+      options: null,
+      defaultValue: null,
+    };
+
+    it.each([
+      ["text", "phone"],
+      ["text", "email"],
+      ["phone", "text"],
+      ["email", "phone"],
+    ])("allows switching from %s to %s", (from, to) => {
+      expect(
+        resolveFieldUpdate({ ...text, type: from }, { type: to }).type,
+      ).toBe(to);
+    });
+
+    it.each([
+      ["email", "number"],
+      ["phone", "url"],
+      ["url", "phone"],
+    ])("still rejects switching from %s to %s", (from, to) => {
+      expect(() =>
+        resolveFieldUpdate({ ...text, type: from }, { type: to }),
+      ).toThrow("can't change");
+    });
+
+    it("stores a kept default in the new type's form", () => {
+      expect(
+        resolveFieldUpdate(
+          { ...text, defaultValue: " 0170  1234567 " },
+          { type: "phone" },
+        ).defaultValue,
+      ).toBe("0170 1234567");
+    });
+
+    it("rejects a kept default that does not fit the new type", () => {
+      expect(() =>
+        resolveFieldUpdate(
+          { ...text, defaultValue: "keine Angabe" },
+          { type: "phone" },
+        ),
+      ).toThrow('Custom field "Telefon" expects a phone number');
+    });
+  });
+
   it("rejects a blank name", () => {
     expect(() => resolveFieldUpdate(dropdown, { name: "  " })).toThrow(
       "Name cannot be empty",

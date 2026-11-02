@@ -730,7 +730,7 @@ export function registerTools(
     "list_project_custom_fields",
     {
       description:
-        "List a project's custom field definitions: id, name, type (text, number, date, dropdown, boolean, multiselect, url), required, options, and defaultValue.",
+        "List a project's custom field definitions: id, name, type (text, number, date, dropdown, boolean, multiselect, url, email, phone), required, options, and defaultValue.",
       inputSchema: z.object({ projectId: nonEmptyString }),
     },
     async (args) =>
@@ -760,7 +760,7 @@ export function registerTools(
     "set_task_custom_field_value",
     {
       description:
-        "Set or clear one custom field value on a task. Get fieldId from list_project_custom_fields. Pass dates as YYYY-MM-DD, a dropdown value as one of its options, multiselect values as an array of options, links as http or https URLs (a missing scheme becomes https://), and null to clear the value (required fields can't be cleared).",
+        "Set or clear one custom field value on a task. Get fieldId from list_project_custom_fields. Pass dates as YYYY-MM-DD, a dropdown value as one of its options, multiselect values as an array of options, links as http or https URLs (a missing scheme becomes https://), email fields as one email address, phone fields as a number with digits, spaces, a leading + and ( ) / . -, and null to clear the value (required fields can't be cleared).",
       inputSchema: z.object({
         taskId: nonEmptyString,
         fieldId: nonEmptyString,

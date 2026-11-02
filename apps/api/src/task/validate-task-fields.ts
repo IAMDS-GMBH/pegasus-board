@@ -2,6 +2,8 @@ import { asc, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../database";
 import { columnTable, customFieldDefinitionTable } from "../database/schema";
+import { normalizeEmailValue } from "../custom-field/email-value";
+import { normalizePhoneValue } from "../custom-field/phone-value";
 import { normalizeUrlValue } from "../custom-field/url-value";
 
 // `text` is absent on purpose: it has no value rules.
@@ -11,7 +13,9 @@ export type CustomFieldValueType =
   | "date"
   | "dropdown"
   | "multiselect"
-  | "url";
+  | "url"
+  | "email"
+  | "phone";
 
 export function isCustomFieldValueEmpty(
   value: string,
@@ -131,6 +135,15 @@ export function validateCustomFieldValue(
 
   if (type === "url" && !normalizeUrlValue(value)) {
     return `Custom field "${fieldName}" expects an http or https link, got "${value}".`;
+  }
+
+  // Pegasus fork (PEGA-86): contact fields.
+  if (type === "email" && !normalizeEmailValue(value)) {
+    return `Custom field "${fieldName}" expects an email address, got "${value}".`;
+  }
+
+  if (type === "phone" && !normalizePhoneValue(value)) {
+    return `Custom field "${fieldName}" expects a phone number, got "${value}".`;
   }
 
   return null;

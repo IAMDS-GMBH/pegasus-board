@@ -92,6 +92,41 @@ test("dropdown and multiselect can switch", () => {
   assert.deepEqual(actions[0].changes, { type: "dropdown" });
 });
 
+// Pegasus fork (PEGA-86): Telefon and E-Mail started as text fields.
+test("text, email and phone can switch", () => {
+  const { actions, errors } = planFields(
+    [
+      { name: "Telefon", type: "phone" },
+      { name: "E-Mail", type: "email" },
+    ],
+    [
+      field({
+        id: "t",
+        name: "Telefon",
+        type: "text",
+        options: null,
+        showOnCard: false,
+      }),
+      field({
+        id: "e",
+        name: "E-Mail",
+        type: "text",
+        options: null,
+        showOnCard: false,
+      }),
+    ],
+  );
+
+  assert.deepEqual(errors, []);
+  assert.deepEqual(
+    actions.map((a) => [a.name, a.changes]),
+    [
+      ["Telefon", { type: "phone" }],
+      ["E-Mail", { type: "email" }],
+    ],
+  );
+});
+
 test("a field outside the spec stays and is reported", () => {
   const { actions, warnings } = planFields(
     [paket],

@@ -74,4 +74,43 @@ describe("CardFieldRows", () => {
     fireEvent.click(link);
     expect(onCardClick).not.toHaveBeenCalled();
   });
+
+  // Pegasus fork (PEGA-86): call or write with one tap from the card.
+  it.each([
+    ["phone", "Telefon", "0170 1234567", "tel:01701234567"],
+    ["email", "E-Mail", "max@example.org", "mailto:max@example.org"],
+  ] as const)(
+    "opens the %s value from the card without opening it",
+    (type, name, value, href) => {
+      const onCardClick = vi.fn();
+      render(
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stands in for the task card
+        <div onClick={onCardClick}>
+          <CardFieldRows fields={[{ fieldId: type, name, type, value }]} />
+        </div>,
+      );
+      const link = screen.getByRole("link", { name: value });
+      expect(link).toHaveAttribute("href", href);
+      expect(link).not.toHaveAttribute("target");
+      fireEvent.click(link);
+      expect(onCardClick).not.toHaveBeenCalled();
+    },
+  );
+
+  it("never links a stored phone value that is not a number", () => {
+    render(
+      <CardFieldRows
+        fields={[
+          {
+            fieldId: "phone",
+            name: "Telefon",
+            type: "phone",
+            value: "keine Angabe",
+          },
+        ]}
+      />,
+    );
+    expect(screen.getByText("keine Angabe")).toBeInTheDocument();
+    expect(screen.queryByRole("link")).toBeNull();
+  });
 });

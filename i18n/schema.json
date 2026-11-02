@@ -7239,6 +7239,12 @@
 								},
 								"url": {
 									"type": "string"
+								},
+								"email": {
+									"type": "string"
+								},
+								"phone": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -7248,7 +7254,9 @@
 								"dropdown",
 								"boolean",
 								"multiselect",
-								"url"
+								"url",
+								"email",
+								"phone"
 							]
 						},
 						"multiple": {
@@ -7293,6 +7301,9 @@
 								},
 								"notFound": {
 									"type": "string"
+								},
+								"tasksHaveInvalidValues": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -7304,7 +7315,8 @@
 								"optionsNotAllowed",
 								"optionInUse",
 								"tasksHaveMultipleOptions",
-								"notFound"
+								"notFound",
+								"tasksHaveInvalidValues"
 							]
 						}
 					},
@@ -13444,9 +13456,29 @@
 						},
 						"openLink": {
 							"type": "string"
+						},
+						"invalidEmail": {
+							"type": "string"
+						},
+						"invalidPhone": {
+							"type": "string"
+						},
+						"sendEmail": {
+							"type": "string"
+						},
+						"callNumber": {
+							"type": "string"
 						}
 					},
-					"required": ["ariaLabel", "invalidUrl", "openLink"]
+					"required": [
+						"ariaLabel",
+						"invalidUrl",
+						"openLink",
+						"invalidEmail",
+						"invalidPhone",
+						"sendEmail",
+						"callNumber"
+					]
 				},
 				"descriptionSearchLoading": {
 					"type": "string"
@@ -16956,6 +16988,12 @@
 						},
 						"url": {
 							"type": "string"
+						},
+						"email": {
+							"type": "string"
+						},
+						"phone": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -17027,7 +17065,9 @@
 						"unchecked",
 						"validDefaultRequired",
 						"multiselectOptionsRequired",
-						"url"
+						"url",
+						"email",
+						"phone"
 					]
 				},
 				"projectNew": {

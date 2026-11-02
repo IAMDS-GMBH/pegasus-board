@@ -12,6 +12,8 @@ const english: Record<string, string> = {
   "settings:customFields.types.multiselect": "Dropdown, pick several",
   "settings:customFields.types.boolean": "Checkbox",
   "settings:customFields.types.url": "Link",
+  "settings:customFields.types.email": "Email",
+  "settings:customFields.types.phone": "Phone",
   "settings:customFields.moreOptions": "+{{hiddenCount}} more",
   "settings:customFields.startsAs": "Starts as “{{value}}”",
   "settings:customFields.startsAt": "Starts at {{value}}",
@@ -59,6 +61,13 @@ describe("describeCustomField", () => {
     );
     expect(describeField("date", "2026-03-12")).toBe(
       "Date · Starts on Mar 12, 2026",
+    );
+    // Pegasus fork (PEGA-86)
+    expect(describeField("email", "bewerbung@example.org")).toBe(
+      "Email · Starts as “bewerbung@example.org”",
+    );
+    expect(describeField("phone", "089 12345")).toBe(
+      "Phone · Starts as “089 12345”",
     );
   });
 

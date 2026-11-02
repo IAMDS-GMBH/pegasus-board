@@ -6,6 +6,7 @@ import {
 import { taskChipClass } from "@/components/task-chips/task-chip-class";
 import type { CardField } from "./card-fields";
 import { CheckboxMark } from "./checkbox-mark";
+import { isLinkFieldType } from "./custom-field-href";
 import { CustomFieldLink } from "./custom-field-link";
 import { formatCustomFieldValue } from "./format-custom-field-value";
 
@@ -27,8 +28,9 @@ export function CardFieldChip({ field }: { field: CardField }) {
             <span className="max-w-24 truncate text-muted-foreground">
               {field.name}
             </span>
-            {field.type === "url" ? (
+            {isLinkFieldType(field.type) ? (
               <CustomFieldLink
+                type={field.type}
                 value={field.value}
                 className="max-w-24 truncate"
               >

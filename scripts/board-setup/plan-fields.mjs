@@ -1,6 +1,16 @@
-// Only dropdown and multiselect can switch into each other; the API rejects
-// every other type change (PUT /api/custom-field/{id}).
-const CONVERTIBLE_TYPES = ["dropdown", "multiselect"];
+// Types the API can switch into each other (PUT /api/custom-field/{id});
+// every other type change is rejected. Text to email or phone (PEGA-86) is
+// rejected too while a card holds a value that doesn't fit.
+const CONVERTIBLE_GROUPS = [
+  ["dropdown", "multiselect"],
+  ["text", "email", "phone"],
+];
+
+function canConvert(from, to) {
+  return CONVERTIBLE_GROUPS.some(
+    (group) => group.includes(from) && group.includes(to),
+  );
+}
 
 export function matchField(spec, fields) {
   return fields.find((f) => f.name === spec.name);
@@ -20,14 +30,11 @@ export function planFields(specFields, fields) {
 
     const changes = {};
     if (field.type !== spec.type) {
-      if (
-        CONVERTIBLE_TYPES.includes(field.type) &&
-        CONVERTIBLE_TYPES.includes(spec.type)
-      ) {
+      if (canConvert(field.type, spec.type)) {
         changes.type = spec.type;
       } else {
         errors.push(
-          `Feld „${spec.name}“ hat den Typ ${field.type}, die Vorgabe verlangt ${spec.type}. Die API kann den Typ nicht ändern; das Feld muss von Hand gelöscht und neu angelegt werden.`,
+          `Feld „${spec.name}“ hat den Typ ${field.type}, die Vorgabe verlangt ${spec.type}. Die API erlaubt diesen Typwechsel nicht; das Feld muss von Hand gelöscht und neu angelegt werden.`,
         );
         continue;
       }

@@ -4,6 +4,8 @@ import {
   Link,
   List,
   type LucideIcon,
+  Mail,
+  Phone,
   SquareCheck,
   SquareChevronDown,
   Type,
@@ -18,6 +20,8 @@ const ICONS: Record<CustomFieldType, LucideIcon> = {
   boolean: SquareCheck,
   multiselect: List,
   url: Link,
+  email: Mail,
+  phone: Phone,
 };
 
 export function customFieldIcon(type: CustomFieldType): LucideIcon {

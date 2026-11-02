@@ -11,7 +11,7 @@ import {
   projectTable,
   userTable,
 } from "../../database/schema";
-import { toStoredCustomFieldValue } from "../../custom-field/url-value";
+import { toStoredCustomFieldValue } from "../../custom-field/stored-value";
 import { publishEvent } from "../../events";
 import {
   assertAssignableUser,

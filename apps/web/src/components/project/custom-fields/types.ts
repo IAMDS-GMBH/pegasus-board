@@ -5,7 +5,10 @@ export type CustomFieldType =
   | "dropdown"
   | "boolean"
   | "multiselect"
-  | "url";
+  | "url"
+  // Pegasus fork (PEGA-86): rendered as mailto: and tel: links.
+  | "email"
+  | "phone";
 
 export type CustomFieldDefinition = {
   id: string;

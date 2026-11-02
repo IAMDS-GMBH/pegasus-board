@@ -1526,7 +1526,9 @@
 				"number": "Number",
 				"text": "Text",
 				"multiselect": "드롭다운(여러 개 선택)",
-				"url": "Link"
+				"url": "Link",
+				"email": "Email",
+				"phone": "Phone"
 			},
 			"clearDefault": "기본값 지우기",
 			"moreOptions": "+{{hiddenCount}} more",
@@ -1554,7 +1556,9 @@
 				"defaultRequired": "필수 필드에는 기본값이 필요합니다.",
 				"moreOptionsRequired": "여러 개 선택을 허용하려면 옵션을 두 개 이상 추가하세요.",
 				"optionsRequired": "옵션을 하나 이상 추가하세요.",
-				"invalidUrl": "Enter a link, like example.org or https://example.org."
+				"invalidUrl": "Enter a link, like example.org or https://example.org.",
+				"invalidEmail": "Enter an email address, like name@example.org.",
+				"invalidPhone": "Enter a phone number, like 0170 1234567 or +49 170 1234567."
 			},
 			"nameLabel": "이름",
 			"newTitle": "새 필드",
@@ -1587,8 +1591,10 @@
 				"optionsNotAllowed": "Only dropdown fields have options.",
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
-				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks."
-			}
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+			},
+			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3203,7 +3209,11 @@
 			"moreFields_other": "필드 {{count}}개 더 보기",
 			"manage": "필드 관리",
 			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
-			"openLink": "Open {{field}}"
+			"openLink": "Open {{field}}",
+			"callNumber": "Call {{field}}",
+			"invalidEmail": "Enter a valid email address, like name@example.org.",
+			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
+			"sendEmail": "Email {{field}}"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",
@@ -4260,7 +4270,9 @@
 			"multiselectOptionsRequired": "서로 다른 옵션을 두 개 이상 추가하세요.",
 			"unchecked": "체크 안 됨",
 			"validDefaultRequired": "이 필수 필드에 유효한 기본값을 입력하세요.",
-			"url": "Link"
+			"url": "Link",
+			"email": "Email",
+			"phone": "Phone"
 		},
 		"search": {
 			"clear": "지우기",

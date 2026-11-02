@@ -9,6 +9,7 @@ import { publishEvent } from "../../events";
 import { isChoiceType } from "../choice-options";
 import { fillEmptyValues } from "../fill-default-values";
 import { planChoiceValueChanges } from "../plan-choice-value-changes";
+import { planTextValueChanges } from "../plan-text-value-changes";
 import {
   type CustomFieldUpdateInput,
   resolveFieldUpdate,
@@ -28,23 +29,31 @@ async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
     }
 
     const next = resolveFieldUpdate(field, input);
+    const from = field.type;
+    const to = next.type;
+    const choiceChange =
+      isChoiceType(from) &&
+      isChoiceType(to) &&
+      (next.removedOptions.length > 0 || to !== from);
+    // Pegasus fork (PEGA-86): resolveFieldUpdate only lets a non-choice field
+    // change type within text, email and phone.
+    const textChange = !choiceChange && to !== from;
 
-    if (
-      isChoiceType(field.type) &&
-      isChoiceType(next.type) &&
-      (next.removedOptions.length > 0 || next.type !== field.type)
-    ) {
+    if (choiceChange || textChange) {
       const rows = await tx
         .selectDistinct({ value: customFieldValueTable.value })
         .from(customFieldValueTable)
         .where(eq(customFieldValueTable.fieldId, id));
+      const values = rows.map((row) => row.value);
 
-      const changes = planChoiceValueChanges({
-        values: rows.map((row) => row.value),
-        from: field.type,
-        to: next.type,
-        removedOptions: next.removedOptions,
-      });
+      const changes = choiceChange
+        ? planChoiceValueChanges({
+            values,
+            from,
+            to,
+            removedOptions: next.removedOptions,
+          })
+        : planTextValueChanges({ values, to });
 
       if (changes.length > 0) {
         const cases = sql.join(

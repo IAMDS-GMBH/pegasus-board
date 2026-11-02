@@ -22587,9 +22587,11 @@
                       "dropdown",
                       "boolean",
                       "multiselect",
-                      "url"
+                      "url",
+                      "email",
+                      "phone"
                     ],
-                    "description": "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored."
+                    "description": "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored. `email` holds one email address, stored trimmed. `phone` holds a phone number with digits, spaces, a leading `+` and `( ) / . -`; it is stored as typed with spaces collapsed."
                   },
                   "required": {
                     "type": "boolean",
@@ -22976,9 +22978,11 @@
                       "dropdown",
                       "boolean",
                       "multiselect",
-                      "url"
+                      "url",
+                      "email",
+                      "phone"
                     ],
-                    "description": "Only `dropdown` and `multiselect` can switch between each other. Task values are converted, and switching to `dropdown` is rejected while a task has more than one option picked. Any other type change is rejected."
+                    "description": "Only `dropdown` and `multiselect` can switch between each other, and `text`, `email` and `phone` can switch between each other. Task values are converted. Switching to `dropdown` is rejected while a task has more than one option picked, and switching to `email` or `phone` is rejected while a task has a value that doesn't fit. Any other type change is rejected."
                   },
                   "required": {
                     "type": "boolean",

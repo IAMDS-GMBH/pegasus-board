@@ -1525,7 +1525,9 @@
 				"number": "數字",
 				"text": "文字",
 				"multiselect": "下拉選單（可複選）",
-				"url": "Link"
+				"url": "Link",
+				"email": "Email",
+				"phone": "Phone"
 			},
 			"clearDefault": "清除預設值",
 			"moreOptions": "+{{hiddenCount}} 個",
@@ -1553,7 +1555,9 @@
 				"defaultRequired": "必填欄位需要預設值。",
 				"moreOptionsRequired": "若要允許複選，請至少新增兩個選項。",
 				"optionsRequired": "請至少新增一個選項。",
-				"invalidUrl": "Enter a link, like example.org or https://example.org."
+				"invalidUrl": "Enter a link, like example.org or https://example.org.",
+				"invalidEmail": "Enter an email address, like name@example.org.",
+				"invalidPhone": "Enter a phone number, like 0170 1234567 or +49 170 1234567."
 			},
 			"nameLabel": "名稱",
 			"newTitle": "新增自訂欄位",
@@ -1586,8 +1590,10 @@
 				"optionsNotAllowed": "Only dropdown fields have options.",
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
-				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks."
-			}
+				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+			},
+			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
 		},
 		"administration": "管理",
 		"adminUsers": {
@@ -3203,7 +3209,11 @@
 			"moreFields_other": "另外 {{count}} 個欄位",
 			"manage": "管理欄位",
 			"invalidUrl": "Enter a valid link, like linkedin.com/in/name.",
-			"openLink": "Open {{field}}"
+			"openLink": "Open {{field}}",
+			"callNumber": "Call {{field}}",
+			"invalidEmail": "Enter a valid email address, like name@example.org.",
+			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
+			"sendEmail": "Email {{field}}"
 		},
 		"board": {
 			"reorderFailed": "無法移動任務，請再試一次。",
@@ -4260,7 +4270,9 @@
 			"multiselectOptionsRequired": "請新增至少兩個不同的選項。",
 			"unchecked": "未勾選",
 			"validDefaultRequired": "請為此必填欄位輸入有效的預設值。",
-			"url": "Link"
+			"url": "Link",
+			"email": "Email",
+			"phone": "Phone"
 		},
 		"search": {
 			"clear": "清除",

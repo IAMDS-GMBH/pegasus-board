@@ -9,6 +9,9 @@ export const FIELD_TYPES = [
   "multiselect",
   "boolean",
   "url",
+  // Pegasus fork (PEGA-86)
+  "email",
+  "phone",
 ] as const;
 
 export type FieldType = (typeof FIELD_TYPES)[number];
@@ -21,6 +24,8 @@ export const FIELD_TYPE_LABELS: Readonly<Record<FieldType, string>> = {
   multiselect: "Multi-select",
   boolean: "Yes or no",
   url: "Link",
+  email: "Email",
+  phone: "Phone",
 };
 
 const ALIASES: Readonly<Record<string, FieldType>> = {
@@ -31,6 +36,10 @@ const ALIASES: Readonly<Record<string, FieldType>> = {
   checkbox: "boolean",
   string: "text",
   link: "url",
+  "e-mail": "email",
+  mail: "email",
+  tel: "phone",
+  telephone: "phone",
 };
 
 export function isFieldType(value: string): value is FieldType {

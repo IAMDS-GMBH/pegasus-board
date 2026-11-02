@@ -1431,7 +1431,7 @@ export const customFieldDefinitionTable = pgTable(
         onUpdate: "cascade",
       }),
     name: text("name").notNull(),
-    type: text("type").notNull(), // 'text' | 'number' | 'date' | 'dropdown' | 'multiselect' | 'boolean' | 'url'
+    type: text("type").notNull(), // 'text' | 'number' | 'date' | 'dropdown' | 'multiselect' | 'boolean' | 'url' | 'email' | 'phone'
     required: boolean("required").default(false).notNull(),
     defaultValue: text("default_value"),
     options: jsonb("options"),

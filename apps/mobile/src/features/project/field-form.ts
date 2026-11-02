@@ -5,7 +5,10 @@ export type CustomFieldType =
   | "boolean"
   | "dropdown"
   | "multiselect"
-  | "url";
+  | "url"
+  // Pegasus fork (PEGA-86)
+  | "email"
+  | "phone";
 
 export type FieldForm = {
   name: string;
@@ -93,6 +96,15 @@ export function validFieldDefault(
     // A quick shape check; the API normalizes and has the final say.
     case "url":
       return /^(https?:\/\/)?[^\s/:@]+\.[^\s]+$/i.test(trimmed);
+    case "email":
+      return /^[^\s@?#&,;:<>"()[\]\\]+@[^\s@?#&,;:<>"()[\]\\]+\.[^\s@?#&,;:<>"()[\]\\]+$/.test(
+        trimmed,
+      );
+    case "phone": {
+      if (!/^\+?[\d ()/.-]+$/.test(trimmed)) return false;
+      const digits = trimmed.replace(/\D/g, "").length;
+      return digits >= 5 && digits <= 17;
+    }
   }
 }
 

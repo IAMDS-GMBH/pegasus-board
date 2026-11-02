@@ -8,6 +8,8 @@ type FieldTypePickerProps = {
   value: FieldKind;
   labelledBy: string;
   disabled: boolean;
+  /** When set, only these kinds can be picked. */
+  allowedKinds?: FieldKind[];
   onChange: (kind: FieldKind) => void;
 };
 
@@ -15,6 +17,7 @@ export function FieldTypePicker({
   value,
   labelledBy,
   disabled,
+  allowedKinds,
   onChange,
 }: FieldTypePickerProps) {
   const { t } = useTranslation();
@@ -31,6 +34,7 @@ export function FieldTypePicker({
         <RadioPrimitive.Root
           key={kind}
           value={kind}
+          disabled={allowedKinds && !allowedKinds.includes(kind)}
           className="flex h-16 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border border-input bg-background text-xs text-muted-foreground outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-checked:border-foreground/40 data-checked:bg-accent data-checked:font-medium data-checked:text-foreground data-disabled:cursor-not-allowed data-disabled:hover:bg-background data-disabled:not-data-checked:opacity-50 dark:bg-input/32 dark:data-checked:bg-input/64"
         >
           <Icon aria-hidden="true" className="size-4" />

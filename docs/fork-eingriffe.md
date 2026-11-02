@@ -24,6 +24,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-89 | Serverseitiger Board-Filter nach Feldwerten und Labels | API, Web, MCP, Tests, Dev-Seed | `tests/api-integration/task-list-filters.test.ts` (1.000 Karten, < 2 s), `tests/api/task/task-filter-params.test.ts`, `tests/e2e/filter-performance.spec.ts`, Web: `server-filters.test.ts`, `board-server-filters.test.ts`, `use-get-tasks.test.tsx`, `task-matches-filters.test.ts`, `use-task-filters-with-labels-support.test.tsx`, `filtered-drag.test.tsx`, MCP: `register.test.ts` |
 | PEGA-90 | Feldänderungen live (`customFieldsChanged`), Fehlercodes der Feldverwaltung, deutsche Feldverwaltung | API, WebSocket, Web, i18n | `tests/api-integration/custom-field-live-updates.test.ts`, `custom-field-error-codes.test.ts`, `tests/api/ws/broadcast.test.ts`, `redis-link-refresh.test.ts`, Web: `use-project-websocket-cache.test.tsx` („custom field live updates“), `custom-field-error-key.test.ts`, `custom-field-dialog.test.tsx`, `custom-field-list.test.tsx`, `use-filter-subjects.test.tsx`, `month-grid.test.tsx`, `lib/i18n/custom-field-translations.test.ts` |
 | PEGA-84 | Board „Bewerber-Pool“ per Skript einrichten (Spalten, Labels, Standardfelder) | Konfiguration (Skript), keine Anwendungsdatei | `scripts/board-setup/*.test.mjs` (`node --test`), Probelauf gegen die Testumgebung |
+| PEGA-86 | Custom-Field-Typen `email` und `phone` (Mail und Anruf mit einem Tipp), Typwechsel Text ↔ E-Mail ↔ Telefon | API, Web, Mobile, CLI, MCP, i18n, Board-Skript | `tests/api-integration/custom-field-contact.test.ts`, `tests/api/custom-field/{email-value,phone-value,stored-value,plan-text-value-changes,resolve-field-update}.test.ts`, Web: `custom-field-{email,phone,href,row,chip}.test.ts(x)`, `card-field-{rows,list}.test.tsx`, `kanban-board/task-card.test.tsx`, `field-dialog/{field-form,custom-field-dialog}.test.ts(x)`, `custom-field-error-key.test.ts`, `lib/i18n/custom-field-translations.test.ts`, `scripts/board-setup/plan-fields.test.mjs` |
 
 ---
 
@@ -144,6 +145,30 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 **Beim Sync beachten:**
 - `scripts/board-setup/to-slug.mjs` kopiert `apps/api/src/column/to-slug.ts`, und `DEFAULT_COLUMN_SLUGS` in `plan-columns.mjs` spiegelt `DEFAULT_PROJECT_COLUMNS` in `apps/api/src/project/controllers/insert-project.ts`. Ändert Upstream eines davon, die Kopie nachziehen.
 - Nach jedem Sync einen Probelauf (`--dry-run`) gegen die Testumgebung ausführen. Er muss „keine Änderungen“ ergeben. Geänderte Pfade oder Felder der API für Projekte, Spalten, Labels oder Custom Fields fallen dort auf.
+
+### PEGA-86 — Custom-Field-Typen `email` und `phone`
+
+**Zweck:** Telefonnummer und E-Mail-Adresse an der Karte als Links, die mit einem Tipp den Anruf oder die Mail starten, vor allem am Smartphone ([Review](review/2026-10-custom-field-kontakt.md)). Upstream hat keine solchen Typen (geprüft 2026-10-28: Enum in `upstream/main` @ `49d72079`).
+
+**Regeln:**
+- `email`: getrimmt; genau ein `@`, Domain mit Punkt, höchstens 254 Zeichen, keine Leerzeichen und keines der Zeichen `? # & , ; : < > " ( ) [ ] \`. So kann ein gespeicherter Wert keine weiteren Empfänger oder Kopfzeilen in den `mailto:`-Link schmuggeln. Link `mailto:<wert>`.
+- `phone`: getrimmt, innere Leerzeichen zusammengefasst, sonst wie eingegeben gespeichert. Erlaubt sind Ziffern, Leerzeichen, `+` am Anfang und `( ) / . -`, 5 bis 15 Ziffern (ohne führendes `00` und ohne `(0)` nach der Ländervorwahl). Link `tel:` mit `+` und Ziffern; aus `+49 (0) 170 123-4567` wird `tel:+491701234567`.
+- Die Prüfung ist streng, auch beim Anlegen einer Karte über die API (Hub-Import): ungültige Werte geben 400.
+- Text, E-Mail und Telefon lassen sich ineinander umwandeln. Der Wechsel zu E-Mail oder Telefon schreibt alle Kartenwerte in die gespeicherte Form um. Er scheitert mit `CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES`, solange ein Wert nicht passt. Der Wechsel zurück zu Text ist immer möglich.
+- Keine Migration: `custom_field_definition.type` ist `text`.
+
+**Dateien:**
+- API: `apps/api/src/custom-field/{email-value,phone-value,stored-value,text-types,plan-text-value-changes}.ts` (neu; `toStoredCustomFieldValue` ist aus `url-value.ts` nach `stored-value.ts` gewandert), `schema.ts` (Enum, OpenAPI), `field-error.ts` (Code), `resolve-field-update.ts` (Typwechsel, Standardwert), `assert-valid-definition.ts`, `controllers/{set-custom-field-value,update-custom-field,create-custom-field}.ts`, `task/validate-task-fields.ts`, `task/controllers/create-task.ts`, `database/schema.ts` (Kommentar); `apps/docs/openapi.json`
+- Web: `apps/web/src/components/custom-fields/{custom-field-email,custom-field-phone,custom-field-href,text-field-inputs}.ts` (neu); `custom-field-link.tsx` (nimmt jetzt den Typ, nur `url` öffnet einen neuen Tab), `custom-field-open-link.tsx` (Symbol je Typ), `card-field-{rows,chip,overflow-row}.tsx`, `custom-field-{row,chip,popover,icon}.tsx/ts`, `text-field-editor.tsx`; `project/custom-fields/{types,field-kinds,describe-custom-field,custom-field-error-key}.ts`, `field-dialog/{custom-field-dialog,field-type-picker,field-default-input}.tsx`, `field-dialog/field-form.ts`
+- Mobile: `apps/mobile/src/features/project/{field-form,use-field-types,field-keyboard}.ts` (`field-keyboard.ts` neu), `custom-field-default-input.tsx`, `features/task/sections.tsx`, `app/(app)/task/new.tsx`. Typunterstützung und passende Tastatur; Links zeigt die App für diese Typen nicht.
+- CLI/MCP: `packages/cli/src/fields/field-types.ts` (Aliasse `mail`, `e-mail`, `tel`, `telephone`), `commands/field/create.ts`, `apps/docs/cli/reference.mdx`; `packages/mcp/src/tools/register.ts`
+- Board-Skript: `scripts/board-setup/board.json` (Telefon `phone`, E-Mail `email`), `plan-fields.mjs` (Typwechsel innerhalb Text/E-Mail/Telefon), `docs/board-einrichtung.md`
+- i18n: `settings.customFields.types.{email,phone}`, `settings.customFields.typeSwitchText`, `settings.customFields.issues.{invalidEmail,invalidPhone}`, `settings.customFields.errors.tasksHaveInvalidValues`, geänderter Text `settings.customFields.errors.typeLocked`, `tasks.customFields.{invalidEmail,invalidPhone,sendEmail,callNumber}`, `mobile.projectSettings.{email,phone}` (en-US, de-DE übersetzt, übrige Locales mit englischem Fallback), `i18n/schema.json` von Hand ergänzt
+
+**Beim Sync beachten:**
+- Die Regeln existieren zweimal (API `email-value.ts`/`phone-value.ts`, Web `custom-field-email.ts`/`custom-field-phone.ts`) und müssen gleich bleiben. Mobile prüft nur grob, die API entscheidet.
+- Upstream-Stellen, die über Feldtypen verzweigen, brauchen `email` und `phone`. Für Links gibt es jetzt einen Einstieg: `isLinkFieldType` und `customFieldHref` in `custom-field-href.ts`. Neue `field.type === "url"`-Abfragen aus Upstream dorthin umleiten.
+- Ändert Upstream `resolveType` in `resolve-field-update.ts` oder die Wertumschreibung in `update-custom-field.ts`, die Gruppe Text/E-Mail/Telefon (`text-types.ts`, `plan-text-value-changes.ts`) erhalten.
 
 ---
 

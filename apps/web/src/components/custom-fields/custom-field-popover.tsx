@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/cn";
 import { toast } from "@/lib/toast";
-import { normalizeCustomFieldUrl } from "./custom-field-url";
 import { DateFieldEditor } from "./date-field-editor";
 import { OptionFieldEditor } from "./option-field-editor";
 import { parseMultiselect } from "./parse-multiselect";
+import { TEXT_FIELD_INPUTS } from "./text-field-inputs";
 import { TextFieldEditor } from "./text-field-editor";
 
 type CustomFieldPopoverProps = {
@@ -32,9 +32,9 @@ export function CustomFieldPopover({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
-  const [invalidUrl, setInvalidUrl] = useState(false);
-  const isText =
-    field.type === "text" || field.type === "number" || field.type === "url";
+  const [invalid, setInvalid] = useState(false);
+  const textInput = TEXT_FIELD_INPUTS[field.type];
+  const isText = !!textInput;
 
   const commit = (next: string) => {
     if (next === value) return;
@@ -42,17 +42,18 @@ export function CustomFieldPopover({
     onChange(next);
   };
 
-  // Links are committed in their stored form, so the optimistic value matches
-  // what the API returns. Returns false when the draft is not a link.
+  // Links, emails and phone numbers are committed in their stored form, so
+  // the optimistic value matches what the API returns. Returns false when the
+  // draft doesn't fit the type.
   const commitDraft = () => {
     const next = draft.trim();
-    if (field.type !== "url" || next === "") {
+    if (!textInput?.normalize || next === "") {
       commit(next);
       return true;
     }
-    const url = normalizeCustomFieldUrl(next);
-    if (!url) return false;
-    commit(url);
+    const stored = textInput.normalize(next);
+    if (!stored) return false;
+    commit(stored);
     return true;
   };
 
@@ -78,13 +79,14 @@ export function CustomFieldPopover({
       onOpenChange={(next, details) => {
         if (next) {
           setDraft(value);
-          setInvalidUrl(false);
+          setInvalid(false);
         } else if (
-          isText &&
+          textInput &&
           details.reason !== "escape-key" &&
-          !commitDraft()
+          !commitDraft() &&
+          textInput.invalidKey
         ) {
-          toast.error(t("tasks:customFields.invalidUrl"));
+          toast.error(t(textInput.invalidKey));
         }
         setOpen(next);
       }}
@@ -99,14 +101,14 @@ export function CustomFieldPopover({
           <TextFieldEditor
             field={field}
             draft={draft}
-            invalid={invalidUrl}
+            invalid={invalid}
             onDraftChange={(next) => {
               setDraft(next);
-              setInvalidUrl(false);
+              setInvalid(false);
             }}
             onSubmit={() => {
               if (!commitDraft()) {
-                setInvalidUrl(true);
+                setInvalid(true);
                 return;
               }
               close();

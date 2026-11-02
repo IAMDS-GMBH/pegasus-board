@@ -14,6 +14,9 @@ const keys: Record<string, string> = {
   CUSTOM_FIELD_OPTION_IN_USE: "settings:customFields.errors.optionInUse",
   CUSTOM_FIELD_TASKS_HAVE_MULTIPLE_OPTIONS:
     "settings:customFields.errors.tasksHaveMultipleOptions",
+  // Pegasus fork (PEGA-86): a text field switching to email or phone.
+  CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES:
+    "settings:customFields.errors.tasksHaveInvalidValues",
   NOT_FOUND: "settings:customFields.errors.notFound",
 };
 

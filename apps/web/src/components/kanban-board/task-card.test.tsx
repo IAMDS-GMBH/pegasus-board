@@ -182,20 +182,23 @@ it("shows every configured field as a label and value row", () => {
   expect(screen.queryByText("+1")).toBeNull();
 });
 
-it("doesn't start a drag when a link field on the card is held", async () => {
-  cardFields.push({
-    fieldId: "profile",
-    name: "LinkedIn",
-    type: "url",
-    value: "https://linkedin.com/in/max",
-  });
-  render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });
-  const link = screen.getByRole("link", { name: "linkedin.com/in/max" });
-  fireEvent.touchStart(link, touchAt);
-  await holdPastDelay();
-  fireEvent.touchEnd(link);
-  expect(onDragStart).not.toHaveBeenCalled();
-});
+it.each([
+  ["link", "url", "https://linkedin.com/in/max", "linkedin.com/in/max"],
+  // Pegasus fork (PEGA-86)
+  ["phone", "phone", "0170 1234567", "0170 1234567"],
+  ["email", "email", "max@example.org", "max@example.org"],
+] as const)(
+  "doesn't start a drag when a %s field on the card is held",
+  async (_kind, type, value, name) => {
+    cardFields.push({ fieldId: "contact", name: "Kontakt", type, value });
+    render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });
+    const link = screen.getByRole("link", { name });
+    fireEvent.touchStart(link, touchAt);
+    await holdPastDelay();
+    fireEvent.touchEnd(link);
+    expect(onDragStart).not.toHaveBeenCalled();
+  },
+);
 
 it("doesn't start a drag when the portaled picker is held", async () => {
   render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });

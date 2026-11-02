@@ -71,6 +71,18 @@ describe("required custom field defaults", () => {
     expect(validFieldDefault("url", value, [])).toBe(valid);
   });
 
+  // Pegasus fork (PEGA-86)
+  it.each([
+    ["email", "max@example.org", true],
+    ["email", "max(at)example.org", false],
+    ["email", "max@example.org?cc=x@y.de", false],
+    ["phone", "+49 (0) 170 123-4567", true],
+    ["phone", "keine Angabe", false],
+    ["phone", "1234", false],
+  ] as const)("checks %s default %s", (type, value, valid) => {
+    expect(validFieldDefault(type, value, [])).toBe(valid);
+  });
+
   it("accepts both boolean states, including unchecked", () => {
     expect(validFieldDefault("boolean", "true", [])).toBe(true);
     expect(

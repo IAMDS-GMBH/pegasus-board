@@ -239,6 +239,47 @@ describe("CustomFieldDialog", () => {
     expect(m.createField).not.toHaveBeenCalled();
   });
 
+  // Pegasus fork (PEGA-86): Telefon and E-Mail started as text fields.
+  it("lets a text field switch to phone while editing and keeps its default", async () => {
+    const { dialog } = renderDialog({
+      ...platforms,
+      name: "Telefon",
+      type: "text",
+      defaultValue: "089 12345",
+      options: null,
+    });
+    expect(
+      within(dialog).getByText("settings:customFields.typeSwitchText"),
+    ).toBeInTheDocument();
+    for (const kind of ["number", "date", "dropdown", "boolean", "url"]) {
+      expect(
+        within(dialog).getByRole("radio", {
+          name: `settings:customFields.types.${kind}`,
+        }),
+      ).toHaveAttribute("data-disabled");
+    }
+
+    fireEvent.click(
+      within(dialog).getByRole("radio", {
+        name: "settings:customFields.types.phone",
+      }),
+    );
+    fireEvent.click(
+      within(dialog).getByRole("button", {
+        name: "settings:customFields.save",
+      }),
+    );
+    await waitFor(() =>
+      expect(m.updateField).toHaveBeenCalledWith({
+        id: "f1",
+        data: expect.objectContaining({
+          type: "phone",
+          defaultValue: "089 12345",
+        }),
+      }),
+    );
+  });
+
   // Pegasus fork (PEGA-90): the reason shows in the user's language.
   it.each([
     [

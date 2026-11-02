@@ -13,6 +13,8 @@ describe("customFieldErrorKey", () => {
     ["CUSTOM_FIELD_OPTIONS_NOT_ALLOWED", "optionsNotAllowed"],
     ["CUSTOM_FIELD_OPTION_IN_USE", "optionInUse"],
     ["CUSTOM_FIELD_TASKS_HAVE_MULTIPLE_OPTIONS", "tasksHaveMultipleOptions"],
+    // Pegasus fork (PEGA-86)
+    ["CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES", "tasksHaveInvalidValues"],
     ["NOT_FOUND", "notFound"],
   ])("maps %s to a translated text", (code, key) => {
     expect(

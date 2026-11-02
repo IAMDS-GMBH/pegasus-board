@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { CardField } from "./card-fields";
 import { CheckboxMark } from "./checkbox-mark";
+import { isLinkFieldType } from "./custom-field-href";
 import { CustomFieldLink } from "./custom-field-link";
 import { formatCustomFieldValue } from "./format-custom-field-value";
 
@@ -36,8 +37,9 @@ export function CardFieldRows({ fields }: { fields: CardField[] }) {
                     {t("settings:customFields.checked")}
                   </span>
                 </>
-              ) : field.type === "url" ? (
+              ) : isLinkFieldType(field.type) ? (
                 <CustomFieldLink
+                  type={field.type}
                   value={field.value}
                   className="truncate"
                   title={field.value}

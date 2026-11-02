@@ -6,7 +6,8 @@ import {
   normalizeOptions,
   readOptions,
 } from "./choice-options";
-import { toStoredCustomFieldValue } from "./url-value";
+import { toStoredCustomFieldValue } from "./stored-value";
+import { isTextType } from "./text-types";
 
 export type CurrentCustomField = {
   name: string;
@@ -40,10 +41,11 @@ function resolveType(field: CurrentCustomField, requested?: string) {
   const type = requested ?? field.type;
   if (type === field.type) return type;
   if (isChoiceType(type) && isChoiceType(field.type)) return type;
+  if (isTextType(type) && isTextType(field.type)) return type;
 
   fieldError(
     "CUSTOM_FIELD_TYPE_LOCKED",
-    "The type of a custom field can't change. Only dropdown and multiselect fields can switch between each other.",
+    "The type of a custom field can't change. Only dropdown and multiselect fields, and text, email and phone fields, can switch between each other.",
   );
 }
 
@@ -58,12 +60,12 @@ function resolveDefault(
     return toStoredCustomFieldValue(type, requested);
   }
 
-  if (
-    field.defaultValue === null ||
-    type === field.type ||
-    !isChoiceType(type) ||
-    !isChoiceType(field.type)
-  ) {
+  if (field.defaultValue === null || type === field.type) {
+    return field.defaultValue;
+  }
+  if (isTextType(type))
+    return toStoredCustomFieldValue(type, field.defaultValue);
+  if (!isChoiceType(type) || !isChoiceType(field.type)) {
     return field.defaultValue;
   }
 

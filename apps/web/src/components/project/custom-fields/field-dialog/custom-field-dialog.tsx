@@ -16,6 +16,10 @@ import {
 import { FieldOptionsEditor } from "@/components/project/custom-fields/field-dialog/field-options-editor";
 import { FieldSettingsBox } from "@/components/project/custom-fields/field-dialog/field-settings-box";
 import { FieldTypePicker } from "@/components/project/custom-fields/field-dialog/field-type-picker";
+import {
+  switchableKinds,
+  toFieldKind,
+} from "@/components/project/custom-fields/field-kinds";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { customFieldErrorKey } from "@/components/project/custom-fields/custom-field-error-key";
 import { Button } from "@/components/ui/button";
@@ -70,6 +74,7 @@ export function CustomFieldDialog({
   const nameId = useId();
   const optionsLabelId = useId();
   const editing = field !== null;
+  const allowedKinds = switchableKinds(toFieldKind(field?.type ?? "text"));
   const pending = creating || updating;
   const issue = getFormIssue(form);
 
@@ -133,14 +138,17 @@ export function CustomFieldDialog({
               <FieldTypePicker
                 value={form.kind}
                 labelledBy={typeLabelId}
-                disabled={editing}
+                disabled={editing && allowedKinds.length === 1}
+                allowedKinds={editing ? allowedKinds : undefined}
                 onChange={(kind) =>
                   setForm((current) => setKind(current, kind))
                 }
               />
               {editing ? (
                 <p className="text-xs text-muted-foreground">
-                  {t("settings:customFields.typeLocked")}
+                  {allowedKinds.length > 1
+                    ? t("settings:customFields.typeSwitchText")
+                    : t("settings:customFields.typeLocked")}
                 </p>
               ) : null}
             </div>

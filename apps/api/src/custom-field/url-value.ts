@@ -30,9 +30,3 @@ export function normalizeUrlValue(value: string): string | null {
 
   return url.href;
 }
-
-/** The value to store for a field type; only links are rewritten. */
-export function toStoredCustomFieldValue(type: string, value: string) {
-  if (type !== "url") return value;
-  return normalizeUrlValue(value) ?? value;
-}
