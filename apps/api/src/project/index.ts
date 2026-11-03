@@ -22,6 +22,7 @@ import {
   validateProjectBackgroundUploadInput,
 } from "../storage/s3";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import {
   hasWorkspacePermission,
   requireWorkspacePermission,
@@ -429,6 +430,7 @@ const project = apiRouter<BaseVariables & { workspaceId: string }>()
       workspaceId,
       c.get("userId"),
       includeArchived === "true",
+      await resolveTaskScope(c), // Fork (PEGA-141)
     );
     return c.json(projects.map(toPublicProject), 200);
   })

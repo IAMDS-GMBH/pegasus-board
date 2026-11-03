@@ -7,11 +7,10 @@ import {
   taskTable,
   userTable,
 } from "../../database/schema";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
-async function exportTasks(
-  projectId: string,
-  restrictToUserId?: string | null,
-) {
+async function exportTasks(projectId: string, scope?: TaskScope | null) {
   const project = await db.query.projectTable.findFirst({
     where: eq(projectTable.id, projectId),
   });
@@ -43,7 +42,7 @@ async function exportTasks(
     .where(
       and(
         eq(taskTable.projectId, projectId),
-        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
+        taskVisibleCondition(scope ?? null),
       ),
     )
     .orderBy(taskTable.position);

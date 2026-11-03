@@ -1172,6 +1172,10 @@
 					"view_assigned_only": {
 						"label": "Only assigned",
 						"description": "Can only see tasks assigned to them"
+					},
+					"view_hub_scoped": {
+						"label": "Visibility from the Hub (units)",
+						"description": "Sees only tasks of the units the Hub sends for this person"
 					}
 				},
 				"label": {

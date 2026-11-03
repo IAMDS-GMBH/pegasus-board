@@ -6,6 +6,7 @@ type UpdateWorkspaceRoleRequest = {
   roleName: string;
   permission: Record<string, string[]>;
   assignedOnly: boolean;
+  hubScoped: boolean;
 };
 
 function useUpdateWorkspaceRole() {
@@ -16,11 +17,12 @@ function useUpdateWorkspaceRole() {
       roleName,
       permission,
       assignedOnly,
+      hubScoped,
     }: UpdateWorkspaceRoleRequest) => {
       const { data, error } = await authClient.organization.updateRole({
         organizationId: workspaceId,
         roleName,
-        data: { permission, assignedOnly },
+        data: { permission, assignedOnly, hubScoped },
       });
       if (error) throw new Error(error.message || "Failed to update role");
       return data;

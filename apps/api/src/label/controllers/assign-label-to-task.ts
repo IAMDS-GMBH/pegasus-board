@@ -21,10 +21,17 @@ import {
   syncLabelToGitlab,
 } from "../../plugins/gitlab/utils/sync-label-to-gitlab";
 import { assertProjectAccess } from "../../project-access/assert-project-access";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 type LabelRow = typeof labelTableType.$inferSelect;
 
-async function assignLabelToTask(id: string, taskId: string, userId: string) {
+async function assignLabelToTask(
+  id: string,
+  taskId: string,
+  userId: string,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-141): hidden task → 404
+) {
   const label = await db.query.labelTable.findFirst({
     where: (label, { eq }) => eq(label.id, id),
   });
@@ -46,7 +53,7 @@ async function assignLabelToTask(id: string, taskId: string, userId: string) {
     })
     .from(taskTable)
     .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))
-    .where(eq(taskTable.id, taskId))
+    .where(and(eq(taskTable.id, taskId), taskVisibleCondition(scope)))
     .limit(1);
 
   if (!task) {

@@ -8,11 +8,14 @@ import {
 } from "../../database/schema";
 import { publishEvent } from "../../events";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 async function deleteTaskRelation(
   id: string,
   userId: string,
   workspaceId: string,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-141)
 ) {
   const workspaceTasks = db
     .select({ id: taskTable.id })
@@ -22,6 +25,7 @@ async function deleteTaskRelation(
       and(
         eq(projectTable.workspaceId, workspaceId),
         projectAccessCondition(userId, taskTable.projectId),
+        taskVisibleCondition(scope),
       ),
     );
 

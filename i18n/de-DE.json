@@ -1417,6 +1417,10 @@
 					"view_assigned_only": {
 						"label": "Nur zugewiesene",
 						"description": "Sieht nur Aufgaben, die der Person zugewiesen sind"
+					},
+					"view_hub_scoped": {
+						"label": "Sicht aus dem Hub (Einheiten)",
+						"description": "Sieht nur Aufgaben der Einheiten, die der Hub für die Person überträgt"
 					}
 				},
 				"label": {

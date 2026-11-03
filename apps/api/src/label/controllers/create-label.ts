@@ -7,6 +7,8 @@ import { syncLabelToGitea } from "../../plugins/gitea/utils/sync-label-to-gitea"
 import { syncLabelToGitHub } from "../../plugins/github/utils/sync-label-to-github";
 import { syncLabelToGitlab } from "../../plugins/gitlab/utils/sync-label-to-gitlab";
 import { assertProjectAccess } from "../../project-access/assert-project-access";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 async function createLabel(
   name: string,
@@ -14,6 +16,7 @@ async function createLabel(
   taskId: string | undefined,
   workspaceId: string,
   userId: string,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-141): hidden task → 404
 ) {
   const deleting = await db.query.labelTable.findFirst({
     where: and(
@@ -34,7 +37,7 @@ async function createLabel(
       })
       .from(taskTable)
       .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))
-      .where(eq(taskTable.id, taskId))
+      .where(and(eq(taskTable.id, taskId), taskVisibleCondition(scope)))
       .limit(1);
 
     if (!task) {

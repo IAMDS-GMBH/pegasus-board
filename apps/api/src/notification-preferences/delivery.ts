@@ -16,6 +16,7 @@ import {
   safeOutboundError,
   sendOutboundRequest,
 } from "../utils/outbound-request";
+import { loadTaskScopes } from "../task-scope/load-task-scopes";
 import { resolveEmailTask } from "./resolve-email-task";
 import { decryptSecret } from "./secrets";
 
@@ -487,7 +488,13 @@ export async function deliverNotification(
     deliveries.push(
       (async () => {
         const task = context.taskId
-          ? await resolveEmailTask(context.taskId)
+          ? await resolveEmailTask(
+              context.taskId,
+              // Fork (PEGA-141): count only what the recipient sees.
+              (await loadTaskScopes(notification.userId)).get(
+                context.workspaceId,
+              ),
+            )
           : undefined;
         await sendNotificationEmail(recipient, content.title, {
           title: content.title,

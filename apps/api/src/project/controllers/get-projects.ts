@@ -2,6 +2,8 @@ import { and, count, eq, isNull, min, sql } from "drizzle-orm";
 import db from "../../database";
 import { projectTable, taskTable } from "../../database/schema";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 type ProjectStatistics = {
   completionPercentage: number;
@@ -19,6 +21,7 @@ async function getProjectStatistics(
   workspaceId: string,
   userId: string,
   includeArchived: boolean,
+  scope: TaskScope | null,
 ) {
   const statisticsByProject = new Map<string, ProjectStatistics>();
 
@@ -40,12 +43,12 @@ async function getProjectStatistics(
     .from(taskTable)
     .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))
     .where(
-      includeArchived
-        ? eq(projectTable.workspaceId, workspaceId)
-        : and(
-            eq(projectTable.workspaceId, workspaceId),
-            isNull(projectTable.archivedAt),
-          ),
+      and(
+        eq(projectTable.workspaceId, workspaceId),
+        includeArchived ? undefined : isNull(projectTable.archivedAt),
+        // Pegasus fork (PEGA-141): counters cover only visible tasks.
+        taskVisibleCondition(scope),
+      ),
     )
     .groupBy(taskTable.projectId)
     .having(projectAccessCondition(userId, taskTable.projectId));
@@ -69,6 +72,7 @@ async function getProjects(
   workspaceId: string,
   userId: string,
   includeArchived = false,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-141)
 ) {
   const projects = await db.query.projectTable.findMany({
     where: and(
@@ -89,6 +93,7 @@ async function getProjects(
     workspaceId,
     userId,
     includeArchived,
+    scope,
   );
 
   return projects.map((project) => ({

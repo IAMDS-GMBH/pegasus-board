@@ -1,13 +1,4 @@
-import {
-  and,
-  desc,
-  eq,
-  ilike,
-  inArray,
-  notInArray,
-  or,
-  sql,
-} from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import db from "../../database";
 import {
   activityTable,
@@ -19,6 +10,8 @@ import {
 } from "../../database/schema";
 import { canAccessProject } from "../../project-access/can-access-project";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import { loadTaskScopes } from "../../task-scope/load-task-scopes";
+import { tasksVisibleCondition } from "../../task-scope/task-visible-condition";
 import { escapeLikePattern } from "../like-pattern";
 import { TASK_SHORT_ID_PATTERN } from "../task-short-id";
 
@@ -36,10 +29,6 @@ type SearchParams = {
   workspaceId?: string;
   projectId?: string;
   limit?: number;
-  // Workspaces in which the user may only see tasks assigned to them
-  // (`task:view_assigned_only`). Task, comment and activity hits from these
-  // workspaces are limited to the user's own tasks.
-  assignedOnlyWorkspaceIds?: string[];
 };
 
 type SearchResult = {
@@ -124,7 +113,6 @@ async function globalSearch(params: SearchParams): Promise<{
     workspaceId,
     projectId,
     limit = 20,
-    assignedOnlyWorkspaceIds,
   } = params;
 
   let resolvedUserId = userId;
@@ -170,15 +158,12 @@ async function globalSearch(params: SearchParams): Promise<{
     projectAccessCondition(resolvedUserId, projectTable.id),
   );
 
-  // Rows from a workspace where the user is restricted to assigned tasks must
-  // be the user's own; rows from other workspaces pass unchanged.
-  const assigneeScope =
-    assignedOnlyWorkspaceIds && assignedOnlyWorkspaceIds.length > 0
-      ? or(
-          notInArray(projectTable.workspaceId, assignedOnlyWorkspaceIds),
-          eq(taskTable.userId, resolvedUserId),
-        )
-      : undefined;
+  // Pegasus fork (PEGA-6, PEGA-141): task, comment and activity hits from a
+  // workspace where the user's role is restricted must be tasks the user
+  // sees; rows from other workspaces pass unchanged.
+  const assigneeScope = tasksVisibleCondition(
+    await loadTaskScopes(resolvedUserId),
+  );
 
   // Check if query matches short-id pattern (e.g. "DEP-23"). `generateProjectSlug`
   // normalizes to NFKC before it stores a key, so the query is normalized too,

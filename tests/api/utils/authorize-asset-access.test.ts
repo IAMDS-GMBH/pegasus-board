@@ -21,6 +21,12 @@ vi.mock("../../../apps/api/src/project-access/assert-project-access", () => ({
   },
 }));
 
+// Pegasus fork (PEGA-141): the task-scope check reads the database; it has
+// its own integration tests (task-view-hub-scope.test.ts, "attachments").
+vi.mock("../../../apps/api/src/task-scope/assert-asset-task-visible", () => ({
+  assertAssetTaskVisible: async () => undefined,
+}));
+
 vi.mock("../../../apps/api/src/utils/authenticate-api-request", () => ({
   // Mirrors the real helper: every unauthenticated path throws, so it never
   // returns a falsy userId.

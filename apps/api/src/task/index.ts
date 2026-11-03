@@ -25,10 +25,7 @@ import {
   validateTaskAssetUploadInput,
   verifyTaskAssetUpload,
 } from "../storage/s3";
-import {
-  listAssignedOnlyWorkspaceIds,
-  resolveAssignedOnlyUserId,
-} from "../utils/assigned-only-scope";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
 import {
   hasWorkspacePermission,
@@ -793,7 +790,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
     c.json(
       await getDescriptionPage(c.req.valid("param").id, {
         ...c.req.valid("query"),
-        restrictToUserId: await resolveAssignedOnlyUserId(c),
+        scope: await resolveTaskScope(c),
       }),
       200,
     ),
@@ -805,7 +802,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
         c.req.valid("param").projectId,
         query,
         after,
-        await resolveAssignedOnlyUserId(c),
+        await resolveTaskScope(c),
       ),
       200,
     );
@@ -830,7 +827,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
       projectId,
       {
         ...filters,
-        restrictToUserId: await resolveAssignedOnlyUserId(c),
+        scope: await resolveTaskScope(c),
       },
       c.get("userId"),
     );
@@ -888,7 +885,13 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(reorderTasksRoute, async (c) => {
     const { projectId, tasks, expectedTasks } = c.req.valid("json");
     return c.json(
-      await reorderTasks(projectId, tasks, c.get("userId"), expectedTasks),
+      await reorderTasks(
+        projectId,
+        tasks,
+        c.get("userId"),
+        expectedTasks,
+        await resolveTaskScope(c), // Fork (PEGA-141)
+      ),
       200,
     );
   })
@@ -949,10 +952,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(getTaskByTicketIdRoute, async (c) => {
     const { ticketId } = c.req.valid("param");
     return c.json(
-      await getTaskByTicketId(ticketId, c.get("userId"), {
-        ...c.req.valid("query"),
-        assignedOnlyWorkspaceIds: await listAssignedOnlyWorkspaceIds(c),
-      }),
+      await getTaskByTicketId(ticketId, c.get("userId"), c.req.valid("query")),
       200,
     );
   })
@@ -963,6 +963,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
       id,
       c.req.valid("query").view === "board",
       c.get("userId"),
+      await resolveTaskScope(c), // Fork (PEGA-141)
     );
 
     return c.json(task, 200);
@@ -1027,10 +1028,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(exportTasksRoute, async (c) => {
     const { projectId } = c.req.valid("param");
 
-    const exportData = await exportTasks(
-      projectId,
-      await resolveAssignedOnlyUserId(c),
-    );
+    const exportData = await exportTasks(projectId, await resolveTaskScope(c));
 
     return c.json(exportData, 200);
   })

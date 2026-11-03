@@ -1,4 +1,4 @@
-import { and, eq, inArray, notInArray, or, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
@@ -15,6 +15,8 @@ import {
 import { projectAccessCondition } from "../../project-access/project-access-condition";
 import { TICKET_ID_PATTERN } from "../ticket-id";
 import { hasInstanceAdminRole } from "../../utils/instance-admin-role";
+import { loadTaskScopes } from "../../task-scope/load-task-scopes";
+import { tasksVisibleCondition } from "../../task-scope/task-visible-condition";
 import getTask from "./get-task";
 
 export default async function getTaskByTicketId(
@@ -24,13 +26,10 @@ export default async function getTaskByTicketId(
     workspaceId,
     workspaceSlug,
     projectId,
-    assignedOnlyWorkspaceIds = [],
   }: {
     workspaceId?: string;
     workspaceSlug?: string;
     projectId?: string;
-    // Workspaces where the user's role only sees tasks assigned to them.
-    assignedOnlyWorkspaceIds?: string[];
   } = {},
 ) {
   const match = ticketId.normalize("NFKC").match(TICKET_ID_PATTERN);
@@ -95,12 +94,8 @@ export default async function getTaskByTicketId(
           ? undefined
           : inArray(projectTable.workspaceId, memberWorkspaces),
         projectAccessCondition(userId, projectTable.id),
-        assignedOnlyWorkspaceIds.length > 0
-          ? or(
-              notInArray(projectTable.workspaceId, assignedOnlyWorkspaceIds),
-              eq(taskTable.userId, userId),
-            )
-          : undefined,
+        // Fork (PEGA-6, PEGA-141): restricted roles, per workspace.
+        tasksVisibleCondition(await loadTaskScopes(userId)),
       ),
     );
 

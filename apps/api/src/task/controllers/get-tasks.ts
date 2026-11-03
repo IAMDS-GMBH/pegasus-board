@@ -35,6 +35,8 @@ import {
 } from "../description-pages";
 import { taskIsCompleted } from "../task-is-completed";
 import { getSubtaskCounts } from "../get-subtask-counts";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import type {
   TaskCustomFieldFilter,
   TaskLabelFilter,
@@ -43,10 +45,10 @@ import type {
 export type GetTasksOptions = {
   publicOnly?: boolean;
   assigneeId?: string;
-  // Server-derived from the member's role (`task:view_assigned_only`), never
+  // Server-derived from the member's role (assigned-only, Hub scope), never
   // from the request. Unlike the client filter `assigneeId` it cannot be
   // widened or dropped by the caller.
-  restrictToUserId?: string | null;
+  scope?: TaskScope | null;
   dueAfter?: string;
   dueBefore?: string;
   limit?: number;
@@ -199,9 +201,8 @@ async function getTasksPage(
     conditions.push(eq(taskTable.userId, options.assigneeId));
   }
 
-  if (options.restrictToUserId) {
-    conditions.push(eq(taskTable.userId, options.restrictToUserId));
-  }
+  const visible = taskVisibleCondition(options.scope ?? null);
+  if (visible) conditions.push(visible);
 
   if (options.dueBefore) {
     conditions.push(lte(taskTable.dueDate, new Date(options.dueBefore)));
@@ -308,6 +309,7 @@ async function getTasksPage(
     project.workspaceId,
     options.publicOnly ?? false,
     userId,
+    options.scope, // Fork (PEGA-141)
   );
 
   const labelsData =
