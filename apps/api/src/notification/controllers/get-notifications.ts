@@ -7,6 +7,7 @@ import {
   workspaceTable,
 } from "../../database/schema";
 
+import { loadTaskScopes } from "../../task-scope/load-task-scopes";
 import { notificationResourceAccess } from "../resource-access";
 import { notificationWorkspaceFilter } from "../workspace-filter";
 
@@ -35,6 +36,7 @@ async function getNotifications(userId: string, workspaceId?: string) {
           userId,
           notificationTable.resourceId,
           notificationTable.resourceType,
+          await loadTaskScopes(userId),
         ),
       ),
     )

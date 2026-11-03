@@ -1,6 +1,8 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { projectTable, taskRelationTable, taskTable } from "../database/schema";
 import { projectAccessCondition } from "../project-access/project-access-condition";
+import type { TaskScope } from "../task-scope/task-scope";
+import { taskVisibleCondition } from "../task-scope/task-visible-condition";
 import type { TaskReadDatabase } from "./bounded-read";
 import { taskIsCompleted } from "./task-is-completed";
 
@@ -11,6 +13,7 @@ export async function getSubtaskCounts(
   workspaceId: string,
   publicOnly: boolean,
   userId?: string,
+  scope?: TaskScope | null, // Fork (PEGA-141): counts only visible children
 ) {
   if (taskIds.length === 0) {
     return new Map<string, { completed: number; total: number }>();
@@ -35,6 +38,7 @@ export async function getSubtaskCounts(
         eq(projectTable.workspaceId, workspaceId),
         publicOnly ? eq(projectTable.isPublic, true) : undefined,
         userId ? projectAccessCondition(userId, projectTable.id) : undefined,
+        taskVisibleCondition(scope ?? null),
       ),
     )
     .groupBy(taskRelationTable.sourceTaskId);

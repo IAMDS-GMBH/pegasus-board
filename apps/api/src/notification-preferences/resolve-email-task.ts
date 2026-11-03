@@ -8,6 +8,8 @@ import {
   taskTable,
   userTable,
 } from "../database/schema";
+import type { TaskScope } from "../task-scope/task-scope";
+import { taskVisibleCondition } from "../task-scope/task-visible-condition";
 import {
   getInitials,
   resolveColumnIcon,
@@ -45,6 +47,9 @@ async function findColumn(task: {
 
 export async function resolveEmailTask(
   taskId: string,
+  // Pegasus fork (PEGA-141): the recipient's scope, so the column counter
+  // does not reveal how many hidden tasks share the column.
+  scope: TaskScope | null = null,
 ): Promise<NotificationEmailTask | undefined> {
   const [task] = await db
     .select({
@@ -90,6 +95,7 @@ export async function resolveEmailTask(
           and(
             eq(taskTable.projectId, task.projectId),
             eq(taskTable.status, column.slug),
+            taskVisibleCondition(scope),
           ),
         )
     : [];

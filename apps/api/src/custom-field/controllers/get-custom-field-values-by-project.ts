@@ -5,12 +5,14 @@ import {
   customFieldValueTable,
   taskTable,
 } from "../../database/schema";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
-// Pegasus fork: `restrictToUserId` applies the assigned-only row filter
-// (task:view_assigned_only) so the board chip never leaks foreign task values.
+// Pegasus fork: `scope` applies the task row filter (assigned-only, Hub
+// scope) so the board chip never leaks values of hidden tasks.
 async function getCustomFieldValuesByProject(
   projectId: string,
-  restrictToUserId: string | null = null,
+  scope: TaskScope | null = null,
 ) {
   return db
     .select({
@@ -31,10 +33,7 @@ async function getCustomFieldValuesByProject(
       eq(customFieldValueTable.fieldId, customFieldDefinitionTable.id),
     )
     .where(
-      and(
-        eq(taskTable.projectId, projectId),
-        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
-      ),
+      and(eq(taskTable.projectId, projectId), taskVisibleCondition(scope)),
     );
 }
 

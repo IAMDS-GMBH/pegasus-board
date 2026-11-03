@@ -2,12 +2,14 @@ import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   foreignKey,
   index,
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -329,6 +331,10 @@ export const workspaceRoleTable = pgTable(
     // lets a member grant permissions they hold themselves, and no one may
     // hold a restriction without being restricted by it.
     assignedOnly: boolean("assigned_only").default(false).notNull(),
+    // Pegasus fork (PEGA-141): members with this role see what the Pegasus
+    // Hub pushed for them (`pegasus_user_scope`). A restriction like
+    // `assignedOnly`, kept outside `permission` for the same reason.
+    hubScoped: boolean("hub_scoped").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" })
       .default(utcNow)
       .notNull(),
@@ -1501,3 +1507,67 @@ export const dataMigrationTable = pgTable("data_migration", {
     .default(utcNow)
     .notNull(),
 });
+
+// Pegasus fork (PEGA-141): the visibility the Pegasus Hub computes and pushes
+// (`pegasus-visibility/`). Users are keyed by lower-case email so a scope
+// applies to someone who registers later. Only that module writes these
+// tables; `task-scope/` reads them.
+export const pegasusUserScopeTable = pgTable(
+  "pegasus_user_scope",
+  {
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspaceTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    email: text("email").notNull(),
+    mode: text("mode").$type<"all" | "units" | "assigned">().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .default(utcNow)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.workspaceId, table.email] }),
+    check(
+      "pegasus_user_scope_mode_check",
+      sql`${table.mode} in ('all', 'units', 'assigned')`,
+    ),
+  ],
+);
+
+export const pegasusUserScopeUnitTable = pgTable(
+  "pegasus_user_scope_unit",
+  {
+    workspaceId: text("workspace_id").notNull(),
+    email: text("email").notNull(),
+    unitId: text("unit_id").notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.workspaceId, table.email, table.unitId] }),
+    foreignKey({
+      columns: [table.workspaceId, table.email],
+      foreignColumns: [
+        pegasusUserScopeTable.workspaceId,
+        pegasusUserScopeTable.email,
+      ],
+      name: "pegasus_user_scope_unit_scope_fk",
+    })
+      .onDelete("cascade")
+      .onUpdate("cascade"),
+  ],
+);
+
+export const pegasusTaskUnitTable = pgTable(
+  "pegasus_task_unit",
+  {
+    taskId: text("task_id")
+      .primaryKey()
+      .references(() => taskTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    unitId: text("unit_id").notNull(),
+  },
+  (table) => [index("pegasus_task_unit_unitId_idx").on(table.unitId)],
+);

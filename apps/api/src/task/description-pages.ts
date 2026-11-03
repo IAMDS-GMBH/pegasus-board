@@ -2,6 +2,8 @@ import { and, asc, eq, gt, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { projectTable, taskTable } from "../database/schema";
 import { boundedTaskRead } from "./bounded-read";
+import type { TaskScope } from "../task-scope/task-scope";
+import { taskVisibleCondition } from "../task-scope/task-visible-condition";
 
 export const BOARD_DESCRIPTION_MAX_BYTES = 64 * 1024;
 export const DESCRIPTION_CHUNK_CHARACTERS = 32 * 1024;
@@ -21,13 +23,13 @@ export async function getDescriptionPage(
     offset: number;
     version?: string;
     publicProjectId?: string;
-    restrictToUserId?: string | null;
+    scope?: TaskScope | null;
   },
 ) {
   return boundedTaskRead(async (tx) => {
     const conditions = [eq(taskTable.id, taskId)];
-    if (options.restrictToUserId)
-      conditions.push(eq(taskTable.userId, options.restrictToUserId));
+    const visible = taskVisibleCondition(options.scope ?? null);
+    if (visible) conditions.push(visible);
     if (options.publicProjectId)
       conditions.push(
         eq(taskTable.projectId, options.publicProjectId),
@@ -66,7 +68,7 @@ export async function getDeferredDescriptionMatches(
   projectId: string,
   query: string,
   after?: string,
-  restrictToUserId?: string | null,
+  scope?: TaskScope | null,
 ) {
   return boundedTaskRead(async (tx) => {
     const rows = await tx
@@ -75,7 +77,7 @@ export async function getDeferredDescriptionMatches(
       .where(
         and(
           eq(taskTable.projectId, projectId),
-          restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
+          taskVisibleCondition(scope ?? null),
           descriptionDeferred,
           sql`strpos(lower(${taskTable.description}), lower(${query})) > 0`,
           after ? gt(taskTable.id, after) : undefined,

@@ -2,15 +2,28 @@ import { and, eq, type SQLWrapper, sql } from "drizzle-orm";
 import db from "../database";
 import { userTable } from "../database/schema";
 import { projectAccessCondition } from "../project-access/project-access-condition";
+import { loadTaskScopes } from "../task-scope/load-task-scopes";
+import type { TaskScopes } from "../task-scope/task-scope";
+import { tasksVisibleCondition } from "../task-scope/task-visible-condition";
 
 // Membership, rather than public visibility or global admin privileges, defines
 // who may be subscribed to private task activity. Use the same predicate when
 // creating, reading and delivering notifications, including historical rows.
+// Pegasus fork (PEGA-6, PEGA-141): `taskScopes` (from `loadTaskScopes(userId)`)
+// also hides tasks outside a restricted role's scope. Required, so a new
+// caller cannot forget it.
 export function notificationResourceAccess(
   userId: string,
   resourceId: string | null | SQLWrapper,
   resourceType: string | null | SQLWrapper,
+  taskScopes: TaskScopes,
 ) {
+  const taskVisible =
+    tasksVisibleCondition(taskScopes, {
+      id: sql`notification_task.id`,
+      assigneeId: sql`notification_task.user_id`,
+      workspaceId: sql`notification_project.workspace_id`,
+    }) ?? sql`true`;
   return sql<boolean>`(
     (${resourceId}::text IS NULL AND ${resourceType}::text IS NULL)
     OR (${resourceType}::text = 'task' AND EXISTS (
@@ -19,6 +32,7 @@ export function notificationResourceAccess(
       JOIN workspace_member AS notification_member ON notification_member.workspace_id = notification_project.workspace_id
       WHERE notification_task.id = ${resourceId} AND notification_member.user_id = ${userId}
         AND ${projectAccessCondition(userId, sql`notification_project.id`)}
+        AND ${taskVisible}
     ))
     OR (${resourceType}::text = 'workspace' AND EXISTS (
       SELECT 1 FROM workspace_member AS notification_member
@@ -43,6 +57,7 @@ export async function canReceiveResourceNotification(
           userId,
           resourceId ?? null,
           resourceType ?? null,
+          await loadTaskScopes(userId),
         ),
       ),
     )

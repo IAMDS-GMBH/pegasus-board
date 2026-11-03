@@ -6,7 +6,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
-import { resolveAssignedOnlyUserId } from "../utils/assigned-only-scope";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createActivity from "./controllers/create-activity";
@@ -178,7 +178,7 @@ const activity = apiRouter()
       await getWorkspaceActivities(
         c.req.valid("param").workspaceId,
         c.get("userId"),
-        await resolveAssignedOnlyUserId(c),
+        await resolveTaskScope(c),
       ),
       200,
     ),

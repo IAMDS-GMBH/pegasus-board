@@ -8,6 +8,8 @@ import {
 } from "../../database/schema";
 import { publishEvent } from "../../events";
 import { assertProjectAccess } from "../../project-access/assert-project-access";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 async function createTaskRelation({
   sourceTaskId,
@@ -15,12 +17,15 @@ async function createTaskRelation({
   relationType,
   userId,
   workspaceId,
+  scope = null,
 }: {
   sourceTaskId: string;
   targetTaskId: string;
   relationType: string;
   userId: string;
   workspaceId: string;
+  // Pegasus fork (PEGA-141): a hidden target answers like a missing one.
+  scope?: TaskScope | null;
 }) {
   if (sourceTaskId === targetTaskId) {
     throw new HTTPException(400, {
@@ -77,6 +82,7 @@ async function createTaskRelation({
         and(
           eq(taskTable.id, targetTaskId),
           eq(projectTable.workspaceId, workspaceId),
+          taskVisibleCondition(scope),
         ),
       )
       .limit(1);

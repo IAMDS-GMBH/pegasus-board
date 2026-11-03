@@ -51,9 +51,13 @@ describe("@kaneo/permissions statement surface", () => {
 describe("built-in role privileges", () => {
   it("keeps role restrictions out of the grantable statement", () => {
     expect(roleRestrictions).toEqual({
-      task: { view_assigned_only: "assignedOnly" },
+      task: {
+        view_assigned_only: "assignedOnly",
+        view_hub_scoped: "hubScoped",
+      },
     });
     expect(statement.task).not.toContain("view_assigned_only");
+    expect(statement.task).not.toContain("view_hub_scoped");
   });
 
   it("viewer can read but cannot create or modify", () => {

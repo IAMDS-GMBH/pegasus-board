@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { notificationTable } from "../../database/schema";
 
+import { loadTaskScopes } from "../../task-scope/load-task-scopes";
 import { notificationResourceAccess } from "../resource-access";
 
 async function setNotificationRead(
@@ -21,6 +22,7 @@ async function setNotificationRead(
           userId,
           notificationTable.resourceId,
           notificationTable.resourceType,
+          await loadTaskScopes(userId),
         ),
       ),
     )

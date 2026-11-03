@@ -63,6 +63,7 @@ import notification from "./notification";
 import notificationPreferences from "./notification-preferences";
 import oauth from "./oauth";
 import { createRoute, errorResponse, jsonResponse, z } from "./openapi";
+import pegasusVisibility from "./pegasus-visibility";
 import { initializePlugins } from "./plugins";
 import { migrateGitHubIntegration } from "./plugins/github/migration";
 import project from "./project";
@@ -877,6 +878,8 @@ export function createApp() {
   const importApi = api.route("/import", importRoutes);
   const userApi = api.route("/user", user);
   const adminApi = api.route("/admin", admin);
+  // Fork (PEGA-141): visibility pushed by the Pegasus Hub.
+  api.route("/pegasus-visibility", pegasusVisibility);
 
   app.route(
     "/",

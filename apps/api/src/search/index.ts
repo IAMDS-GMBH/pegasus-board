@@ -4,7 +4,6 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
-import { listAssignedOnlyWorkspaceIds } from "../utils/assigned-only-scope";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import globalSearch from "./controllers/global-search";
 import { searchResponseSchema } from "./response";
@@ -42,7 +41,6 @@ const search = apiRouter().openapi(globalSearchRoute, async (c) => {
       workspaceId,
       projectId,
       limit,
-      assignedOnlyWorkspaceIds: await listAssignedOnlyWorkspaceIds(c),
     }),
     200,
   );

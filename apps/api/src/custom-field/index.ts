@@ -4,7 +4,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
-import { resolveAssignedOnlyUserId } from "../utils/assigned-only-scope";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createCustomField from "./controllers/create-custom-field";
@@ -273,7 +273,7 @@ const customField = apiRouter()
     c.json(
       await getCustomFieldValuesByProject(
         c.req.valid("param").projectId,
-        await resolveAssignedOnlyUserId(c),
+        await resolveTaskScope(c),
       ),
       200,
     ),
@@ -285,7 +285,7 @@ const customField = apiRouter()
     c.json(
       await getCustomFieldFilterValues(
         c.req.valid("param").projectId,
-        await resolveAssignedOnlyUserId(c),
+        await resolveTaskScope(c),
       ),
       200,
     ),

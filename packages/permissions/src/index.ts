@@ -17,9 +17,10 @@ export const statement = {
 // Role restrictions take visibility away instead of granting it, so they are
 // not part of `statement`: better-auth only lets a member grant permissions
 // they hold. Each one is stored as its own `workspace_role` column (Pegasus
-// fork, Baustein 4); the role editor shows it next to the resource it narrows.
+// fork, Baustein 4; PEGA-141 for `hubScoped`, the visibility pushed by the
+// Pegasus Hub); the role editor shows it next to the resource it narrows.
 export const roleRestrictions = {
-  task: { view_assigned_only: "assignedOnly" },
+  task: { view_assigned_only: "assignedOnly", view_hub_scoped: "hubScoped" },
 } as const;
 
 export const ac = createAccessControl(statement);
