@@ -865,6 +865,7 @@
 			"title": "भूमिकाएँ",
 			"subtitle": "परिभाषित करें कि सदस्य {{workspaceName}} में कौन से कार्य कर सकते हैं।",
 			"thisWorkspace": "इस वर्कस्पेस",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "वर्कस्पेस भूमिकाएँ प्रबंधित करने के लिए आपको व्यवस्थापक या मालिक अनुमति चाहिए।",
 			"sectionTitle": "वर्कस्पेस भूमिकाएँ",
 			"sectionSubtitle": "डिफ़ॉल्ट भूमिकाएँ संपादित करें या कस्टम जोड़ें। संपादन के बाद भी सदस्य अपनी असाइन की गई भूमिका का नाम रखते हैं।",
@@ -949,10 +950,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

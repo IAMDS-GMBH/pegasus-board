@@ -11,8 +11,17 @@ vi.mock("@/components/activity/comment-editor", () => ({
   default: ({ value }: { value: string }) => <div>{value}</div>,
 }));
 
+const session = vi.hoisted(() => ({
+  user: null as { id: string } | null,
+  canUpdateTasks: vi.fn(() => true),
+}));
+
 vi.mock("@/components/providers/auth-provider/hooks/use-auth", () => ({
-  useAuth: () => ({ user: null }),
+  useAuth: () => ({ user: session.user }),
+}));
+
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({ canUpdateTasks: session.canUpdateTasks }),
 }));
 
 vi.mock("@/hooks/mutations/comment/use-update-comment", () => ({
@@ -124,7 +133,36 @@ function renderCommentCard(externalSource?: string, importedBy?: string) {
   );
 }
 
+function offersEdit() {
+  for (const button of screen.queryAllByRole("button")) fireEvent.focus(button);
+  return screen.queryByText("activity:comment.edit") !== null;
+}
+
 describe("CommentCard", () => {
+  // Pegasus fork (PEGA-142): editing a comment edits the lead (LEAD_EDIT
+  // where the Hub governs, task:update otherwise), on top of authorship.
+  describe("editing your own comment", () => {
+    afterEach(() => {
+      session.user = null;
+      session.canUpdateTasks.mockReturnValue(true);
+    });
+
+    it("is offered with canUpdateTasks", () => {
+      session.user = { id: "user-1" };
+      renderCommentCard();
+
+      expect(offersEdit()).toBe(true);
+    });
+
+    it("is not offered without canUpdateTasks", () => {
+      session.user = { id: "user-1" };
+      session.canUpdateTasks.mockReturnValue(false);
+      renderCommentCard();
+
+      expect(offersEdit()).toBe(false);
+    });
+  });
+
   it.each(["planka", "trello", "jira", "github"])(
     "visibly identifies %s authors as imported without hovering",
     (source) => {

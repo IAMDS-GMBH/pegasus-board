@@ -41,7 +41,13 @@ function apiKeyPermissions(c: Context) {
   return apiKey?.permissions ?? null;
 }
 
-function assertApiKeyScope(c: Context, permissions: PermissionMap) {
+/** Whether the request's API key, if any, covers `permissions`. */
+export function apiKeyAllows(c: Context, permissions: PermissionMap) {
+  const scope = apiKeyPermissions(c);
+  return !scope || satisfies(scope, permissions);
+}
+
+export function assertApiKeyScope(c: Context, permissions: PermissionMap) {
   const scope = apiKeyPermissions(c);
   if (scope && !satisfies(scope, permissions)) {
     throw new ApiError(403, {

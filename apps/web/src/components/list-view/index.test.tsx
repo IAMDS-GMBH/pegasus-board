@@ -31,6 +31,14 @@ const m = vi.hoisted(() => ({
   },
   mutate: vi.fn(),
   setProject: vi.fn(),
+  canMoveTasks: vi.fn(() => true),
+  canCreateTasks: vi.fn(() => true),
+}));
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({
+    canMoveTasks: m.canMoveTasks,
+    canCreateTasks: m.canCreateTasks,
+  }),
 }));
 vi.mock("@dnd-kit/core", async (original) => ({
   ...(await original<typeof import("@dnd-kit/core")>()),
@@ -95,6 +103,38 @@ it("disables keyboard sensors and rejects drag completion on a partial board", (
   );
   expect(m.mutate).not.toHaveBeenCalled();
   expect(m.setProject).not.toHaveBeenCalled();
+});
+
+// Pegasus fork (PEGA-142): no dragging without the right to move cards.
+it("offers no dragging without canMoveTasks", () => {
+  m.canMoveTasks.mockReturnValue(false);
+  const project = {
+    id: "p",
+    workspaceId: "w",
+    columns: [
+      {
+        id: "todo",
+        slug: "todo",
+        name: "To do",
+        tasks: [
+          { id: "a", position: 0 },
+          { id: "b", position: 1 },
+        ],
+      },
+    ],
+    plannedTasks: [],
+    archivedTasks: [],
+  } as unknown as ProjectWithTasks;
+  render(<ListView project={project} />, { wrapper: Providers });
+  expect(m.props.sensors).toEqual([]);
+  act(() =>
+    m.props.onDragEnd?.({
+      active: { id: "a" },
+      over: { id: "b" },
+    } as DragEndEvent),
+  );
+  expect(m.mutate).not.toHaveBeenCalled();
+  m.canMoveTasks.mockReturnValue(true);
 });
 
 it("blocks archive-all during pagination or errors, including an already-open confirmation", () => {
@@ -170,4 +210,34 @@ it("keeps collapsed lanes per project after the list view unmounts", () => {
 
   render(<ListView project={makeProject("other")} />, { wrapper: Providers });
   expect(lane("To do")).toHaveAttribute("aria-expanded", "true");
+});
+
+// Pegasus fork (PEGA-142): adding needs canCreateTasks, archiving all moves
+// the cards and needs canMoveTasks.
+it("offers neither add nor archive-all without the rights", () => {
+  m.canMoveTasks.mockReturnValue(false);
+  m.canCreateTasks.mockReturnValue(false);
+  const project = {
+    id: "p",
+    workspaceId: "w",
+    columns: [
+      {
+        id: "done",
+        slug: "done",
+        name: "Done",
+        isFinal: true,
+        tasks: [{ id: "a", position: 0 }],
+      },
+    ],
+    plannedTasks: [],
+    archivedTasks: [],
+  } as unknown as ProjectWithTasks;
+  render(<ListView project={project} />, { wrapper: Providers });
+
+  expect(screen.queryByLabelText("tasks:listView.addTask")).toBeNull();
+  expect(
+    screen.queryByLabelText("tasks:listView.archiveAllTooltip"),
+  ).toBeNull();
+  m.canMoveTasks.mockReturnValue(true);
+  m.canCreateTasks.mockReturnValue(true);
 });

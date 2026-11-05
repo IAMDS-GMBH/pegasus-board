@@ -29,6 +29,7 @@ import { useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
 import { useProjectBackground } from "@/hooks/use-project-background";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { EASE_OUT_CSS } from "@/lib/motion";
 import { useBackgroundStore } from "@/store/background";
@@ -53,12 +54,16 @@ type KanbanBoardProps = {
 
 function KanbanBoard({
   project,
-  disableDragDrop = false,
+  disableDragDrop: viewDisablesDragDrop = false,
   disableCollectionActions = false,
   sortedByNumber = false,
   sortedByPriority = false,
   serverFiltered = false,
 }: KanbanBoardProps) {
+  // Pegasus fork (PEGA-142): moving cards needs its own right (LEAD_MOVE_STAGE
+  // where the Hub governs), so the view offers no dragging without it.
+  const { canMoveTasks } = useWorkspacePermission();
+  const disableDragDrop = viewDisablesDragDrop || !canMoveTasks();
   const isAutomaticallySorted = sortedByNumber || sortedByPriority;
   const appendOnly = isAutomaticallySorted || serverFiltered;
   const queryClient = useQueryClient();

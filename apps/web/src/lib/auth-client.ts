@@ -65,7 +65,6 @@ export const authClient = createAuthClient({
         organizationRole: {
           additionalFields: {
             assignedOnly: { type: "boolean", required: false, input: true },
-            hubScoped: { type: "boolean", required: false, input: true },
           },
         },
       }),

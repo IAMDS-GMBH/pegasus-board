@@ -34,15 +34,14 @@ export function taskVisibleCondition(
   task: TaskColumns = taskColumns,
 ): SQL | undefined {
   if (!scope) return undefined;
+  if (scope.unitIds?.length === 0) return sql`false`;
 
-  const admitted: SQL[] = [];
-  if (scope.assigned) admitted.push(sql`${task.assigneeId} = ${scope.userId}`);
-  if (scope.unitIds.length > 0) {
-    admitted.push(
-      sql`exists (select 1 from ${pegasusTaskUnitTable} where ${pegasusTaskUnitTable.taskId} = ${task.id} and ${inArray(pegasusTaskUnitTable.unitId, [...scope.unitIds])})`,
-    );
-  }
-  return or(...admitted) ?? sql`false`;
+  return and(
+    scope.assignedOnly ? sql`${task.assigneeId} = ${scope.userId}` : undefined,
+    scope.unitIds
+      ? sql`exists (select 1 from ${pegasusTaskUnitTable} where ${pegasusTaskUnitTable.taskId} = ${task.id} and ${inArray(pegasusTaskUnitTable.unitId, [...scope.unitIds])})`
+      : undefined,
+  );
 }
 
 /**

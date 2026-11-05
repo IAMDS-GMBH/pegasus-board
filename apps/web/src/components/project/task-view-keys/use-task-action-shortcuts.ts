@@ -40,8 +40,13 @@ export function useTaskActionShortcuts(selection: TaskSelectionStore) {
   const queryClient = useQueryClient();
   const { data: workspace } = useActiveWorkspace();
   const operations = useBulkOperations();
-  const { canUpdateTasks, canAssignTasks, canDeleteTasks, canUpdateLabels } =
-    useWorkspacePermission();
+  const {
+    canUpdateTasks,
+    canMoveTasks,
+    canAssignTasks,
+    canDeleteTasks,
+    canLabelTasks,
+  } = useWorkspacePermission();
 
   const targets = () => {
     const { selectedTaskIds, focusedTaskId } = selection.getState();
@@ -100,11 +105,13 @@ export function useTaskActionShortcuts(selection: TaskSelectionStore) {
 
   const view = { scope: "view" as const };
   const edit = { ...view, enabled: canUpdateTasks() };
+  // Pegasus fork (PEGA-142): moving and labelling have their own rights.
+  const move = { ...view, enabled: canMoveTasks() };
   const assign = { ...view, enabled: canAssignTasks() };
-  const labels = { ...view, enabled: canUpdateLabels() };
+  const labels = { ...view, enabled: canLabelTasks() };
   const remove = { ...view, enabled: canDeleteTasks() };
 
-  useShortcut("changeStatus", () => request("status"), edit);
+  useShortcut("changeStatus", () => request("status"), move);
   useShortcut("changePriority", () => request("priority"), edit);
   useShortcut("assignTask", () => request("assignee"), assign);
   useShortcut("changeLabels", () => request("labels"), labels);

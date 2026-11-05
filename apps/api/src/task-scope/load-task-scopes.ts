@@ -1,29 +1,44 @@
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import db, { schema } from "../database";
 import { isOwnerRole } from "../project-access/is-owner-role";
 import { hasInstanceAdminRole } from "../utils/instance-admin-role";
 import { splitRoles } from "../utils/split-roles";
 import { composeTaskScope } from "./compose-task-scope";
+import { isHubSystemAccount } from "./is-hub-system-account";
 import type { HubMode, HubScope, TaskScope, TaskScopes } from "./task-scope";
 
-// The restriction comes from the member's roles, never from API-key scopes,
-// so a key can neither widen nor create it. Instance admins and owners are
-// never restricted. A member with several comma-separated roles is
-// restricted as soon as any role is, and duplicate unrestricted role rows
-// cannot lift it.
-export async function loadTaskScopes(
+// What a member may see and, in a workspace the Hub manages, do. `scope: null`
+// sees everything; `permissions: null` is not governed by Hub rights.
+export type MemberAccess = {
+  scope: TaskScope | null;
+  permissions: ReadonlySet<string> | null;
+};
+
+type HubRow = HubScope & { permissions: readonly string[] };
+
+// Restrictions come from the member's roles and the Hub's snapshot, never
+// from API-key scopes, so a key can neither widen nor create them. Instance
+// admins, owners and the Hub's system account are never restricted. Holds
+// only workspaces where the user is restricted in some way.
+export async function loadMemberAccess(
   userId: string,
   workspaceIds?: readonly string[],
-): Promise<TaskScopes> {
-  const scopes = new Map<string, TaskScope>();
-  if (workspaceIds?.length === 0) return scopes;
+): Promise<Map<string, MemberAccess>> {
+  const access = new Map<string, MemberAccess>();
+  if (workspaceIds?.length === 0) return access;
 
   const [user] = await db
     .select({ role: schema.userTable.role, email: schema.userTable.email })
     .from(schema.userTable)
     .where(eq(schema.userTable.id, userId))
     .limit(1);
-  if (!user || hasInstanceAdminRole(user.role)) return scopes;
+  if (
+    !user ||
+    hasInstanceAdminRole(user.role) ||
+    isHubSystemAccount(user.email)
+  ) {
+    return access;
+  }
 
   const memberships = (
     await db
@@ -41,68 +56,79 @@ export async function loadTaskScopes(
         ),
       )
   ).filter((membership) => !isOwnerRole(membership.role));
-  if (memberships.length === 0) return scopes;
+  if (memberships.length === 0) return access;
+  const memberWorkspaceIds = memberships.map((m) => m.workspaceId);
 
-  const restrictedRoles = await db
+  const assignedOnlyRoles = await db
     .select({
       workspaceId: schema.workspaceRoleTable.workspaceId,
       role: schema.workspaceRoleTable.role,
-      assignedOnly: schema.workspaceRoleTable.assignedOnly,
-      hubScoped: schema.workspaceRoleTable.hubScoped,
     })
     .from(schema.workspaceRoleTable)
     .where(
       and(
-        inArray(
-          schema.workspaceRoleTable.workspaceId,
-          memberships.map((membership) => membership.workspaceId),
-        ),
-        or(
-          eq(schema.workspaceRoleTable.assignedOnly, true),
-          eq(schema.workspaceRoleTable.hubScoped, true),
-        ),
+        inArray(schema.workspaceRoleTable.workspaceId, memberWorkspaceIds),
+        eq(schema.workspaceRoleTable.assignedOnly, true),
       ),
     );
-  if (restrictedRoles.length === 0) return scopes;
-
-  const flags = memberships.map((membership) => {
-    const roles = splitRoles(membership.role);
-    const rows = restrictedRoles.filter(
-      (row) =>
-        row.workspaceId === membership.workspaceId && roles.includes(row.role),
-    );
-    return {
-      workspaceId: membership.workspaceId,
-      assignedOnly: rows.some((row) => row.assignedOnly),
-      hubScoped: rows.some((row) => row.hubScoped),
-    };
-  });
-
-  const hubScopes = await loadHubScopes(
-    user.email.toLowerCase(),
-    flags.filter((flag) => flag.hubScoped).map((flag) => flag.workspaceId),
+  const managed = new Set(
+    (
+      await db
+        .select({ workspaceId: schema.pegasusWorkspaceTable.workspaceId })
+        .from(schema.pegasusWorkspaceTable)
+        .where(
+          inArray(schema.pegasusWorkspaceTable.workspaceId, memberWorkspaceIds),
+        )
+    ).map((row) => row.workspaceId),
   );
+  const hubRows = await loadHubRows(user.email.toLowerCase(), [...managed]);
 
-  for (const flag of flags) {
+  for (const membership of memberships) {
+    const roles = splitRoles(membership.role);
+    const isManaged = managed.has(membership.workspaceId);
+    const hub = hubRows.get(membership.workspaceId) ?? null;
     const scope = composeTaskScope({
       userId,
-      assignedOnly: flag.assignedOnly,
-      hubScoped: flag.hubScoped,
-      hub: hubScopes.get(flag.workspaceId) ?? null,
+      // A member with several roles is restricted as soon as any role is.
+      assignedOnly: assignedOnlyRoles.some(
+        (row) =>
+          row.workspaceId === membership.workspaceId &&
+          roles.includes(row.role),
+      ),
+      managed: isManaged,
+      hub,
     });
-    if (scope) scopes.set(flag.workspaceId, scope);
+    const permissions = isManaged ? new Set(hub?.permissions ?? []) : null;
+    if (scope || permissions) {
+      access.set(membership.workspaceId, { scope, permissions });
+    }
+  }
+  return access;
+}
+
+export async function loadTaskScopes(
+  userId: string,
+  workspaceIds?: readonly string[],
+): Promise<TaskScopes> {
+  const scopes = new Map<string, TaskScope>();
+  for (const [workspaceId, { scope }] of await loadMemberAccess(
+    userId,
+    workspaceIds,
+  )) {
+    if (scope) scopes.set(workspaceId, scope);
   }
   return scopes;
 }
 
-async function loadHubScopes(email: string, workspaceIds: string[]) {
-  const scopes = new Map<string, HubScope>();
-  if (workspaceIds.length === 0) return scopes;
+async function loadHubRows(email: string, workspaceIds: string[]) {
+  const rows = new Map<string, HubRow>();
+  if (workspaceIds.length === 0) return rows;
 
-  const rows = await db
+  const scopes = await db
     .select({
       workspaceId: schema.pegasusUserScopeTable.workspaceId,
       mode: schema.pegasusUserScopeTable.mode,
+      permissions: schema.pegasusUserScopeTable.permissions,
     })
     .from(schema.pegasusUserScopeTable)
     .where(
@@ -124,13 +150,14 @@ async function loadHubScopes(email: string, workspaceIds: string[]) {
       ),
     );
 
-  for (const row of rows) {
-    scopes.set(row.workspaceId, {
+  for (const row of scopes) {
+    rows.set(row.workspaceId, {
       mode: row.mode as HubMode,
+      permissions: row.permissions,
       unitIds: units
         .filter((unit) => unit.workspaceId === row.workspaceId)
         .map((unit) => unit.unitId),
     });
   }
-  return scopes;
+  return rows;
 }

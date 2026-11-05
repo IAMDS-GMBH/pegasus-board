@@ -331,10 +331,6 @@ export const workspaceRoleTable = pgTable(
     // lets a member grant permissions they hold themselves, and no one may
     // hold a restriction without being restricted by it.
     assignedOnly: boolean("assigned_only").default(false).notNull(),
-    // Pegasus fork (PEGA-141): members with this role see what the Pegasus
-    // Hub pushed for them (`pegasus_user_scope`). A restriction like
-    // `assignedOnly`, kept outside `permission` for the same reason.
-    hubScoped: boolean("hub_scoped").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" })
       .default(utcNow)
       .notNull(),
@@ -1523,6 +1519,12 @@ export const pegasusUserScopeTable = pgTable(
       }),
     email: text("email").notNull(),
     mode: text("mode").$type<"all" | "units" | "assigned">().notNull(),
+    // PEGA-142: the user's effective rights as the Hub sends them
+    // (`LEAD_EDIT`, ...). Unknown keys are kept; a missing key is denied.
+    permissions: text("permissions")
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .default(utcNow)
       .notNull(),
@@ -1535,6 +1537,21 @@ export const pegasusUserScopeTable = pgTable(
     ),
   ],
 );
+
+// PEGA-142: a workspace the Hub has pushed a user snapshot to. From then on
+// every member except owners, instance admins and the Hub's system account
+// is governed by the pushed scope and rights; no role or switch lifts it.
+export const pegasusWorkspaceTable = pgTable("pegasus_workspace", {
+  workspaceId: text("workspace_id")
+    .primaryKey()
+    .references(() => workspaceTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .default(utcNow)
+    .notNull(),
+});
 
 export const pegasusUserScopeUnitTable = pgTable(
   "pegasus_user_scope_unit",

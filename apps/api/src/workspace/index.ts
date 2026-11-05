@@ -6,9 +6,11 @@ import {
   jsonResponse,
 } from "../openapi";
 import { listWorkspaceProjectAccess } from "../project-access/list-workspace-project-access";
+import { resolveMemberAccess } from "../task-scope/resolve-task-scope";
 import {
   requireApiKeyScope,
   requireWorkspacePermission,
+  apiKeyAllows,
   workspacePermissionChecker,
 } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
@@ -203,9 +205,19 @@ const workspace = apiRouter<BaseVariables & { workspaceId: string }>()
       200,
     ),
   )
-  .openapi(getMyCapabilitiesRoute, async (c) =>
-    c.json(getMyCapabilitiesCtrl(await workspacePermissionChecker(c)), 200),
-  )
+  .openapi(getMyCapabilitiesRoute, async (c) => {
+    const { permissions } = await resolveMemberAccess(c); // Fork (PEGA-142)
+    return c.json(
+      getMyCapabilitiesCtrl(
+        await workspacePermissionChecker(c),
+        permissions && {
+          permissions,
+          keyAllows: (required) => apiKeyAllows(c, required),
+        },
+      ),
+      200,
+    );
+  })
   .openapi(getWorkspaceProjectAccessRoute, async (c) =>
     c.json(
       await listWorkspaceProjectAccess(c.get("workspaceId"), c.get("userId")),

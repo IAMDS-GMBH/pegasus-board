@@ -89,10 +89,17 @@ export default function TaskCardContextMenuContent({
   const { mutateAsync: updateTaskTitle } = useUpdateTaskTitle();
   const { mutateAsync: updateTaskDescription } = useUpdateTaskDescription();
   const { mutate: duplicateTask } = useDuplicateTask();
-  const { canCreateTasks, canUpdateTasks, canDeleteTasks, canAssignTasks } =
-    useWorkspacePermission();
+  const {
+    canCreateTasks,
+    canUpdateTasks,
+    canMoveTasks,
+    canDeleteTasks,
+    canAssignTasks,
+  } = useWorkspacePermission();
   const canCreate = canCreateTasks();
   const canEdit = canUpdateTasks();
+  // Pegasus fork (PEGA-142): status, archive and planned move the card.
+  const canMove = canMoveTasks();
   const canDelete = canDeleteTasks();
   const canAssign = canAssignTasks();
 
@@ -174,7 +181,7 @@ export default function TaskCardContextMenuContent({
         <span>{t("tasks:contextMenu.copyLink")}</span>
       </ContextMenuItem>
 
-      {(canEdit || canAssign) && <ContextMenuSeparator />}
+      {(canEdit || canMove || canAssign) && <ContextMenuSeparator />}
 
       {canEdit && (
         <ContextMenuSub>
@@ -209,7 +216,7 @@ export default function TaskCardContextMenuContent({
         </ContextMenuSub>
       )}
 
-      {canEdit && (
+      {canMove && (
         <ContextMenuSub>
           <ContextMenuSubTrigger>
             <CircleDot className="size-3.5 text-muted-foreground" />
@@ -277,9 +284,9 @@ export default function TaskCardContextMenuContent({
         </ContextMenuSub>
       )}
 
-      {(canCreate || canEdit || canDelete) && (
+      {(canCreate || canMove || canDelete) && (
         <>
-          {(canCreate || canEdit) && (
+          {(canCreate || canMove) && (
             <>
               <ContextMenuSeparator />
 
@@ -293,7 +300,7 @@ export default function TaskCardContextMenuContent({
                 </ContextMenuItem>
               )}
 
-              {canEdit && (
+              {canMove && (
                 <>
                   <ContextMenuItem
                     className="[&>svg]:mx-0"

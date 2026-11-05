@@ -28,9 +28,10 @@ export default function SubtaskStatusPopover({
   const [open, setOpen] = useState(false);
   const { data: columns = [] } = useGetColumns(projectId);
   const { mutateAsync: updateTaskStatus } = useUpdateTaskStatus();
-  const { canUpdateTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-142): a status change moves the card between columns.
+  const { canMoveTasks } = useWorkspacePermission();
 
-  if (!canUpdateTasks()) return <>{children}</>;
+  if (!canMoveTasks()) return <>{children}</>;
 
   const current = tasks.every((task) => task.status === tasks[0]?.status)
     ? tasks[0]?.status

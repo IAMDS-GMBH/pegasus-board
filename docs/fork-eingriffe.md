@@ -25,7 +25,8 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-90 | Feldänderungen live (`customFieldsChanged`), Fehlercodes der Feldverwaltung, deutsche Feldverwaltung | API, WebSocket, Web, i18n | `tests/api-integration/custom-field-live-updates.test.ts`, `custom-field-error-codes.test.ts`, `tests/api/ws/broadcast.test.ts`, `redis-link-refresh.test.ts`, Web: `use-project-websocket-cache.test.tsx` („custom field live updates“), `custom-field-error-key.test.ts`, `custom-field-dialog.test.tsx`, `custom-field-list.test.tsx`, `use-filter-subjects.test.tsx`, `month-grid.test.tsx`, `lib/i18n/custom-field-translations.test.ts` |
 | PEGA-84 | Board „Bewerber-Pool“ per Skript einrichten (Spalten, Labels, Standardfelder) | Konfiguration (Skript), keine Anwendungsdatei | `scripts/board-setup/*.test.mjs` (`node --test`), Probelauf gegen die Testumgebung |
 | PEGA-86 | Custom-Field-Typen `email` und `phone` (Mail und Anruf mit einem Tipp), Typwechsel Text ↔ E-Mail ↔ Telefon | API, Web, Mobile, CLI, MCP, i18n, Board-Skript | `tests/api-integration/custom-field-contact.test.ts`, `tests/api/custom-field/{email-value,phone-value,stored-value,plan-text-value-changes,resolve-field-update}.test.ts`, Web: `custom-field-{email,phone,href,row,chip}.test.ts(x)`, `card-field-{rows,list}.test.tsx`, `kanban-board/task-card.test.tsx`, `field-dialog/{field-form,custom-field-dialog}.test.ts(x)`, `custom-field-error-key.test.ts`, `lib/i18n/custom-field-translations.test.ts`, `scripts/board-setup/plan-fields.test.mjs` |
-| PEGA-141 | Sichtbereich nach Einheiten aus dem Hub (`workspace_role.hub_scoped`, Tabellen `pegasus_*`, Push-API); ein gemeinsames Sicht-Prädikat für „Sicht aus dem Hub“ und „Nur zugewiesene“, schließt die Lücken des PEGA-6-Reviews | Datenmodell, API, API-Scope, Benachrichtigungen, Web, i18n | `tests/api-integration/{task-view-hub-scope,notification-hub-scope,pegasus-visibility-api,workspace-role-hub-scoped}.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, weiterhin `task-view-assigned-only.test.ts`, `workspace-role-assigned-only.test.ts`; Web `roles.test.tsx`, `packages/permissions/src/index.test.ts` |
+| PEGA-141 | Sichtbereich nach Einheiten aus dem Hub (Tabellen `pegasus_*`, Push-API; Rollenschalter `hub_scoped` seit PEGA-142 entfallen); ein gemeinsames Sicht-Prädikat für „Sicht aus dem Hub“ und „Nur zugewiesene“, schließt die Lücken des PEGA-6-Reviews | Datenmodell, API, API-Scope, Benachrichtigungen, Web, i18n | `tests/api-integration/{task-view-hub-scope,notification-hub-scope,pegasus-visibility-api}.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, weiterhin `task-view-assigned-only.test.ts`, `workspace-role-assigned-only.test.ts`; Web `roles.test.tsx`, `packages/permissions/src/index.test.ts` |
+| PEGA-142 | Rechte je Nutzer aus dem Hub (`pegasus_user_scope.permissions`, `pegasus_workspace`): ab dem ersten Push gelten Sicht und Lead-Rechte des Hubs für jedes Mitglied; ersetzen auf Karten-Routen die Kaneo-Rolle; Capabilities fürs Web | Datenmodell, API, Web, i18n, Doku | `tests/api-integration/hub-permissions.test.ts`, `pegasus-visibility-api.test.ts`, `task-view-hub-scope.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, `packages/permissions/src/hub-permissions.test.ts`; Web `bulk-bar`, `filtered-drag`, `list-view`, `column-header`, `task-card-context-menu-content`, `task-status-popover`, `task-move-popover`, `task-labels-popover`, `task-activity`, `comment-card`, `export-tasks-row`, `project-progress`, `task-shortcuts`, `use-task-action-shortcuts`, `use-workspace-permission`, `roles` |
 
 ---
 
@@ -174,20 +175,60 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 
 **Zweck:** Jeder Nutzer sieht genau die Leads seiner Einheiten und der Einheiten darunter ([Review](review/2026-11-sichtbereich-einheiten.md)). Der Pegasus-Hub kennt Hierarchie und Zuordnungen und überträgt je Nutzer (E-Mail) Modus und flache Einheitenmenge sowie je Karte die Einheit; der Fork speichert und filtert nur. Kaneo-Teams werden nicht benutzt.
 
-**Regel:** Gilt für Mitglieder, deren Rolle „Sicht aus dem Hub (Einheiten)“ trägt (außer `owner` und Instanz-Admins). `all` sieht alles, `units` nur Karten mit Einheit in der Menge (ohne Einheit: unsichtbar), `assigned` nur zugewiesene, ohne Stand nichts. Mit „Nur zugewiesene“ zusammen: sichtbar, wenn eine Einschränkung zulässt. Verdeckt = 404.
+**Regel:** Seit PEGA-142 gilt der Sichtbereich für jedes Mitglied eines vom Hub verwalteten Workspaces (siehe [PEGA-142](#pega-142--rechte-je-nutzer-aus-dem-hub)), nicht mehr je Rolle. `all` sieht alles, `units` nur Karten mit Einheit in der Menge (ohne Einheit: unsichtbar), `assigned` nur zugewiesene, ohne Stand nichts. „Nur zugewiesene“ schränkt zusätzlich ein (beides muss zulassen). Verdeckt = 404.
 
 **Dateien:**
-- Migration `apps/api/drizzle/0066_pegasus_visibility.sql` (idempotent), `database/schema.ts` (`workspaceRoleTable.hubScoped`, `pegasusUserScopeTable`, `pegasusUserScopeUnitTable`, `pegasusTaskUnitTable`), `database/index.ts`
+- Migration `apps/api/drizzle/0066_pegasus_visibility.sql` (idempotent; die Spalte `workspace_role.hub_scoped` entfernt 0067 wieder), `database/schema.ts` (`pegasusUserScopeTable`, `pegasusUserScopeUnitTable`, `pegasusTaskUnitTable`), `database/index.ts`
 - Neu: `apps/api/src/task-scope/` (`composeTaskScope`, `loadTaskScopes`, `resolveTaskScope`, `taskVisibleCondition`/`tasksVisibleCondition`, `assertTasksVisible`, `assertAssetTaskVisible`, `denyTaskScoped`), `apps/api/src/pegasus-visibility/` (Push-API, eingehängt in `index.ts` unter `/pegasus-visibility`); gelöscht: `utils/assigned-only-scope.ts`
 - Durchsetzung (Einzeiler bzw. ein Parameter `scope`): `utils/workspace-access-middleware.ts` (Lookup liefert Karten-ID), `task/index.ts`, `task/controllers/{get-tasks,get-task,export-tasks,get-task-by-ticket-id,reorder-tasks}.ts`, `task/{description-pages,get-subtask-counts}.ts`, `search/{index.ts,controllers/global-search.ts}`, `activity/{index.ts,controllers/get-workspace-activities.ts}`, `custom-field/{index.ts,controllers/get-custom-field-values-by-project.ts,controllers/get-custom-field-filter-values.ts}`, `project/{index.ts,controllers/get-projects.ts}`, `label/{index.ts,controllers/{get-labels-by-workspace-id,create-label,assign-label-to-task}.ts}`, `task-relation/{index.ts,controllers/{get,create,delete}-task-relation.ts}`, `notification/resource-access.ts` + `notification/controllers/{get-notifications,set-notification-read,delete-notification,clear-notifications,mark-all-notifications-as-read}.ts`, `notification-preferences/{delivery,resolve-email-task}.ts`, `utils/authorize-asset-access.ts`, `calendar-feed/index.ts`, `integration-sync/index.ts`
-- Rollenfeld `hubScoped`: `auth.ts`, `auth-openapi.ts`, `packages/permissions` (`roleRestrictions.task.view_hub_scoped`), Web `lib/auth-client.ts`, `hooks/{mutations,queries}/workspace/use-*-workspace-role(s).ts`, `routes/.../settings/workspace/roles.tsx`
-- i18n `settings.workspaceRoles.permissions.task.view_hub_scoped` (en-US, de-DE; übrige Locales englischer Fallback), `i18n/schema.json` von Hand; `apps/docs/openapi.json`
+- Rollenfeld `hubScoped` und i18n `…task.view_hub_scoped`: mit PEGA-142 wieder entfernt; `apps/docs/openapi.json`
 
 **Beim Sync beachten:**
 - **Neue Upstream-Lesepfade für Karten gegen `taskVisibleCondition` prüfen.** Wo Upstream `projectAccessCondition(...)` ergänzt, gehört meist auch `taskVisibleCondition(scope)` (ein Workspace, `resolveTaskScope(c)`) bzw. `tasksVisibleCondition(await loadTaskScopes(userId))` (mehrere Workspaces) dazu. Lücken in `task-view-hub-scope.test.ts` absichern.
 - `notificationResourceAccess` hat den **Pflicht**-Parameter `taskScopes`; neue Upstream-Aufrufer meldet TypeScript.
 - Migration wie bei PEGA-6 hinter die letzte Upstream-Migration nummerieren (zuletzt 0066).
 - Die Pfade unter `/pegasus-visibility` und ihre Operation-IDs sind ein Vertrag mit dem Hub (`kaneo:spec:pull`); nicht umbenennen.
+
+### PEGA-142 — Rechte je Nutzer aus dem Hub
+
+**Zweck:** Der Pegasus-Hub ist Rechteinhaber (SPEC Rollen & Rechte §5, §6). Er überträgt je Nutzer die effektiven Rechte zusammen mit dem Sichtbereich; das Board speichert sie je Workspace und setzt sie für jedes Mitglied durch ([Review](review/2026-11-rechte-aus-dem-hub.md)). Kaneo-Rollen regeln nur noch Board-Eigenes (Labels, Spalten, Felder, Workspace-Einstellungen).
+
+**Regel:**
+- Ein Workspace gilt als vom Hub verwaltet, sobald `PUT …/users` einmal lief (Zeile in `pegasus_workspace`).
+- Dort ist jedes Mitglied Hub-gesteuert, außer `owner`, Instanz-Admins und dem Konto aus `PEGASUS_HUB_USER_EMAIL`.
+- Für Hub-gesteuerte Mitglieder ersetzt ein Hub-Recht auf Karten-Routen die Kaneo-Rollenprüfung (Tabelle im Review). Ein API-Key-Scope schränkt weiter ein.
+- Fehlt das Recht: 403 `MISSING_PERMISSION` mit `missingPermissions: ["LEAD_…"]`. Ohne Eintrag im Stand: nichts sehen, nichts dürfen.
+- Workspaces ohne Push verhalten sich wie Kaneo.
+
+**Dateien:**
+- Migration `apps/api/drizzle/0067_pegasus_permissions.sql` (idempotent: `pegasus_workspace`, `pegasus_user_scope.permissions`, `DROP COLUMN IF EXISTS workspace_role.hub_scoped`), `database/schema.ts`, `database/index.ts`
+- Neu:
+  - `packages/permissions/src/hub-permissions.ts` (`HUB_PERMISSIONS`, `capabilityHubPermission`), neue Capabilities `moveTasks`, `labelTasks`, `exportTasks`, `viewReports` in `capabilities.ts`
+  - `apps/api/src/utils/require-hub-permission.ts` (`requireLeadPermission`, `requireHubPermission`, `hubAllows`, `hasLeadPermission`)
+  - `apps/api/src/task-scope/is-hub-system-account.ts`
+- `task-scope/`:
+  - `loadMemberAccess` (Sicht und Rechte), `resolveMemberAccess`
+  - `TaskScope` mit UND-Semantik (`assignedOnly`, `unitIds | null`), `composeTaskScope` mit `managed`
+- Push-API `pegasus-visibility/{schema,controllers/*}.ts`: Pflichtfeld `permissions`, Marker `pegasus_workspace`
+- Gates (Einzeiler `requireLeadPermission(...)` statt `requireWorkspacePermission(...)`):
+  - `task/index.ts`, `task/controllers/require-task-permission.ts` (Bulk, Assignee, neu `requireTaskStatusPermission`, `requireReorderPermission`)
+  - `comment/index.ts`, `activity/index.ts`, `custom-field/index.ts`, `label/index.ts` (attach/detach), `task-relation/index.ts`, `time-entry/index.ts`, `external-link/index.ts`
+  - Statistik `project/{index.ts,controllers/get-projects.ts}`
+  - Capabilities `workspace/{index.ts,controllers/get-my-capabilities.ts}`
+  - `utils/require-workspace-permission.ts` exportiert `assertApiKeyScope`, `apiKeyAllows`
+- Rollenfeld `hubScoped` entfernt: `auth.ts`, `auth-openapi.ts`, `packages/permissions` (`roleRestrictions`), Web `lib/auth-client.ts`, `hooks/{mutations,queries}/workspace/use-*-workspace-role(s).ts`, `routes/.../settings/workspace/roles.tsx` (statt Schalter Hinweis `settings.workspaceRoles.hubManagedHint`)
+- Web-Gates über Capabilities:
+  - `use-workspace-permission.ts` (`canMoveTasks`, `canLabelTasks`, `canExportTasks`, `canViewReports`)
+  - `kanban-board/{index,column/column-header,task-card-context-menu/task-card-context-menu-content}.tsx`, `list-view/{index,list-column-section}.tsx`, `bulk-selection/{bulk-bar.tsx,use-bulk-actions.ts}`
+  - `task/{task-status-popover,subtask-status-popover,task-move-popover,task-labels-popover,task-activity,task-shortcuts}.tsx`, `activity/comment-card.tsx`, `project/task-view-keys/use-task-action-shortcuts.ts`, `project/tasks-import-export/export-tasks-row.tsx`, `project-progress.tsx`
+- i18n `settings.workspaceRoles.hubManagedHint` (en-US, de-DE; übrige Locales englisch), `view_hub_scoped` entfernt, `i18n/schema.json` von Hand; `.env.sample`; `apps/docs/openapi.json`
+
+**Beim Sync beachten:**
+- **Pfade und Operation-IDs der Push-API sind Vertrag mit dem Hub** (`replacePegasusUserScopes`, `getPegasusUserScopes`, `setPegasusTaskUnit`, `setPegasusTaskUnits`, `kaneo:spec:pull`). Ebenso die Rechte-Schlüssel (UPPER_SNAKE, unverändert vom Hub). Nicht umbenennen.
+- **Neue Upstream-Schreibrouten auf Karten** (alles mit `requireWorkspacePermission({ task: [...] })` oder `{ label: ["update"] }` an einer Karte): auf `requireLeadPermission(<Kaneo-Map>, "<Hub-Recht>")` umstellen und eine Zeile in `ACTIONS` von `hub-permissions.test.ts` ergänzen. Sonst entscheidet für Hub-gesteuerte Mitglieder wieder die Kaneo-Rolle.
+- Neue In-Handler-Prüfungen `hasWorkspacePermission(c, { task: [...] })` auf `hasLeadPermission` umstellen.
+- Neue Upstream-Capabilities für Karten-Aktionen in `capabilityHubPermission` eintragen.
+- Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0067).
 
 ---
 
@@ -198,10 +239,11 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 3. Fork-Migration umnummerieren (Abschnitt PEGA-6) und gegen eine Datenbank auf altem Fork-Stand prüfen (`pnpm --filter @kaneo/api db:migrate`).
 4. `pnpm i18n:check` (Fork-Schlüssel in allen Locales), `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:integration`. Bleibt die lokale Testdatenbank auf einem alten Migrationsstand hängen (Fehler „relation … does not exist“), `kaneo_test` verwerfen; die Tests legen sie neu an.
 5. Neue Upstream-Lesepfade gegen `taskVisibleCondition` prüfen und Lücken in `task-view-hub-scope.test.ts` bzw. `task-view-assigned-only.test.ts` absichern.
-6. Merge-Commit „Merge upstream usekaneo/kaneo main (vX.Y.Z+N) into pegasus-board“ mit Konfliktbericht, Nacharbeit als eigener Commit; dieses Register aktualisieren.
+6. Neue Upstream-Schreibpfade auf Karten gegen `requireLeadPermission` prüfen und in `hub-permissions.test.ts` absichern (PEGA-142).
+7. Merge-Commit „Merge upstream usekaneo/kaneo main (vX.Y.Z+N) into pegasus-board“ mit Konfliktbericht, Nacharbeit als eigener Commit; dieses Register aktualisieren.
 
 ---
 
 ## 4. Bekannte offene Lücken des Zeilenfilters
 
-Die Lücken aus dem [Zeilenfilter-Review](review/2026-10-zeilenfilter-fuehrungskraft.md#nachtrag-upstream-sync-2026-10-19) (#8, #9, #11, #12, #14, #18, #24) sind mit PEGA-141 geschlossen. Offen bzw. akzeptiert: WebSocket-Broadcasts mit IDs (#13), Export-Schutz je Rolle (#17), Detail-Sheet ohne „nicht gefunden“ (#21), Spalte löschen verrät verdeckte Karten per 409 (#25), Duplizieren übernimmt Verknüpfungen zu verdeckten Elternkarten (#26). Stand: [Sichtbereich-Review, Abschnitt 3](review/2026-11-sichtbereich-einheiten.md#3-umgehungsmöglichkeiten-tabelle-aus-pega-6-abschnitt-4-und-nachtrag-fortgeschrieben).
+Die Lücken aus dem [Zeilenfilter-Review](review/2026-10-zeilenfilter-fuehrungskraft.md#nachtrag-upstream-sync-2026-10-19) (#8, #9, #11, #12, #14, #18, #24) sind mit PEGA-141 geschlossen. Der Export-Schutz (#17) gilt seit PEGA-142 über `LEAD_EXPORT`. Offen bzw. akzeptiert: WebSocket-Broadcasts mit IDs (#13), Detail-Sheet ohne „nicht gefunden“ (#21), Spalte löschen verrät verdeckte Karten per 409 (#25), Duplizieren übernimmt Verknüpfungen zu verdeckten Elternkarten (#26). Stand: [Sichtbereich-Review, Abschnitt 3](review/2026-11-sichtbereich-einheiten.md#3-umgehungsmöglichkeiten-tabelle-aus-pega-6-abschnitt-4-und-nachtrag-fortgeschrieben).

@@ -34,8 +34,13 @@ export function useBulkActions(
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(
     workspace?.id ?? "",
   );
-  const { canUpdateTasks, canDeleteTasks, canAssignTasks, canUpdateLabels } =
-    useWorkspacePermission();
+  const {
+    canUpdateTasks,
+    canMoveTasks,
+    canDeleteTasks,
+    canAssignTasks,
+    canLabelTasks,
+  } = useWorkspacePermission();
   const [deleteCount, setDeleteCount] = useState<number | null>(null);
   const [lastDeleteCount, setLastDeleteCount] = useState(0);
 
@@ -75,9 +80,12 @@ export function useBulkActions(
     labels,
     permissions: {
       edit: canUpdateTasks(),
+      // Pegasus fork (PEGA-142): status, backlog and archive move the cards;
+      // labelling cards is a lead edit where the Hub governs.
+      move: canMoveTasks(),
       delete: canDeleteTasks(),
       assign: canAssignTasks(),
-      labels: canUpdateLabels(),
+      labels: canLabelTasks(),
     },
     changeStatus: (status: string) =>
       run(

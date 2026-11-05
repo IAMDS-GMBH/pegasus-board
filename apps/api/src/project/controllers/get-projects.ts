@@ -73,6 +73,8 @@ async function getProjects(
   userId: string,
   includeArchived = false,
   scope: TaskScope | null = null, // Pegasus fork (PEGA-141)
+  // Pegasus fork (PEGA-142): members without REPORTING_VIEW get no figures.
+  withStatistics = true,
 ) {
   const projects = await db.query.projectTable.findMany({
     where: and(
@@ -89,12 +91,9 @@ async function getProjects(
     ],
   });
 
-  const statisticsByProject = await getProjectStatistics(
-    workspaceId,
-    userId,
-    includeArchived,
-    scope,
-  );
+  const statisticsByProject = withStatistics
+    ? await getProjectStatistics(workspaceId, userId, includeArchived, scope)
+    : new Map<string, ProjectStatistics>();
 
   return projects.map((project) => ({
     ...project,

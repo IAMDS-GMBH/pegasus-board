@@ -8,6 +8,7 @@ import {
 } from "../openapi";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createActivity from "./controllers/create-activity";
 import createComment from "./controllers/create-comment";
@@ -80,7 +81,7 @@ const createActivityRoute = createRoute({
     "Record a system-generated event on a task. Most events are written by the server itself; this exists for importers and integrations.",
   middleware: [
     workspaceAccess.fromTaskId(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     body: {
@@ -110,7 +111,7 @@ const createCommentRoute = createRoute({
     "Add a comment to a task. Equivalent to POST /comment/{taskId}, kept for the activity-feed client.",
   middleware: [
     workspaceAccess.fromTaskId(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     body: {
@@ -135,7 +136,11 @@ const updateCommentRoute = createRoute({
   tags: ["Activity"],
   summary: "Update comment",
   description: "Edit a comment. Only the comment's author may do this.",
-  middleware: [workspaceAccess.fromActivity("activityId")] as const,
+  middleware: [
+    workspaceAccess.fromActivity("activityId"),
+    // Kaneo leaves comment edits to the author check in the controller.
+    requireLeadPermission(null, "LEAD_EDIT"),
+  ] as const,
   request: {
     body: {
       required: true,
@@ -157,7 +162,11 @@ const deleteCommentRoute = createRoute({
   tags: ["Activity"],
   summary: "Delete comment",
   description: "Delete a comment. Only the comment's author may do this.",
-  middleware: [workspaceAccess.fromActivity("activityId")] as const,
+  middleware: [
+    workspaceAccess.fromActivity("activityId"),
+    // Kaneo leaves comment edits to the author check in the controller.
+    requireLeadPermission(null, "LEAD_EDIT"),
+  ] as const,
   request: {
     body: {
       required: true,

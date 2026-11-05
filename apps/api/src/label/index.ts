@@ -6,6 +6,7 @@ import {
 } from "../openapi";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import assignLabelToTask from "./controllers/assign-label-to-task";
 import createLabel from "./controllers/create-label";
@@ -111,7 +112,7 @@ const attachLabelToTaskRoute = createRoute({
   description: "Attach an existing label to a task",
   middleware: [
     workspaceAccess.fromLabel(),
-    requireWorkspacePermission({ label: ["update"] }),
+    requireLeadPermission({ label: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     params: labelParam,
@@ -140,7 +141,7 @@ const detachLabelFromTaskRoute = createRoute({
   description: "Detach a label from its current task",
   middleware: [
     workspaceAccess.fromLabel(),
-    requireWorkspacePermission({ label: ["update"] }),
+    requireLeadPermission({ label: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: { params: labelParam },
   responses: {

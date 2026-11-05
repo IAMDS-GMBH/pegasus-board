@@ -21,6 +21,7 @@ import { priorityColorsTaskCard } from "@/constants/priority-colors";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
 import { useCollapsedSections } from "@/hooks/use-collapsed-sections";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { toast } from "@/lib/toast";
 import useBulkSelectionStore from "@/store/bulk-selection";
@@ -39,9 +40,13 @@ type ListViewProps = {
 
 function ListView({
   project,
-  disableDragDrop = false,
+  disableDragDrop: viewDisablesDragDrop = false,
   disableCollectionActions = false,
 }: ListViewProps) {
+  // Pegasus fork (PEGA-142): moving cards needs its own right (LEAD_MOVE_STAGE
+  // where the Hub governs), so the view offers no dragging without it.
+  const { canMoveTasks } = useWorkspacePermission();
+  const disableDragDrop = viewDisablesDragDrop || !canMoveTasks();
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const { setProject } = useProjectStore();

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import useDeleteComment from "@/hooks/mutations/comment/use-delete-comment";
 import useUpdateComment from "@/hooks/mutations/comment/use-update-comment";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { formatDateTime, formatRelativeTime } from "@/lib/format";
 import { getInitials } from "@/lib/get-initials";
 import { toast } from "@/lib/toast";
@@ -79,7 +80,9 @@ export default function CommentCard({
     useDeleteComment(taskId);
   const queryClient = useQueryClient();
 
-  const canEdit = currentUser?.id === user?.id;
+  // Pegasus fork (PEGA-142): editing a comment edits the lead.
+  const { canUpdateTasks } = useWorkspacePermission();
+  const canEdit = currentUser?.id === user?.id && canUpdateTasks();
   const forge = forgeOf(externalSource);
   const sourceName = forge
     ? forge.name

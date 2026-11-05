@@ -6,6 +6,7 @@ import {
 } from "../openapi";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createCustomField from "./controllers/create-custom-field";
 import deleteCustomField from "./controllers/delete-custom-field";
@@ -192,7 +193,7 @@ const setCustomFieldValueRoute = createRoute({
   description: "Create or update a custom field value for a task.",
   middleware: [
     workspaceAccess.fromTaskId("taskId"),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     body: {

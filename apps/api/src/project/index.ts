@@ -23,6 +23,7 @@ import {
 } from "../storage/s3";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
+import { hubAllows } from "../utils/require-hub-permission";
 import {
   hasWorkspacePermission,
   requireWorkspacePermission,
@@ -431,6 +432,7 @@ const project = apiRouter<BaseVariables & { workspaceId: string }>()
       c.get("userId"),
       includeArchived === "true",
       await resolveTaskScope(c), // Fork (PEGA-141)
+      await hubAllows(c, "REPORTING_VIEW"), // Fork (PEGA-142)
     );
     return c.json(projects.map(toPublicProject), 200);
   })

@@ -4407,6 +4407,9 @@
 						"thisWorkspace": {
 							"type": "string"
 						},
+						"hubManagedHint": {
+							"type": "string"
+						},
 						"noAccess": {
 							"type": "string"
 						},
@@ -4699,19 +4702,6 @@
 												}
 											},
 											"required": ["label", "description"]
-										},
-										"view_hub_scoped": {
-											"type": "object",
-											"additionalProperties": false,
-											"properties": {
-												"label": {
-													"type": "string"
-												},
-												"description": {
-													"type": "string"
-												}
-											},
-											"required": ["label", "description"]
 										}
 									},
 									"required": [
@@ -4720,8 +4710,7 @@
 										"update",
 										"delete",
 										"assign",
-										"view_assigned_only",
-										"view_hub_scoped"
+										"view_assigned_only"
 									]
 								},
 								"label": {
@@ -5139,6 +5128,7 @@
 						"title",
 						"subtitle",
 						"thisWorkspace",
+						"hubManagedHint",
 						"noAccess",
 						"sectionTitle",
 						"sectionSubtitle",

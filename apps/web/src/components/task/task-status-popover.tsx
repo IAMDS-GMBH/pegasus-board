@@ -30,9 +30,10 @@ export default function TaskStatusPopover({
     isError,
   } = useGetColumns(task.projectId);
   const { mutateAsync: updateTaskStatus } = useUpdateTaskStatus();
-  const { canUpdateTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-142): a status change moves the card between columns.
+  const { canMoveTasks } = useWorkspacePermission();
 
-  if (!canUpdateTasks()) return <>{children}</>;
+  if (!canMoveTasks()) return <>{children}</>;
 
   const changeStatus = async (status: string) => {
     setOpen(false);

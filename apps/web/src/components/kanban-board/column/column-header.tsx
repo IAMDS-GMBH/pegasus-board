@@ -23,8 +23,9 @@ export function ColumnHeader({
   const { t } = useTranslation();
   const { project, setProject } = useProjectStore();
   const { mutate: updateTask } = useUpdateTask();
-  const { canUpdateTasks, canCreateTasks } = useWorkspacePermission();
-  const canTask = canUpdateTasks();
+  const { canMoveTasks, canCreateTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-142): archiving all moves the cards out of the column.
+  const canArchive = canMoveTasks();
   const canCreate = canCreateTasks();
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
@@ -71,7 +72,7 @@ export function ColumnHeader({
       </div>
 
       <div className="flex items-center">
-        {canTask && column.isFinal && column.tasks.length > 0 && (
+        {canArchive && column.isFinal && column.tasks.length > 0 && (
           <button
             type="button"
             disabled={disableCollectionActions}

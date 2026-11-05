@@ -54,9 +54,10 @@ export default function TaskLabelsPopover({
   children,
 }: TaskLabelsPopoverProps) {
   const [open, setOpen] = useState(false);
-  const { canUpdateLabels } = useWorkspacePermission();
+  // Pegasus fork (PEGA-142): LEAD_EDIT where the Hub governs.
+  const { canLabelTasks } = useWorkspacePermission();
 
-  if (!canUpdateLabels()) return <>{children}</>;
+  if (!canLabelTasks()) return <>{children}</>;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

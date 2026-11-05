@@ -20,6 +20,7 @@ async function getUserScopes(workspaceId: string) {
       unitIds: units
         .filter((unit) => unit.email === scope.email)
         .map((unit) => unit.unitId),
+      permissions: scope.permissions,
       updatedAt: scope.updatedAt,
     })),
   };

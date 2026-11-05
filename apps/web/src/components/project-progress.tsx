@@ -1,3 +1,4 @@
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 
 type ProjectProgressProps = {
@@ -13,6 +14,9 @@ export function ProjectProgress({
   percentage,
   className,
 }: ProjectProgressProps) {
+  // Pegasus fork (PEGA-142): REPORTING_VIEW where the Hub governs.
+  const { canViewReports } = useWorkspacePermission();
+  if (!canViewReports()) return null;
   const clamped = Math.min(100, Math.max(0, percentage));
 
   return (

@@ -11,6 +11,13 @@ export const workspaceCapabilities = {
   createTasks: { task: ["create"] },
   deleteTasks: { task: ["delete"] },
   assignTasks: { task: ["assign"] },
+  // Pegasus fork (PEGA-142): lead actions the Hub grants separately. For
+  // members it does not govern they keep Kaneo's rules: moving and labelling
+  // cards need what the routes check, export and statistics only reading.
+  moveTasks: { task: ["update"] },
+  labelTasks: { label: ["update"] },
+  exportTasks: { task: ["read"] },
+  viewReports: { project: ["read"] },
   createLabels: { label: ["create"] },
   updateLabels: { label: ["update"] },
   deleteLabels: { label: ["delete"] },

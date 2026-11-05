@@ -27,10 +27,11 @@ import {
 } from "../storage/s3";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
+import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import {
-  hasWorkspacePermission,
-  requireWorkspacePermission,
-} from "../utils/require-workspace-permission";
+  hasLeadPermission,
+  requireLeadPermission,
+} from "../utils/require-hub-permission";
 import {
   validateAndParseDate,
   validateDateRange,
@@ -55,7 +56,9 @@ import {
 import {
   requireBulkTaskEntitlement,
   requireBulkTaskPermission,
+  requireReorderPermission,
   requireTaskAssigneePermission,
+  requireTaskStatusPermission,
 } from "./controllers/require-task-permission";
 import updateTask from "./controllers/update-task";
 import updateTaskAssignee from "./controllers/update-task-assignee";
@@ -192,7 +195,7 @@ const stagedUploadRoute = createRoute({
     "Upload an attachment before submitting a task. Staged assets are private to the uploader and expire after 24 hours.",
   middleware: [
     workspaceAccess.fromProject("projectId"),
-    requireWorkspacePermission({ task: ["create"] }),
+    requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -218,7 +221,7 @@ const finalizeStagedUploadRoute = createRoute({
   summary: "Finalize a staged task attachment",
   middleware: [
     workspaceAccess.fromProject("projectId"),
-    requireWorkspacePermission({ task: ["create"] }),
+    requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -250,7 +253,7 @@ const reorderTasksRoute = createRoute({
     "Atomically update positions and optional column status for cards in one project. Other task fields are preserved.",
   middleware: [
     workspaceAccess.fromProject("projectId"),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireReorderPermission,
     requireEntitlement,
   ] as const,
   request: {
@@ -286,7 +289,7 @@ const createTaskRoute = createRoute({
     "Add a task to a project. It is placed in the column named by `status`.",
   middleware: [
     workspaceAccess.fromProject("projectId"),
-    requireWorkspacePermission({ task: ["create"] }),
+    requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -316,7 +319,7 @@ const duplicateTaskRoute = createRoute({
     "Copy a task into the same project and column, including custom fields, labels, description assets and same-workspace parent links. Copying parent links also requires task:update. Comments, time entries and child tasks are not copied.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["create"] }),
+    requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -386,7 +389,7 @@ const moveTaskRoute = createRoute({
     "Move a task to another project, optionally into a named column. Both projects must be in the same workspace.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_MOVE_STAGE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -420,7 +423,8 @@ const updateTaskRoute = createRoute({
     "Replace every field of a task. Use the single-field routes for narrower edits.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
+    requireTaskStatusPermission,
     requireTaskAssigneePermission,
     requireEntitlement,
   ] as const,
@@ -449,7 +453,10 @@ const exportTasksRoute = createRoute({
   summary: "Export tasks",
   description:
     "Export a project's tasks, with their labels, as a JSON document.",
-  middleware: [workspaceAccess.fromProject("projectId")] as const,
+  middleware: [
+    workspaceAccess.fromProject("projectId"),
+    requireLeadPermission(null, "LEAD_EXPORT"),
+  ] as const,
   request: { params: projectIdParam },
   responses: {
     200: jsonResponse("The exported project and tasks", taskExportSchema),
@@ -468,7 +475,7 @@ const importTasksRoute = createRoute({
     "Import tasks into a project. Each task is reported individually, so a partial import still returns 200.",
   middleware: [
     workspaceAccess.fromProject("projectId"),
-    requireWorkspacePermission({ task: ["create"] }),
+    requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -498,7 +505,7 @@ const deleteTaskRoute = createRoute({
     "Permanently delete a task and its comments, labels, and time entries.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["delete"] }),
+    requireLeadPermission({ task: ["delete"] }, "LEAD_DELETE"),
   ] as const,
   request: { params: taskParam },
   responses: {
@@ -520,7 +527,7 @@ const updateTaskStatusRoute = createRoute({
   description: "Move a task to another column in the same project.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_MOVE_STAGE"),
     requireEntitlement,
   ] as const,
   request: {
@@ -549,7 +556,7 @@ const updateTaskPriorityRoute = createRoute({
   description: "Set a task's priority.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -579,7 +586,7 @@ const updateTaskAssigneeRoute = createRoute({
     "Assign a task to a workspace member, or send null to unassign it.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["assign"] }),
+    requireLeadPermission({ task: ["assign"] }, "LEAD_ASSIGN_PROCESSOR"),
     requireEntitlement,
   ] as const,
   request: {
@@ -610,7 +617,7 @@ const updateTaskDueDateRoute = createRoute({
   description: "Set or clear a task's due date.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -639,7 +646,7 @@ const updateTaskTitleRoute = createRoute({
   description: "Rename a task.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -669,7 +676,7 @@ const createTaskImageUploadRoute = createRoute({
     "Get a presigned URL for uploading an image used in a task description or comment. PUT the bytes to it, then call the finalize route.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -700,7 +707,7 @@ const finalizeTaskImageUploadRoute = createRoute({
     "Record an uploaded image as a private asset and return the URL to reference it by.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -731,7 +738,7 @@ const updateTaskDescriptionRoute = createRoute({
   description: "Replace a task's description.",
   middleware: [
     workspaceAccess.fromTask(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireEntitlement,
   ] as const,
   request: {
@@ -944,7 +951,11 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
         taskId: id,
         title,
         currentUserId: c.get("userId"),
-        canUpdateTasks: await hasWorkspacePermission(c, { task: ["update"] }),
+        canUpdateTasks: await hasLeadPermission(
+          c,
+          { task: ["update"] },
+          "LEAD_EDIT",
+        ),
       }),
       200,
     );

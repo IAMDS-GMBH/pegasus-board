@@ -473,13 +473,6 @@ export const auth = betterAuth({
               defaultValue: false,
               input: true,
             },
-            // Fork (PEGA-141): restriction to the scope pushed by the Hub.
-            hubScoped: {
-              type: "boolean",
-              required: false,
-              defaultValue: false,
-              input: true,
-            },
           },
         },
         team: {

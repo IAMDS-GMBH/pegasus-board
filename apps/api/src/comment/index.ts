@@ -6,10 +6,8 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
-import {
-  hasWorkspacePermission,
-  requireWorkspacePermission,
-} from "../utils/require-workspace-permission";
+import { hasWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createComment from "./controllers/create-comment";
 import deleteComment from "./controllers/delete-comment";
@@ -50,7 +48,7 @@ const createTaskCommentRoute = createRoute({
     "Add a comment to a task. Mentions in the content notify the mentioned users, and the assignee is notified too. Returns the stored activity row, which carries no author object -- read the list route for that.",
   middleware: [
     workspaceAccess.fromTaskId(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     params: taskIdParam,
@@ -78,7 +76,7 @@ const updateTaskCommentRoute = createRoute({
   description: "Edit a comment. Only the comment's author may do this.",
   middleware: [
     workspaceAccess.fromComment(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     params: commentParam,
@@ -104,7 +102,7 @@ const deleteTaskCommentRoute = createRoute({
   description: "Delete a comment. Only the comment's author may do this.",
   middleware: [
     workspaceAccess.fromComment(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: { params: commentParam },
   responses: {

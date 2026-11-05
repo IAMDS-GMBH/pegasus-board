@@ -4497,6 +4497,18 @@
           "assignTasks": {
             "type": "boolean"
           },
+          "moveTasks": {
+            "type": "boolean"
+          },
+          "labelTasks": {
+            "type": "boolean"
+          },
+          "exportTasks": {
+            "type": "boolean"
+          },
+          "viewReports": {
+            "type": "boolean"
+          },
           "createLabels": {
             "type": "boolean"
           },
@@ -4538,6 +4550,10 @@
           "createTasks",
           "deleteTasks",
           "assignTasks",
+          "moveTasks",
+          "labelTasks",
+          "exportTasks",
+          "viewReports",
           "createLabels",
           "updateLabels",
           "deleteLabels",
@@ -6399,10 +6415,6 @@
                       "assignedOnly": {
                         "type": "boolean",
                         "description": "Restrict members with this role to tasks assigned to them"
-                      },
-                      "hubScoped": {
-                        "type": "boolean",
-                        "description": "Restrict members with this role to the units the Pegasus Hub pushed for them"
                       }
                     }
                   }
@@ -8274,10 +8286,6 @@
                           "assignedOnly": {
                             "type": "boolean",
                             "description": "Restrict members with this role to tasks assigned to them"
-                          },
-                          "hubScoped": {
-                            "type": "boolean",
-                            "description": "Restrict members with this role to the units the Pegasus Hub pushed for them"
                           }
                         }
                       }
@@ -24446,7 +24454,7 @@
           "Pegasus visibility"
         ],
         "summary": "Replace the visibility of all users",
-        "description": "Replaces every user scope of the workspace with this snapshot in one transaction. A user who is not listed sees no tasks in roles with Hub visibility.",
+        "description": "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing.",
         "parameters": [
           {
             "schema": {
@@ -24492,12 +24500,23 @@
                           },
                           "maxItems": 10000,
                           "description": "Every unit the user sees, already including the units below; must be empty unless `mode` is `units`."
+                        },
+                        "permissions": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                          },
+                          "maxItems": 200,
+                          "description": "The user's effective rights in this workspace, as computed by the Hub (`LEAD_READ`, `LEAD_EDIT`, `LEAD_MOVE_STAGE`, `LEAD_CREATE`, `LEAD_ASSIGN_PROCESSOR`, `LEAD_DELETE`, `LEAD_EXPORT`, `REPORTING_VIEW`, ...). A right that is missing is denied. Unknown keys are stored, not rejected. Required: a snapshot without it is refused so an older Hub cannot switch a workspace to Hub rights."
                         }
                       },
                       "required": [
                         "email",
                         "mode",
-                        "unitIds"
+                        "unitIds",
+                        "permissions"
                       ]
                     },
                     "maxItems": 10000
@@ -24623,6 +24642,12 @@
                               "type": "string"
                             }
                           },
+                          "permissions": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
                           "updatedAt": {
                             "type": "string",
                             "format": "date-time"
@@ -24632,6 +24657,7 @@
                           "email",
                           "mode",
                           "unitIds",
+                          "permissions",
                           "updatedAt"
                         ]
                       }

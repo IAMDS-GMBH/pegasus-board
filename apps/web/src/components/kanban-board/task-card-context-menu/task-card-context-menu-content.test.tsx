@@ -5,6 +5,7 @@ import TaskCardContextMenuContent from "./task-card-context-menu-content";
 
 const duplicateTask = vi.fn();
 const canCreateTasks = vi.fn(() => true);
+const canMoveTasks = vi.fn(() => true);
 vi.mock("@/hooks/mutations/task/use-duplicate-task", () => ({
   useDuplicateTask: () => ({ mutate: duplicateTask }),
 }));
@@ -110,6 +111,7 @@ vi.mock("@/hooks/mutations/task/use-update-task-title", () => ({
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canCreateTasks,
+    canMoveTasks,
     canUpdateTasks: () => true,
     canDeleteTasks: () => true,
     canAssignTasks: () => true,
@@ -197,4 +199,16 @@ it("hides duplication without task-create permission", () => {
   canCreateTasks.mockReturnValue(false);
   renderTask(task);
   expect(screen.queryByText("tasks:actions.duplicate")).toBeNull();
+});
+
+// Pegasus fork (PEGA-142): status, archive and planned move the card between
+// columns, which needs its own right; editing the card stays possible.
+it("hides status, archive and planned without canMoveTasks", () => {
+  canMoveTasks.mockReturnValue(false);
+  renderTask(task);
+  expect(screen.queryByText("tasks:status.label")).toBeNull();
+  expect(screen.queryByText("tasks:actions.archive")).toBeNull();
+  expect(screen.queryByText("tasks:actions.markAsPlanned")).toBeNull();
+  expect(screen.getByText("tasks:priority.label")).toBeInTheDocument();
+  canMoveTasks.mockReturnValue(true);
 });

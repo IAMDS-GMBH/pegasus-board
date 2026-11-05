@@ -104,6 +104,7 @@ async function storedScopes(workspaceId: string) {
     .map((scope) => ({
       email: scope.email,
       mode: scope.mode,
+      permissions: scope.permissions,
       unitIds: units
         .filter((unit) => unit.email === scope.email)
         .map((unit) => unit.unitId)
@@ -127,18 +128,38 @@ describe("pegasus visibility API", () => {
 
       const response = await put(app, `/workspace/${f.workspace.id}/users`, {
         users: [
-          { email: " FK-BD@WWK.de ", mode: "units", unitIds: ["U3"] },
-          { email: "admin@wwk.de", mode: "all", unitIds: [] },
-          { email: "bearbeiter@wwk.de", mode: "assigned", unitIds: [] },
+          {
+            email: " FK-BD@WWK.de ",
+            mode: "units",
+            unitIds: ["U3"],
+            permissions: [],
+          },
+          { email: "admin@wwk.de", mode: "all", unitIds: [], permissions: [] },
+          {
+            email: "bearbeiter@wwk.de",
+            mode: "assigned",
+            unitIds: [],
+            permissions: [],
+          },
         ],
       });
 
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual({ users: 3 });
       expect(await storedScopes(f.workspace.id)).toEqual([
-        { email: "admin@wwk.de", mode: "all", unitIds: [] },
-        { email: "bearbeiter@wwk.de", mode: "assigned", unitIds: [] },
-        { email: "fk-bd@wwk.de", mode: "units", unitIds: ["U3"] },
+        { email: "admin@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        {
+          email: "bearbeiter@wwk.de",
+          mode: "assigned",
+          unitIds: [],
+          permissions: [],
+        },
+        {
+          email: "fk-bd@wwk.de",
+          mode: "units",
+          unitIds: ["U3"],
+          permissions: [],
+        },
       ]);
 
       const read = await app.request(
@@ -146,18 +167,93 @@ describe("pegasus visibility API", () => {
       );
       expect(read.status).toBe(200);
       const body = (await read.json()) as {
-        users: Array<{ email: string; mode: string; unitIds: string[] }>;
+        users: Array<{
+          email: string;
+          mode: string;
+          unitIds: string[];
+          permissions: string[];
+        }>;
       };
       expect(
-        body.users.map(({ email, mode, unitIds }) => ({
+        body.users.map(({ email, mode, unitIds, permissions }) => ({
           email,
           mode,
           unitIds,
+          permissions,
         })),
       ).toEqual([
-        { email: "admin@wwk.de", mode: "all", unitIds: [] },
-        { email: "bearbeiter@wwk.de", mode: "assigned", unitIds: [] },
-        { email: "fk-bd@wwk.de", mode: "units", unitIds: ["U3"] },
+        { email: "admin@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        {
+          email: "bearbeiter@wwk.de",
+          mode: "assigned",
+          unitIds: [],
+          permissions: [],
+        },
+        {
+          email: "fk-bd@wwk.de",
+          mode: "units",
+          unitIds: ["U3"],
+          permissions: [],
+        },
+      ]);
+    });
+
+    // Pegasus fork (PEGA-142): the effective rights the Hub computed per user.
+    it("stores and returns permissions, including keys the board does not know", async () => {
+      const f = await fixture();
+      const app = as(f.hub);
+
+      const response = await put(app, `/workspace/${f.workspace.id}/users`, {
+        users: [
+          {
+            email: "fk-bd@wwk.de",
+            mode: "units",
+            unitIds: ["U3"],
+            permissions: [
+              "LEAD_READ",
+              "LEAD_EDIT",
+              "FUTURE_RIGHT",
+              "LEAD_EDIT",
+            ],
+          },
+          { email: "leser@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        ],
+      });
+      expect(response.status).toBe(200);
+
+      const read = await app.request(
+        `/api/pegasus-visibility/workspace/${f.workspace.id}/users`,
+      );
+      const body = (await read.json()) as {
+        users: Array<{ email: string; permissions: string[] }>;
+      };
+      expect(
+        body.users.map(({ email, permissions }) => ({ email, permissions })),
+      ).toEqual([
+        {
+          email: "fk-bd@wwk.de",
+          permissions: ["FUTURE_RIGHT", "LEAD_EDIT", "LEAD_READ"],
+        },
+        { email: "leser@wwk.de", permissions: [] },
+      ]);
+    });
+
+    it("rejects a snapshot without permissions and keeps the stored one", async () => {
+      const f = await fixture();
+      const app = as(f.hub);
+      await put(app, `/workspace/${f.workspace.id}/users`, {
+        users: [
+          { email: "keep@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        ],
+      });
+
+      const response = await put(app, `/workspace/${f.workspace.id}/users`, {
+        users: [{ email: "old-hub@wwk.de", mode: "all", unitIds: [] }],
+      });
+
+      expect(response.status).toBe(400);
+      expect(await storedScopes(f.workspace.id)).toEqual([
+        { email: "keep@wwk.de", mode: "all", unitIds: [], permissions: [] },
       ]);
     });
 
@@ -166,20 +262,35 @@ describe("pegasus visibility API", () => {
       const app = as(f.hub);
       await put(app, `/workspace/${f.workspace.id}/users`, {
         users: [
-          { email: "fk-bd@wwk.de", mode: "units", unitIds: ["U3"] },
-          { email: "gone@wwk.de", mode: "all", unitIds: [] },
+          {
+            email: "fk-bd@wwk.de",
+            mode: "units",
+            unitIds: ["U3"],
+            permissions: [],
+          },
+          { email: "gone@wwk.de", mode: "all", unitIds: [], permissions: [] },
         ],
       });
 
       const response = await put(app, `/workspace/${f.workspace.id}/users`, {
         users: [
-          { email: "fk-bd@wwk.de", mode: "units", unitIds: ["U2", "U4"] },
+          {
+            email: "fk-bd@wwk.de",
+            mode: "units",
+            unitIds: ["U2", "U4"],
+            permissions: [],
+          },
         ],
       });
 
       expect(response.status).toBe(200);
       expect(await storedScopes(f.workspace.id)).toEqual([
-        { email: "fk-bd@wwk.de", mode: "units", unitIds: ["U2", "U4"] },
+        {
+          email: "fk-bd@wwk.de",
+          mode: "units",
+          unitIds: ["U2", "U4"],
+          permissions: [],
+        },
       ]);
     });
 
@@ -187,7 +298,9 @@ describe("pegasus visibility API", () => {
       const f = await fixture();
       const other = await createWorkspaceMember({ role: "owner" });
       await put(as(other.user), `/workspace/${other.workspace.id}/users`, {
-        users: [{ email: "x@wwk.de", mode: "all", unitIds: [] }],
+        users: [
+          { email: "x@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        ],
       });
 
       await put(as(f.hub), `/workspace/${f.workspace.id}/users`, { users: [] });
@@ -199,24 +312,36 @@ describe("pegasus visibility API", () => {
       [
         "a duplicate email",
         [
-          { email: "a@wwk.de", mode: "all", unitIds: [] },
-          { email: "A@wwk.de", mode: "assigned", unitIds: [] },
+          { email: "a@wwk.de", mode: "all", unitIds: [], permissions: [] },
+          { email: "A@wwk.de", mode: "assigned", unitIds: [], permissions: [] },
         ],
       ],
       [
         "units on a mode other than units",
-        [{ email: "a@wwk.de", mode: "assigned", unitIds: ["U3"] }],
+        [
+          {
+            email: "a@wwk.de",
+            mode: "assigned",
+            unitIds: ["U3"],
+            permissions: [],
+          },
+        ],
       ],
-      ["an unknown mode", [{ email: "a@wwk.de", mode: "team", unitIds: [] }]],
+      [
+        "an unknown mode",
+        [{ email: "a@wwk.de", mode: "team", unitIds: [], permissions: [] }],
+      ],
       [
         "an invalid email",
-        [{ email: "not-an-email", mode: "all", unitIds: [] }],
+        [{ email: "not-an-email", mode: "all", unitIds: [], permissions: [] }],
       ],
     ])("rejects %s with 400 and writes nothing", async (_case, users) => {
       const f = await fixture();
       const app = as(f.hub);
       await put(app, `/workspace/${f.workspace.id}/users`, {
-        users: [{ email: "keep@wwk.de", mode: "all", unitIds: [] }],
+        users: [
+          { email: "keep@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        ],
       });
 
       const response = await put(app, `/workspace/${f.workspace.id}/users`, {
@@ -225,7 +350,7 @@ describe("pegasus visibility API", () => {
 
       expect(response.status).toBe(400);
       expect(await storedScopes(f.workspace.id)).toEqual([
-        { email: "keep@wwk.de", mode: "all", unitIds: [] },
+        { email: "keep@wwk.de", mode: "all", unitIds: [], permissions: [] },
       ]);
     });
 
@@ -234,7 +359,9 @@ describe("pegasus visibility API", () => {
       const app = as(f.member);
 
       const write = await put(app, `/workspace/${f.workspace.id}/users`, {
-        users: [{ email: "x@wwk.de", mode: "all", unitIds: [] }],
+        users: [
+          { email: "x@wwk.de", mode: "all", unitIds: [], permissions: [] },
+        ],
       });
       const read = await app.request(
         `/api/pegasus-visibility/workspace/${f.workspace.id}/users`,
@@ -263,7 +390,14 @@ describe("pegasus visibility API", () => {
           method: "PUT",
           headers: { "content-type": "application/json", "x-api-key": key },
           body: JSON.stringify({
-            users: [{ email: "fk@wwk.de", mode: "units", unitIds: ["U3"] }],
+            users: [
+              {
+                email: "fk@wwk.de",
+                mode: "units",
+                unitIds: ["U3"],
+                permissions: [],
+              },
+            ],
           }),
         },
       );

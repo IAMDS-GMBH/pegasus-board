@@ -1272,6 +1272,7 @@
 			"title": "Ролі",
 			"subtitle": "Визначте, які дії можуть виконувати учасники в {{workspaceName}}.",
 			"thisWorkspace": "цьому робочому просторі",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Для керування ролями робочого простору потрібні права адміністратора або власника.",
 			"sectionTitle": "Ролі робочого простору",
 			"sectionSubtitle": "Редагуйте стандартні ролі або додайте власну. Учасники зберігають призначену назву ролі після редагувань.",
@@ -1358,10 +1359,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

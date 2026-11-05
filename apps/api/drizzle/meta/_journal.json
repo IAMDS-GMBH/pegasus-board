@@ -470,6 +470,13 @@
       "when": 1793627789456,
       "tag": "0066_pegasus_visibility",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1793884878700,
+      "tag": "0067_pegasus_permissions",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { SettingsRow } from "@/components/settings/settings-row";
 import { Button } from "@/components/ui/button";
 import useExportTasks from "@/hooks/mutations/task/use-export-tasks";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { toast } from "@/lib/toast";
 import type { ProjectWithTasks } from "@/types/project";
 
@@ -14,6 +15,8 @@ type ExportTasksRowProps = {
 export function ExportTasksRow({ project }: ExportTasksRowProps) {
   const { t } = useTranslation();
   const { mutateAsync: exportTasks, isPending } = useExportTasks();
+  // Pegasus fork (PEGA-142): LEAD_EXPORT where the Hub governs.
+  const { canExportTasks } = useWorkspacePermission();
 
   const handleExport = async () => {
     try {
@@ -35,6 +38,8 @@ export function ExportTasksRow({ project }: ExportTasksRowProps) {
       console.error(error);
     }
   };
+
+  if (!canExportTasks()) return null;
 
   return (
     <SettingsRow

@@ -1280,6 +1280,7 @@
 			"title": "Роли",
 			"subtitle": "Определите, какие действия участники могут выполнять в {{workspaceName}}.",
 			"thisWorkspace": "этой рабочей области",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Для управления ролями рабочей области нужны права администратора или владельца.",
 			"sectionTitle": "Роли рабочей области",
 			"sectionSubtitle": "Отредактируйте роли по умолчанию или добавьте собственную. Назначенные участникам роли сохраняются при изменениях.",
@@ -1366,10 +1367,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

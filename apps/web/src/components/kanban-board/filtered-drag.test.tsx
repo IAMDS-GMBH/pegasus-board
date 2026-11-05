@@ -13,6 +13,7 @@ import type { ProjectWithTasks } from "@/types/project";
 import KanbanBoard from "./index";
 
 const mocks = vi.hoisted(() => ({
+  canMoveTasks: vi.fn(() => true),
   project: null as unknown,
   setProject: vi.fn(),
   reorder: vi.fn(),
@@ -58,6 +59,9 @@ vi.mock("@/hooks/use-project-background", () => ({
   useProjectBackground: () => null,
 }));
 vi.mock("../bulk-selection/bulk-toolbar", () => ({ default: () => null }));
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({ canMoveTasks: mocks.canMoveTasks }),
+}));
 vi.mock("./column", () => ({
   default: ({
     column,
@@ -124,7 +128,10 @@ vi.mock("@dnd-kit/core", () => ({
   defaultDropAnimationSideEffects: vi.fn(),
 }));
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.canMoveTasks.mockReturnValue(true);
+});
 afterEach(cleanup);
 describe("filtered board dragging", () => {
   it("moves visible tasks in canonical state and sends one ordering mutation", () => {
@@ -488,5 +495,36 @@ describe.each([
     expect(view.getByTestId("column-doing")).not.toHaveAttribute(
       "data-sort-hint",
     );
+  });
+});
+
+// Pegasus fork (PEGA-142): without the right to move cards (LEAD_MOVE_STAGE
+// where the Hub governs) the board does not reorder or move them.
+describe("dragging without canMoveTasks", () => {
+  it("drops nothing", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    const project = {
+      id: "p",
+      columns: [
+        {
+          id: "todo",
+          slug: "todo",
+          tasks: [
+            { id: "a", status: "todo", position: 0 },
+            { id: "b", status: "todo", position: 1 },
+          ],
+        },
+      ],
+      plannedTasks: [],
+      archivedTasks: [],
+    } as unknown as ProjectWithTasks;
+    mocks.project = project;
+
+    const view = render(<KanbanBoard project={project} />);
+    fireEvent.click(view.getByText("drop"));
+
+    expect(mocks.setProject).not.toHaveBeenCalled();
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
   });
 });

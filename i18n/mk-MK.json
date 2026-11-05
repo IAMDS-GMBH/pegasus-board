@@ -1256,6 +1256,7 @@
 			"title": "Улоги",
 			"subtitle": "Дефинирај кои акции може да ги извршуваат членовите во {{workspaceName}}.",
 			"thisWorkspace": "овој работен простор",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Потребни ти се администраторски или сопственички дозволи за да управуваш со улогите на работниот простор.",
 			"sectionTitle": "Улоги на работниот простор",
 			"sectionSubtitle": "Уреди ги стандардните улоги или додади прилагодена. Членовите го задржуваат името на доделената улога и по измените.",
@@ -1340,10 +1341,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

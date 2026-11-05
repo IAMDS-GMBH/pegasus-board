@@ -857,6 +857,7 @@
 			"title": "角色",
 			"subtitle": "定义成员在 {{workspaceName}} 中可以执行的操作。",
 			"thisWorkspace": "此工作区",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "你需要管理员或所有者权限才能管理工作区角色。",
 			"sectionTitle": "工作区角色",
 			"sectionSubtitle": "编辑默认角色或添加自定义角色。成员的已分配角色名称在编辑过程中保持不变。",
@@ -940,10 +941,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

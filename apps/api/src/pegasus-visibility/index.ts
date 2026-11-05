@@ -22,10 +22,12 @@ import {
   workspaceIdParam,
 } from "./schema";
 
-// Pegasus fork (PEGA-141): the Pegasus Hub owns the unit hierarchy and pushes
-// what each user may see; members of roles with `hubScoped` only see tasks
-// the stored scope admits (`task-scope/`). These are the only routes that
-// read or write the pegasus_* tables.
+// Pegasus fork (PEGA-141, PEGA-142): the Pegasus Hub owns the unit hierarchy
+// and the rights, and pushes what each user may see and do. From the first
+// user snapshot on, every member except owners, instance admins and the Hub's
+// system account is bound by it (`task-scope/`, `utils/require-hub-permission`).
+// These are the only routes that write the pegasus_* tables. Paths and
+// operation ids are the contract with the Hub: do not rename them.
 
 const TAGS = ["Pegasus visibility"];
 const manageSettings = requireWorkspacePermission({
@@ -39,7 +41,7 @@ const replaceUserScopesRoute = createRoute({
   tags: TAGS,
   summary: "Replace the visibility of all users",
   description:
-    "Replaces every user scope of the workspace with this snapshot in one transaction. A user who is not listed sees no tasks in roles with Hub visibility.",
+    "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing.",
   middleware: [workspaceAccess.fromParam(), manageSettings] as const,
   request: {
     params: workspaceIdParam,

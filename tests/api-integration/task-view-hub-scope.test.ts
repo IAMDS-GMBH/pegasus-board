@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import db, { schema } from "../../apps/api/src/database";
 import { resetTestDatabase } from "./helpers/database";
@@ -253,7 +253,8 @@ describe("API integration: hub-scoped task visibility", () => {
       ["all", ALL],
       ["bearbeiter", ["L2"]],
       ["noRow", []],
-      ["innendienst", ALL],
+      // PEGA-142: governed whatever the role, and not in the snapshot.
+      ["innendienst", []],
     ] as const)("shows %s exactly %j", async (user, expected) => {
       const f = await createHubScopeFixture();
 
@@ -288,17 +289,18 @@ describe("API integration: hub-scoped task visibility", () => {
       expect(await boardNames(f, asUser(f.owner))).toEqual(ALL);
     });
 
-    it("restricts a member who holds the hub role next to member", async () => {
+    it("restricts a member whatever their role, even a workspace admin", async () => {
       const f = await createHubScopeFixture();
       await db
         .update(schema.workspaceUserTable)
-        .set({ role: `member,${HUB_ROLE}` })
+        .set({ role: "admin" })
         .where(eq(schema.workspaceUserTable.userId, f.users.fkBD.id));
 
       expect(await boardNames(f, asUser(f.users.fkBD))).toEqual(["L1", "L2"]);
     });
 
-    it("admits a task when either restriction does", async () => {
+    // PEGA-142: "assigned only" narrows the Hub's units instead of widening.
+    it("admits a task only when both restrictions do", async () => {
       const f = await createHubScopeFixture();
       await db
         .update(schema.workspaceRoleTable)
@@ -307,13 +309,9 @@ describe("API integration: hub-scoped task visibility", () => {
       await db
         .update(schema.taskTable)
         .set({ userId: f.users.fkBD.id })
-        .where(eq(schema.taskTable.id, f.tasks.L4.id));
+        .where(inArray(schema.taskTable.id, [f.tasks.L1.id, f.tasks.L4.id]));
 
-      expect(await boardNames(f, asUser(f.users.fkBD))).toEqual([
-        "L1",
-        "L2",
-        "L4",
-      ]);
+      expect(await boardNames(f, asUser(f.users.fkBD))).toEqual(["L1"]);
     });
 
     it("denies calendar feeds and the integration sync scope", async () => {

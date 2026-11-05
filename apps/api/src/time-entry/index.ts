@@ -4,7 +4,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
-import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createTimeEntry from "./controllers/create-time-entry";
 import getTimeEntriesByTaskId from "./controllers/get-time-entries";
@@ -60,7 +60,7 @@ const createTimeEntryRoute = createRoute({
     "Log time against a task. Omit endTime to start a running entry that can be closed later with an update.",
   middleware: [
     workspaceAccess.fromTaskId(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     body: {
@@ -88,7 +88,7 @@ const updateTimeEntryRoute = createRoute({
     "Replace a time entry's start, end, and description. Setting endTime closes a running entry and fills in its duration.",
   middleware: [
     workspaceAccess.fromTimeEntry(),
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     params: timeEntryParam,

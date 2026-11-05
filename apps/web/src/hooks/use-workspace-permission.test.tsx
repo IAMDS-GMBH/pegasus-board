@@ -81,6 +81,31 @@ describe("useWorkspacePermission", () => {
     expect(result.current.canDeleteLabels()).toBe(false);
   });
 
+  // Pegasus fork (PEGA-142): lead actions with their own Hub right.
+  it("passes the server's lead capabilities through unchanged", async () => {
+    getMyCapabilities.mockResolvedValue({
+      ...Object.fromEntries(
+        Object.keys(workspaceCapabilities).map((name) => [name, false]),
+      ),
+      moveTasks: true,
+      exportTasks: false,
+      viewReports: true,
+      labelTasks: false,
+    });
+
+    const { result } = renderHook(() => useWorkspacePermission(), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(result.current.isCheckingPermissions).toBe(false);
+    });
+
+    expect(result.current.canMoveTasks()).toBe(true);
+    expect(result.current.canExportTasks()).toBe(false);
+    expect(result.current.canViewReports()).toBe(true);
+    expect(result.current.canLabelTasks()).toBe(false);
+  });
+
   it("loads every capability in a single request", async () => {
     getMyCapabilities.mockResolvedValue({});
 

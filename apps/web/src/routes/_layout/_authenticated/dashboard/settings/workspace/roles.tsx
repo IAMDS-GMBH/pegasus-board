@@ -182,11 +182,6 @@ const PERMISSION_LABELS: Record<
     description:
       "Restricts this role to tasks assigned to the member. Other tasks respond as not found, including in search and export.",
   },
-  "task:view_hub_scoped": {
-    label: "Visibility from the Hub (units)",
-    description:
-      "Restricts this role to the tasks of the units the Pegasus Hub sends for the member. Other tasks respond as not found, including in search and export.",
-  },
   "label:create": {
     label: "Create labels",
     description: "Add new labels to tasks in this workspace.",
@@ -241,11 +236,16 @@ function isDefaultRole(name: string) {
   return DEFAULT_ROLE_NAME_SET.has(name);
 }
 
-// Role restrictions (`task:view_assigned_only`, `task:view_hub_scoped`) are
-// toggled next to the task permissions but saved as their own role fields,
-// not in `permission`: better-auth only lets a member grant permissions they
-// hold (see `roleRestrictions`).
-type RestrictionFlags = { assignedOnly: boolean; hubScoped: boolean };
+// Role restrictions (`task:view_assigned_only`) are toggled next to the task
+// permissions but saved as their own role fields, not in `permission`:
+// better-auth only lets a member grant permissions they hold (see
+// `roleRestrictions`).
+type RestrictionFlags = { assignedOnly: boolean };
+
+// Pegasus fork (PEGA-142): no role switch for the Hub; it governs every
+// member of a workspace it manages, so the editor only says so.
+const HUB_MANAGED_HINT =
+  "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.";
 
 const RESTRICTIONS = Object.entries(roleRestrictions).flatMap(
   ([resource, actions]) =>
@@ -276,7 +276,7 @@ function fromEditorSelection(
   selected: Record<string, Set<string>>,
 ): { permission: Record<string, string[]> } & RestrictionFlags {
   const permission: Record<string, string[]> = Object.create(null);
-  const flags: RestrictionFlags = { assignedOnly: false, hubScoped: false };
+  const flags: RestrictionFlags = { assignedOnly: false };
   for (const [r, set] of Object.entries(selected)) {
     const actions = Array.from(set).filter((action) => {
       const restriction = RESTRICTIONS.find(
@@ -621,6 +621,13 @@ export function PermissionList({
                   : resource.charAt(0).toUpperCase() + resource.slice(1),
               })}
             </p>
+            {resource === "task" && (
+              <p className="text-xs text-muted-foreground">
+                {t("settings:workspaceRoles.hubManagedHint", {
+                  defaultValue: HUB_MANAGED_HINT,
+                })}
+              </p>
+            )}
             <div className="space-y-4">
               {actions.map((action, idx) => {
                 const meta = PERMISSION_LABELS[`${resource}:${action}`] ?? {
@@ -717,8 +724,7 @@ function DraftEditor({
       toast.error(t("settings:workspaceRoles.validation.nameExists"));
       return;
     }
-    const { permission, assignedOnly, hubScoped } =
-      fromEditorSelection(permissions);
+    const { permission, assignedOnly } = fromEditorSelection(permissions);
     if (Object.keys(permission).length === 0) {
       toast.error(t("settings:workspaceRoles.validation.permissionRequired"));
       return;
@@ -729,7 +735,6 @@ function DraftEditor({
         role: trimmed,
         permission,
         assignedOnly,
-        hubScoped,
       });
       toast.success(t("settings:workspaceRoles.toast.created"), {
         icon: ShieldPlusIcon,
@@ -817,8 +822,7 @@ export function CustomRoleEditor({
 
   const dirty =
     !permissionsEqual(current.permission, role.permission) ||
-    current.assignedOnly !== role.assignedOnly ||
-    current.hubScoped !== role.hubScoped;
+    current.assignedOnly !== role.assignedOnly;
 
   const togglePermission = (resource: string, action: string) => {
     setPermissions((prev) => {
@@ -838,7 +842,6 @@ export function CustomRoleEditor({
         roleName: role.role,
         permission: current.permission,
         assignedOnly: current.assignedOnly,
-        hubScoped: current.hubScoped,
       });
       toast.success(t("settings:workspaceRoles.toast.updated"), {
         icon: ShieldCheckIcon,

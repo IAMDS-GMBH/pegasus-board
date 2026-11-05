@@ -2085,10 +2085,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"workspace": {
@@ -2192,6 +2188,7 @@
 			"sectionTitle": "Role obszaru roboczego",
 			"subtitle": "Określ, jakie działania członkowie mogą wykonywać w {{workspaceName}}.",
 			"thisWorkspace": "ten obszar roboczy",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"title": "Role",
 			"toast": {
 				"created": "Utworzono rolę",

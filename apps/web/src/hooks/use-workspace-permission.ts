@@ -61,6 +61,11 @@ export function useWorkspacePermission() {
       canCreateTasks: () => can.createTasks,
       canDeleteTasks: () => can.deleteTasks,
       canAssignTasks: () => can.assignTasks,
+      // Pegasus fork (PEGA-142): decided by the Hub's rights where it governs.
+      canMoveTasks: () => can.moveTasks,
+      canLabelTasks: () => can.labelTasks,
+      canExportTasks: () => can.exportTasks,
+      canViewReports: () => can.viewReports,
       canCreateLabels: () => can.createLabels,
       canUpdateLabels: () => can.updateLabels,
       canDeleteLabels: () => can.deleteLabels,

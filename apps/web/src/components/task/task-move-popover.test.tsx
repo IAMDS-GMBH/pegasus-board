@@ -14,6 +14,10 @@ const mocks = vi.hoisted(() => ({
   moveTask: vi.fn(),
   fetchQuery: vi.fn(),
   columns: [] as { slug: string; name: string; isFinal: boolean }[],
+  canMoveTasks: vi.fn(() => true),
+}));
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({ canMoveTasks: mocks.canMoveTasks }),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -74,6 +78,20 @@ async function pickMobileApp() {
 }
 
 describe("TaskMovePopover", () => {
+  // Pegasus fork (PEGA-142): moving a card needs LEAD_MOVE_STAGE where the
+  // Hub governs (task:update otherwise).
+  it("offers no destination without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValueOnce(false);
+    render(
+      <TaskMovePopover task={task} workspaceId="workspace-1">
+        <button type="button">Move</button>
+      </TaskMovePopover>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
+
+    expect(screen.queryByRole("option", { name: /Mobile app/ })).toBeNull();
+  });
+
   it("moves right away when the destination has the same status", async () => {
     mocks.fetchQuery.mockResolvedValue([
       { slug: "in-review", name: "In Review", isFinal: false },
