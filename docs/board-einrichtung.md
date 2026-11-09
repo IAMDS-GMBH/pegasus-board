@@ -6,7 +6,7 @@ Das Skript ändert nur, was von der Vorgabe abweicht. Es kann daher auf jeder Um
 
 ## 1. Voraussetzungen
 
-- **Workspace vorhanden.** Workspace „Pegasus“ über die Oberfläche anlegen. Seine ID steht in der Adresse: `/dashboard/workspace/<ID>/…`.
+- **Workspace des Key Accounts vorhanden.** Jeder Key Account (= Vertriebsweg) hat seinen eigenen Workspace ([Abschnitt 6](#6-neuen-key-account-anbinden)). Den Workspace über die Oberfläche anlegen. Seine ID steht in der Adresse: `/dashboard/workspace/<ID>/…`.
 - **Nutzer mit der Rolle Owner oder Admin in diesem Workspace.** Das Skript braucht die Rechte `project:create`, `project:update`, `label:create` und `label:update`.
 - **API-Schlüssel dieses Nutzers.** Anlegen unter Einstellungen → Konto → API-Schlüssel. Der Schlüssel wirkt mit den Rechten des Nutzers und gehört nicht ins Repository.
 - **Node.js ab Version 20.** Weitere Abhängigkeiten gibt es nicht. `pnpm install` ist nicht nötig, eine Kopie des Ordners `scripts/board-setup/` reicht.
@@ -68,7 +68,6 @@ Im Repository geht auch `pnpm board:setup --workspace …`.
 |---|---|---|
 | Quelle | Quelle: Meta · Quelle: LinkedIn · Quelle: Formular · Quelle: Import | Sage (teal) |
 | Paket | Paket 1 · Paket 2 · Paket 3 | Terracotta (orange) |
-| Vertriebsweg | Vertriebsweg: WWK · Vertriebsweg: 1zu1 · Vertriebsweg: Clarus | Lavender (purple) |
 | Kampagne | Kampagne: ohne Kampagne | Slate (dark-gray) |
 | Prüfung und Rückgabe | Dublette? · unvollständig (Amber) · verwertbar (Forest) · Rückläufer (Rose) · keine Zuordnung (Crimson) | je Label |
 
@@ -87,7 +86,8 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 | Quelle | Auswahl | Meta, LinkedIn, Formular, Import | |
 | Kampagne | Text (Name aus dem Hub) | | ja |
 | Paket | Auswahl | Paket 1, Paket 2, Paket 3 | ja |
-| Vertriebsweg | Auswahl | WWK, 1zu1, Clarus | |
+
+**Vertriebsweg:** Es gibt dafür weder ein Feld noch ein Label. Der Vertriebsweg ist der Workspace des Key Accounts; die Einheit einer Karte kommt vom Hub (`lead.unit_id`, übertragen über `/pegasus-visibility`). Seit PEGA-142 legt das Skript beides nicht mehr an, und der Hub schreibt es nicht.
 
 ## 4. Regeln des Abgleichs
 
@@ -104,6 +104,17 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 - Ein archiviertes Projekt `BEW` stellt es nicht wieder her. Der Lauf bricht ab.
 
 **Vorgabe ändern:** `board.json` anpassen, im Review-Prozess freigeben und das Skript auf allen Umgebungen erneut ausführen. Weitere Felder aus Feinkonzept Baustein 3 (Prüfergebnis, Termin, Rückgabegrund und so weiter) werden so ergänzt, sobald sie fachlich abgestimmt sind.
+
+### Altbestand: Feld und Labels „Vertriebsweg“ entfernen
+
+Workspaces, die vor PEGA-142 eingerichtet wurden, haben noch das Feld „Vertriebsweg“ und die Labels „Vertriebsweg: WWK“, „Vertriebsweg: 1zu1“ und „Vertriebsweg: Clarus“. Das Skript legt sie nicht mehr an, löscht sie aber auch nicht (siehe oben). Ein Lauf meldet das Feld als Hinweis (`!`, Feld außerhalb der Vorgabe); die Labels meldet er nicht. Von Hand entfernen, je Workspace:
+
+1. **Zuerst prüfen**, ob die Werte noch gebraucht werden. Löschen entfernt Feld und Label von allen Karten und lässt sich nicht rückgängig machen. Wo Karten nur über „Vertriebsweg“ einem Key Account zugeordnet sind, zuerst die Einheit im Hub setzen bzw. die Karten in den Workspace des Key Accounts bringen. Kaneo verschiebt Karten nicht zwischen Workspaces.
+2. **Feld:** Projekt „Bewerber-Pool“ → Projekteinstellungen → Benutzerdefinierte Felder → „Vertriebsweg“ → Löschen.
+3. **Labels:** Einstellungen → Workspace → Labels, die drei Labels „Vertriebsweg: …“ löschen.
+4. Das Skript erneut mit `--dry-run` ausführen. Es muss „Keine Änderungen.“ melden, ohne Hinweis auf „Vertriebsweg“.
+
+Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten liegen. Eine Löschung per Skript gibt es bewusst nicht, weil das Skript nie Daten löscht.
 
 ## 5. Nicht Teil des Skripts
 

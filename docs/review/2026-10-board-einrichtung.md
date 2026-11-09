@@ -1,3 +1,5 @@
+> Teilweise überholt durch PEGA-142: ein Workspace je Key Account, Feld und Labels „Vertriebsweg“ entfallen ([Betriebshandbuch](../board-einrichtung.md#6-neuen-key-account-anbinden)).
+
 # Board „Bewerber-Pool“ per Skript einrichten — Umsetzung und Nachweis
 
 | | |

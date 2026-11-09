@@ -139,7 +139,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 
 ### PEGA-84 — Board per Skript einrichten
 
-**Zweck:** Das Board „Bewerber-Pool“ ist auf jeder Umgebung gleich und lässt sich reproduzierbar aufbauen: zehn Prozessspalten, Workspace-Labels für Quelle, Paket, Vertriebsweg und Prüfung sowie die Grundfelder ([Review](review/2026-10-board-einrichtung.md), [Betriebshandbuch](board-einrichtung.md)). Das ist Konfiguration über die REST-API; der Code der Anwendung ändert sich nicht.
+**Zweck:** Das Board „Bewerber-Pool“ ist auf jeder Umgebung gleich und lässt sich reproduzierbar aufbauen: zehn Prozessspalten, Workspace-Labels für Quelle, Paket und Prüfung sowie die Grundfelder ([Review](review/2026-10-board-einrichtung.md), [Betriebshandbuch](board-einrichtung.md)). Das ist Konfiguration über die REST-API; der Code der Anwendung ändert sich nicht. Den Vertriebsweg bildet seit PEGA-142 der Workspace des Key Accounts ab, nicht ein Feld oder Label.
 
 **Dateien:** `scripts/board-setup/` (neu; Vorgabe `board.json`, Einstieg `setup-board.mjs`, Planer und Tests), Kommando `board:setup` in `package.json`
 
