@@ -10,6 +10,7 @@ import {
 import icons from "@/constants/project-icons";
 import getColumns from "@/fetchers/column/get-columns";
 import { useMoveTask } from "@/hooks/mutations/task/use-move-task";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
 import useGetProjects from "@/hooks/queries/project/use-get-projects";
 import queryClient from "@/query-client";
@@ -39,12 +40,14 @@ export default function TaskMovePopover({
     isError,
   } = useGetColumns(projectId ?? "");
   const { mutateAsync: moveTask } = useMoveTask();
+  // Pegasus fork (PEGA-142): LEAD_MOVE_STAGE where the Hub governs.
+  const { canMoveTasks } = useWorkspacePermission();
 
   const destinations = projects.filter(
     (project) => project.id !== task.projectId,
   );
 
-  if (destinations.length === 0) return <>{children}</>;
+  if (destinations.length === 0 || !canMoveTasks()) return <>{children}</>;
 
   const moveTo = async (destinationProjectId: string, status: string) => {
     setOpen(false);

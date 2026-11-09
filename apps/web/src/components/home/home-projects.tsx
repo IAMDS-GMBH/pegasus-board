@@ -72,7 +72,8 @@ export function HomeProjects({
           {projects.slice(0, VISIBLE_PROJECTS).map((project) => {
             const ProjectIcon =
               icons[project.icon as keyof typeof icons] || icons.Layout;
-            const { completionPercentage, totalTasks } = project.statistics;
+            // Pegasus fork (PEGA-142): absent without REPORTING_VIEW.
+            const { statistics } = project;
 
             return (
               <Link
@@ -89,19 +90,29 @@ export function HomeProjects({
                   <span className="min-w-0 flex-1 truncate font-medium text-foreground text-sm">
                     {project.name}
                   </span>
-                  <span className="text-muted-foreground text-xs tabular-nums">
-                    {completionPercentage}%
-                  </span>
+                  {statistics && (
+                    <span className="text-muted-foreground text-xs tabular-nums">
+                      {statistics.completionPercentage}%
+                    </span>
+                  )}
                 </div>
-                <div className="h-1 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-foreground/80"
-                    style={{ width: `${completionPercentage}%` }}
-                  />
-                </div>
-                <span className="text-muted-foreground text-xs">
-                  {t("workspace:home.projects.tasks", { count: totalTasks })}
-                </span>
+                {statistics && (
+                  <>
+                    <div className="h-1 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-foreground/80"
+                        style={{
+                          width: `${statistics.completionPercentage}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-muted-foreground text-xs">
+                      {t("workspace:home.projects.tasks", {
+                        count: statistics.totalTasks,
+                      })}
+                    </span>
+                  </>
+                )}
               </Link>
             );
           })}

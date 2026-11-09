@@ -240,10 +240,6 @@ export function organizationRoutes(registry: OpenAPIHono["openAPIRegistry"]) {
                     description:
                       "Restrict members with this role to tasks assigned to them",
                   }),
-                  hubScoped: z.boolean().optional().openapi({
-                    description:
-                      "Restrict members with this role to the units the Pegasus Hub pushed for them",
-                  }),
                 })
                 .optional(),
             }),
@@ -1164,10 +1160,6 @@ export function organizationRoutes(registry: OpenAPIHono["openAPIRegistry"]) {
                   assignedOnly: z.boolean().optional().openapi({
                     description:
                       "Restrict members with this role to tasks assigned to them",
-                  }),
-                  hubScoped: z.boolean().optional().openapi({
-                    description:
-                      "Restrict members with this role to the units the Pegasus Hub pushed for them",
                   }),
                 }),
               }),

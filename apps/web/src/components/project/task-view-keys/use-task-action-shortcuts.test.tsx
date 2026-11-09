@@ -23,6 +23,8 @@ const mocks = vi.hoisted(() => ({
   error: vi.fn(),
   canUpdateTasks: vi.fn(),
   canAssignTasks: vi.fn(),
+  canMoveTasks: vi.fn(),
+  canLabelTasks: vi.fn(),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -48,7 +50,8 @@ vi.mock("@/hooks/use-workspace-permission", () => ({
     canUpdateTasks: mocks.canUpdateTasks,
     canAssignTasks: mocks.canAssignTasks,
     canDeleteTasks: () => true,
-    canUpdateLabels: () => true,
+    canMoveTasks: mocks.canMoveTasks,
+    canLabelTasks: mocks.canLabelTasks,
   }),
 }));
 vi.mock("@/lib/toast", () => ({
@@ -74,6 +77,8 @@ const selection = () => useBulkSelectionStore.getState();
 beforeEach(() => {
   mocks.canUpdateTasks.mockReturnValue(true);
   mocks.canAssignTasks.mockReturnValue(true);
+  mocks.canMoveTasks.mockReturnValue(true);
+  mocks.canLabelTasks.mockReturnValue(true);
   mocks.bulkAssign.mockResolvedValue(undefined);
   mocks.bulkDueDate.mockResolvedValue(undefined);
   mocks.writeText.mockResolvedValue(undefined);
@@ -176,11 +181,29 @@ describe("useTaskActionShortcuts", () => {
     );
     act(() => selection().setFocusedTask("a"));
 
-    press({ key: "s", code: "KeyS" });
+    press({ key: "p", code: "KeyP" });
     press({ key: "i", code: "KeyI" });
 
     expect(useBulkRequestStore.getState().request).toBeNull();
     expect(mocks.bulkAssign).not.toHaveBeenCalled();
+  });
+
+  // Pegasus fork (PEGA-142): status and labels have their own rights.
+  it("opens no status or label picker without canMoveTasks and canLabelTasks", () => {
+    cleanup();
+    mocks.canMoveTasks.mockReturnValue(false);
+    mocks.canLabelTasks.mockReturnValue(false);
+    render(
+      <ShortcutTestWrapper>
+        <Harness />
+      </ShortcutTestWrapper>,
+    );
+    act(() => selection().setFocusedTask("a"));
+
+    press({ key: "s", code: "KeyS" });
+    press({ key: "l", code: "KeyL" });
+
+    expect(useBulkRequestStore.getState().request).toBeNull();
   });
 
   it("copies the focused task's ID and title", async () => {

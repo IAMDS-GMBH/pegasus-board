@@ -19,8 +19,10 @@ import { useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { priorityColorsTaskCard } from "@/constants/priority-colors";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
+import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-status";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
 import { useCollapsedSections } from "@/hooks/use-collapsed-sections";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { toast } from "@/lib/toast";
 import useBulkSelectionStore from "@/store/bulk-selection";
@@ -39,9 +41,15 @@ type ListViewProps = {
 
 function ListView({
   project,
-  disableDragDrop = false,
+  disableDragDrop: viewDisablesDragDrop = false,
   disableCollectionActions = false,
 }: ListViewProps) {
+  // Pegasus fork (PEGA-142): a drop saves full updates (LEAD_EDIT where the
+  // Hub governs); one into another column also moves the card, which needs
+  // LEAD_MOVE_STAGE on top. Without that only reordering in place is offered.
+  const { canMoveTasks, canUpdateTasks } = useWorkspacePermission();
+  const disableDragDrop = viewDisablesDragDrop || !canUpdateTasks();
+  const canChangeColumn = canMoveTasks();
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const { setProject } = useProjectStore();
@@ -50,6 +58,7 @@ function ListView({
   );
   const clearFocus = useBulkSelectionStore((state) => state.clearFocus);
   const { mutate: updateTask } = useUpdateTask();
+  const { mutate: updateTaskStatus } = useUpdateTaskStatus();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const { isExpanded, toggleSection, toggleAllSections } = useCollapsedSections(
@@ -94,6 +103,14 @@ function ListView({
     setActiveId(event.active.id);
   };
 
+  const columnOf = (id: string) =>
+    project?.columns?.find(
+      (col) => col.id === id || col.tasks.some((task) => task.id === id),
+    );
+
+  const isMoveAllowed = (activeTaskId: string, overId: string) =>
+    canChangeColumn || columnOf(activeTaskId)?.id === columnOf(overId)?.id;
+
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event;
     if (!over || !activeId) {
@@ -101,25 +118,16 @@ function ListView({
       return;
     }
 
-    if (project?.columns?.some((col) => col.id === over.id)) {
-      setOverColumnId(over.id.toString());
-      return;
-    }
-
-    const taskId = over.id.toString();
-    const columnWithTask = project?.columns?.find((col) =>
-      col.tasks.some((task) => task.id === taskId),
+    const overId = over.id.toString();
+    const target = columnOf(overId);
+    setOverColumnId(
+      target && isMoveAllowed(activeId.toString(), overId) ? target.id : null,
     );
-
-    if (columnWithTask) {
-      setOverColumnId(columnWithTask.id);
-    } else {
-      setOverColumnId(null);
-    }
   };
 
   const moveTask = (activeTaskId: string, overId: string) => {
     if (disableDragDrop || !project?.columns) return;
+    if (!isMoveAllowed(activeTaskId, overId)) return;
 
     const updatedProject = produce(project, (draft) => {
       const sourceColumn = draft?.columns?.find((col) =>
@@ -241,8 +249,10 @@ function ListView({
       );
       if (!archivedColumn) return;
 
+      // Pegasus fork (PEGA-142): archiving is a status change, so it uses
+      // the status route and needs only the right to move cards.
       for (const task of archivedColumn.tasks) {
-        updateTask({
+        updateTaskStatus({
           ...task,
           status: "archived",
         });

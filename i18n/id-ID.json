@@ -1248,6 +1248,7 @@
 			"title": "Peran",
 			"subtitle": "Tentukan tindakan yang dapat dilakukan anggota di {{workspaceName}}.",
 			"thisWorkspace": "ruang kerja ini",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Anda memerlukan izin admin atau pemilik untuk mengelola peran ruang kerja.",
 			"sectionTitle": "Peran ruang kerja",
 			"sectionSubtitle": "Ubah peran bawaan atau tambahkan peran khusus. Anggota tetap memakai nama peran yang ditetapkan meski peran diubah.",
@@ -1331,10 +1332,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

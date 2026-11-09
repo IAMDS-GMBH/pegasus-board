@@ -1248,6 +1248,7 @@
 			"title": "역할",
 			"subtitle": "{{workspaceName}}에서 멤버가 수행할 수 있는 작업을 정의합니다.",
 			"thisWorkspace": "이 워크스페이스",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "워크스페이스 역할을 관리하려면 관리자 또는 소유자 권한이 필요합니다.",
 			"sectionTitle": "워크스페이스 역할",
 			"sectionSubtitle": "기본 역할을 편집하거나 맞춤 역할을 추가하세요. 편집해도 멤버에게 할당된 역할 이름은 유지됩니다.",
@@ -1331,10 +1332,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

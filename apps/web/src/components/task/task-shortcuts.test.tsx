@@ -21,6 +21,8 @@ const mocks = vi.hoisted(() => ({
   error: vi.fn(),
   canUpdateTasks: vi.fn(),
   canAssignTasks: vi.fn(),
+  canMoveTasks: vi.fn(),
+  canLabelTasks: vi.fn(),
   task: {
     id: "task-1",
     number: 42,
@@ -94,6 +96,8 @@ vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canUpdateTasks: mocks.canUpdateTasks,
     canAssignTasks: mocks.canAssignTasks,
+    canMoveTasks: mocks.canMoveTasks,
+    canLabelTasks: mocks.canLabelTasks,
   }),
 }));
 vi.mock("@/lib/toast", () => ({
@@ -125,6 +129,8 @@ function press(init: KeyboardEventInit) {
 beforeEach(() => {
   mocks.canUpdateTasks.mockReturnValue(true);
   mocks.canAssignTasks.mockReturnValue(true);
+  mocks.canMoveTasks.mockReturnValue(true);
+  mocks.canLabelTasks.mockReturnValue(true);
   mocks.updateAssignee.mockResolvedValue({});
   mocks.updateDueDate.mockResolvedValue({});
   mocks.writeText.mockResolvedValue(undefined);
@@ -245,7 +251,9 @@ describe("TaskShortcuts", () => {
   });
 
   it("keeps copy shortcuts but blocks edits without update permission", async () => {
+    // Without task:update a Kaneo role can neither edit nor move cards.
     mocks.canUpdateTasks.mockReturnValue(false);
+    mocks.canMoveTasks.mockReturnValue(false);
     renderTaskShortcuts();
 
     press({ key: "s", code: "KeyS" });
@@ -257,6 +265,16 @@ describe("TaskShortcuts", () => {
     expect(onStatus).not.toHaveBeenCalled();
     expect(useRelationPickerStore.getState().request).toBeNull();
     expect(mocks.writeText).toHaveBeenCalledWith("KAN-42");
+  });
+
+  // Pegasus fork (PEGA-142): a status change needs the right to move cards.
+  it("opens no status picker without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    renderTaskShortcuts();
+
+    press({ key: "s", code: "KeyS" });
+
+    expect(onStatus).not.toHaveBeenCalled();
   });
 
   it("does not assign without assign permission", async () => {

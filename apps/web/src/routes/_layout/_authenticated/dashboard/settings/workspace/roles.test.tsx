@@ -75,7 +75,6 @@ describe("workspace role permission editing", () => {
           role: "admin",
           permission: defaultRolePayloads.admin,
           assignedOnly: false,
-          hubScoped: false,
           createdAt: new Date(),
         }}
         isDefault
@@ -95,7 +94,6 @@ describe("workspace role permission editing", () => {
         roleName: "admin",
         permission: {},
         assignedOnly: false,
-        hubScoped: false,
       }),
     );
   });
@@ -109,7 +107,6 @@ describe("workspace role permission editing", () => {
           role: "fuehrungskraft",
           permission: { task: ["read", "update"] },
           assignedOnly: false,
-          hubScoped: false,
           createdAt: new Date(),
         }}
         onDelete={() => {}}
@@ -131,7 +128,6 @@ describe("workspace role permission editing", () => {
         roleName: "fuehrungskraft",
         permission: { task: ["read", "update"] },
         assignedOnly: true,
-        hubScoped: false,
       }),
     );
   });
@@ -145,7 +141,6 @@ describe("workspace role permission editing", () => {
           role: "fuehrungskraft",
           permission: { task: ["read"] },
           assignedOnly: true,
-          hubScoped: false,
           createdAt: new Date(),
         }}
         onDelete={() => {}}
@@ -155,29 +150,42 @@ describe("workspace role permission editing", () => {
       screen.getByRole("switch", { name: "Only assigned tasks" }),
     ).toBeChecked();
   });
-  // Pegasus fork (PEGA-141): the Hub-scope restriction sits next to
-  // "Only assigned tasks" and is saved the same way.
-  it("saves the hub restriction as its own field, not as a permission", async () => {
+  // Pegasus fork (PEGA-142): the Hub's visibility and rights apply to every
+  // member of a workspace it manages, so the role editor has no switch for
+  // them and says where they come from.
+  it("offers no Hub switch and explains that the Hub decides on leads", () => {
+    render(
+      <PermissionList
+        permissions={{ task: ["read", "update"] }}
+        selected={{ task: new Set(["read"]) }}
+        onToggle={() => {}}
+      />,
+    );
+    expect(
+      screen.queryByRole("switch", { name: "Visibility from the Hub (units)" }),
+    ).toBeNull();
+    expect(
+      screen.getByText(/In workspaces the Pegasus Hub manages/),
+    ).toBeInTheDocument();
+  });
+  it("saves a role without a Hub field", async () => {
     render(
       <CustomRoleEditor
         workspaceId="workspace"
         role={{
           id: "role",
           workspaceId: "workspace",
-          role: "fuehrungskraft",
+          role: "pegasus",
           permission: { task: ["read", "update"] },
           assignedOnly: false,
-          hubScoped: false,
           createdAt: new Date(),
         }}
         onDelete={() => {}}
       />,
     );
-    const restriction = screen.getByRole("switch", {
-      name: "Visibility from the Hub (units)",
-    });
-    expect(restriction).not.toBeChecked();
-    fireEvent.click(restriction);
+    fireEvent.click(
+      screen.getByRole("switch", { name: "Only assigned tasks" }),
+    );
     fireEvent.click(
       screen.getByRole("button", {
         name: "settings:workspaceRoles.saveChanges",
@@ -186,35 +194,11 @@ describe("workspace role permission editing", () => {
     await waitFor(() =>
       expect(m.update).toHaveBeenCalledWith({
         workspaceId: "workspace",
-        roleName: "fuehrungskraft",
+        roleName: "pegasus",
         permission: { task: ["read", "update"] },
-        assignedOnly: false,
-        hubScoped: true,
+        assignedOnly: true,
       }),
     );
-  });
-  it("shows a stored hub restriction as switched on", () => {
-    render(
-      <CustomRoleEditor
-        workspaceId="workspace"
-        role={{
-          id: "role",
-          workspaceId: "workspace",
-          role: "fuehrungskraft",
-          permission: { task: ["read"] },
-          assignedOnly: false,
-          hubScoped: true,
-          createdAt: new Date(),
-        }}
-        onDelete={() => {}}
-      />,
-    );
-    expect(
-      screen.getByRole("switch", { name: "Visibility from the Hub (units)" }),
-    ).toBeChecked();
-    expect(
-      screen.getByRole("switch", { name: "Only assigned tasks" }),
-    ).not.toBeChecked();
   });
   it("also exposes unknown stored permission entries instead of silently retaining them", () => {
     render(

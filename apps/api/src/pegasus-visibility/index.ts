@@ -6,6 +6,7 @@ import {
 } from "../openapi";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
+import { denyHubGoverned } from "./deny-hub-governed";
 import getUserScopes from "./controllers/get-user-scopes";
 import replaceUserScopes from "./controllers/replace-user-scopes";
 import setTaskUnit from "./controllers/set-task-unit";
@@ -22,15 +23,19 @@ import {
   workspaceIdParam,
 } from "./schema";
 
-// Pegasus fork (PEGA-141): the Pegasus Hub owns the unit hierarchy and pushes
-// what each user may see; members of roles with `hubScoped` only see tasks
-// the stored scope admits (`task-scope/`). These are the only routes that
-// read or write the pegasus_* tables.
+// Pegasus fork (PEGA-141, PEGA-142): the Pegasus Hub owns the unit hierarchy
+// and the rights, and pushes what each user may see and do. From the first
+// user snapshot on, every member except owners, instance admins and the Hub's
+// system account is bound by it (`task-scope/`, `utils/require-hub-permission`),
+// and only those three may use these routes (`deny-hub-governed`).
+// These are the only routes that write the pegasus_* tables. Paths and
+// operation ids are the contract with the Hub: do not rename them.
 
 const TAGS = ["Pegasus visibility"];
-const manageSettings = requireWorkspacePermission({
-  workspace: ["manage_settings"],
-});
+const manageSettings = [
+  requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
+] as const;
 
 const replaceUserScopesRoute = createRoute({
   method: "put",
@@ -39,8 +44,8 @@ const replaceUserScopesRoute = createRoute({
   tags: TAGS,
   summary: "Replace the visibility of all users",
   description:
-    "Replaces every user scope of the workspace with this snapshot in one transaction. A user who is not listed sees no tasks in roles with Hub visibility.",
-  middleware: [workspaceAccess.fromParam(), manageSettings] as const,
+    "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing.",
+  middleware: [workspaceAccess.fromParam(), ...manageSettings] as const,
   request: {
     params: workspaceIdParam,
     body: {
@@ -52,7 +57,9 @@ const replaceUserScopesRoute = createRoute({
     400: errorResponse(
       "Invalid body, duplicate email, or units on a mode other than units",
     ),
-    403: errorResponse("Missing workspace:manage_settings permission"),
+    403: errorResponse(
+      "Missing workspace:manage_settings permission, or a member the Hub governs",
+    ),
     404: errorResponse("Workspace not found"),
   },
 });
@@ -64,11 +71,13 @@ const getUserScopesRoute = createRoute({
   tags: TAGS,
   summary: "Get the visibility of all users",
   description: "Returns the stored snapshot, sorted by email.",
-  middleware: [workspaceAccess.fromParam(), manageSettings] as const,
+  middleware: [workspaceAccess.fromParam(), ...manageSettings] as const,
   request: { params: workspaceIdParam },
   responses: {
     200: jsonResponse("Stored snapshot", userScopesResponse),
-    403: errorResponse("Missing workspace:manage_settings permission"),
+    403: errorResponse(
+      "Missing workspace:manage_settings permission, or a member the Hub governs",
+    ),
     404: errorResponse("Workspace not found"),
   },
 });
@@ -81,7 +90,10 @@ const setTaskUnitRoute = createRoute({
   summary: "Set the unit of a task",
   description:
     "Sets the unit of the task's lead, or removes it with null. A task without a unit is visible only to users with mode `all`.",
-  middleware: [workspaceAccess.fromTaskId("taskId"), manageSettings] as const,
+  middleware: [
+    workspaceAccess.fromTaskId("taskId"),
+    ...manageSettings,
+  ] as const,
   request: {
     params: taskIdParam,
     body: { content: { "application/json": { schema: setTaskUnitBody } } },
@@ -89,7 +101,9 @@ const setTaskUnitRoute = createRoute({
   responses: {
     200: jsonResponse("Unit stored", taskUnitResponse),
     400: errorResponse("Invalid body"),
-    403: errorResponse("Missing workspace:manage_settings permission"),
+    403: errorResponse(
+      "Missing workspace:manage_settings permission, or a member the Hub governs",
+    ),
     404: errorResponse("Task not found"),
   },
 });
@@ -102,7 +116,7 @@ const setTaskUnitsRoute = createRoute({
   summary: "Set the units of many tasks",
   description:
     "Upserts the unit of every listed task; tasks not listed keep theirs. If any task is unknown or outside the workspace, nothing is written and the response names them.",
-  middleware: [workspaceAccess.fromParam(), manageSettings] as const,
+  middleware: [workspaceAccess.fromParam(), ...manageSettings] as const,
   request: {
     params: workspaceIdParam,
     body: { content: { "application/json": { schema: setTaskUnitsBody } } },
@@ -112,7 +126,9 @@ const setTaskUnitsRoute = createRoute({
     400: errorResponse(
       "Invalid body, or tasks that are unknown or outside the workspace",
     ),
-    403: errorResponse("Missing workspace:manage_settings permission"),
+    403: errorResponse(
+      "Missing workspace:manage_settings permission, or a member the Hub governs",
+    ),
     404: errorResponse("Workspace not found"),
   },
 });

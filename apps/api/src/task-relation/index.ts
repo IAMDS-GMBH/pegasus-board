@@ -13,7 +13,7 @@ import {
 import { assertProjectAccess } from "../project-access/assert-project-access";
 import { assertTasksVisible } from "../task-scope/assert-tasks-visible";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
-import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { validateWorkspaceAccess } from "../utils/validate-workspace-access";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createTaskRelation from "./controllers/create-task-relation";
@@ -135,7 +135,7 @@ const createTaskRelationRoute = createRoute({
     "Link two tasks. Authorization is scoped to the source task's workspace.",
   middleware: [
     scopeToSourceTask,
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     body: {
@@ -163,7 +163,7 @@ const deleteTaskRelationRoute = createRoute({
   description: "Remove a link between two tasks. Returns the deleted relation.",
   middleware: [
     scopeToRelation,
-    requireWorkspacePermission({ task: ["update"] }),
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: { params: taskRelationParam },
   responses: {

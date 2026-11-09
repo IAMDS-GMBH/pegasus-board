@@ -42,7 +42,11 @@ export const projectStatisticsSchema = z
 
 export const projectListItemSchema = projectSchema
   .extend({
-    statistics: projectStatisticsSchema,
+    // Pegasus fork (PEGA-142): absent for members without REPORTING_VIEW.
+    statistics: projectStatisticsSchema.optional().openapi({
+      description:
+        "Rollup task statistics. Absent for a member the Pegasus Hub governs without REPORTING_VIEW.",
+    }),
     // Legacy, always empty. Fetch the board via GET /task/tasks/{id}.
     archivedTasks: z
       .array(boardTaskSchema)

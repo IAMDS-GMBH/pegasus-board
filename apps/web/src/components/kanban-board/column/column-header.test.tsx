@@ -17,14 +17,18 @@ const m = vi.hoisted(() => ({
   },
   mutate: vi.fn(),
   setProject: vi.fn(),
+  canMoveTasks: vi.fn(() => true),
 }));
-vi.mock("@/hooks/mutations/task/use-update-task", () => ({
-  useUpdateTask: () => ({ mutate: m.mutate }),
+// Pegasus fork (PEGA-142): archiving goes through the status route, which
+// needs only LEAD_MOVE_STAGE, not the full update and its LEAD_EDIT.
+vi.mock("@/hooks/mutations/task/use-update-task-status", () => ({
+  useUpdateTaskStatus: () => ({ mutate: m.mutate }),
 }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canUpdateTasks: () => true,
     canCreateTasks: () => true,
+    canMoveTasks: m.canMoveTasks,
   }),
 }));
 vi.mock("@/store/project", () => ({
@@ -71,5 +75,24 @@ it("prevents archive confirmation while the board is partial and uses the comple
   expect(m.archive.taskCount).toBe(2);
   act(() => m.archive.onConfirm?.());
   expect(m.mutate).toHaveBeenCalledTimes(2);
+  expect(m.mutate).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "a", status: "archived" }),
+  );
   expect(m.setProject).toHaveBeenCalledOnce();
+});
+
+// Pegasus fork (PEGA-142): archiving moves the cards out of the column.
+it("offers no archive-all without canMoveTasks", () => {
+  m.canMoveTasks.mockReturnValueOnce(false);
+  const column = {
+    id: "done",
+    name: "Done",
+    slug: "done",
+    isFinal: true,
+    tasks: [{ id: "a" }],
+  } as unknown as ProjectWithTasks["columns"][number];
+  m.project = { id: "p", columns: [column] } as ProjectWithTasks;
+  render(<ColumnHeader column={column} />);
+
+  expect(screen.queryByTitle(/archiveAllTooltip/)).toBeNull();
 });

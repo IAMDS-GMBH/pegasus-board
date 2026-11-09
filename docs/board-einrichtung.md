@@ -6,7 +6,7 @@ Das Skript ändert nur, was von der Vorgabe abweicht. Es kann daher auf jeder Um
 
 ## 1. Voraussetzungen
 
-- **Workspace vorhanden.** Workspace „Pegasus“ über die Oberfläche anlegen. Seine ID steht in der Adresse: `/dashboard/workspace/<ID>/…`.
+- **Workspace des Key Accounts vorhanden.** Jeder Key Account (= Vertriebsweg) hat seinen eigenen Workspace ([Abschnitt 6](#6-neuen-key-account-anbinden)). Den Workspace über die Oberfläche anlegen. Seine ID steht in der Adresse: `/dashboard/workspace/<ID>/…`.
 - **Nutzer mit der Rolle Owner oder Admin in diesem Workspace.** Das Skript braucht die Rechte `project:create`, `project:update`, `label:create` und `label:update`.
 - **API-Schlüssel dieses Nutzers.** Anlegen unter Einstellungen → Konto → API-Schlüssel. Der Schlüssel wirkt mit den Rechten des Nutzers und gehört nicht ins Repository.
 - **Node.js ab Version 20.** Weitere Abhängigkeiten gibt es nicht. `pnpm install` ist nicht nötig, eine Kopie des Ordners `scripts/board-setup/` reicht.
@@ -68,7 +68,6 @@ Im Repository geht auch `pnpm board:setup --workspace …`.
 |---|---|---|
 | Quelle | Quelle: Meta · Quelle: LinkedIn · Quelle: Formular · Quelle: Import | Sage (teal) |
 | Paket | Paket 1 · Paket 2 · Paket 3 | Terracotta (orange) |
-| Vertriebsweg | Vertriebsweg: WWK · Vertriebsweg: 1zu1 · Vertriebsweg: Clarus | Lavender (purple) |
 | Kampagne | Kampagne: ohne Kampagne | Slate (dark-gray) |
 | Prüfung und Rückgabe | Dublette? · unvollständig (Amber) · verwertbar (Forest) · Rückläufer (Rose) · keine Zuordnung (Crimson) | je Label |
 
@@ -87,7 +86,8 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 | Quelle | Auswahl | Meta, LinkedIn, Formular, Import | |
 | Kampagne | Text (Name aus dem Hub) | | ja |
 | Paket | Auswahl | Paket 1, Paket 2, Paket 3 | ja |
-| Vertriebsweg | Auswahl | WWK, 1zu1, Clarus | |
+
+**Vertriebsweg:** Es gibt dafür weder ein Feld noch ein Label. Der Vertriebsweg ist der Workspace des Key Accounts; die Einheit einer Karte kommt vom Hub (`lead.unit_id`, übertragen über `/pegasus-visibility`). Seit PEGA-142 legt das Skript beides nicht mehr an, und der Hub schreibt es nicht.
 
 ## 4. Regeln des Abgleichs
 
@@ -105,9 +105,71 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 
 **Vorgabe ändern:** `board.json` anpassen, im Review-Prozess freigeben und das Skript auf allen Umgebungen erneut ausführen. Weitere Felder aus Feinkonzept Baustein 3 (Prüfergebnis, Termin, Rückgabegrund und so weiter) werden so ergänzt, sobald sie fachlich abgestimmt sind.
 
+### Altbestand: Feld und Labels „Vertriebsweg“ entfernen
+
+Workspaces, die vor PEGA-142 eingerichtet wurden, haben noch das Feld „Vertriebsweg“ und die Labels „Vertriebsweg: WWK“, „Vertriebsweg: 1zu1“ und „Vertriebsweg: Clarus“. Das Skript legt sie nicht mehr an, löscht sie aber auch nicht (siehe oben). Ein Lauf meldet das Feld als Hinweis (`!`, Feld außerhalb der Vorgabe); die Labels meldet er nicht. Von Hand entfernen, je Workspace:
+
+1. **Zuerst prüfen**, ob die Werte noch gebraucht werden. Löschen entfernt Feld und Label von allen Karten und lässt sich nicht rückgängig machen. Wo Karten nur über „Vertriebsweg“ einem Key Account zugeordnet sind, zuerst die Einheit im Hub setzen bzw. die Karten in den Workspace des Key Accounts bringen. Kaneo verschiebt Karten nicht zwischen Workspaces.
+2. **Feld:** Projekt „Bewerber-Pool“ → Projekteinstellungen → Benutzerdefinierte Felder → „Vertriebsweg“ → Löschen.
+3. **Labels:** Einstellungen → Workspace → Labels, die drei Labels „Vertriebsweg: …“ löschen.
+4. Das Skript erneut mit `--dry-run` ausführen. Es muss „Keine Änderungen.“ melden, ohne Hinweis auf „Vertriebsweg“.
+
+Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten liegen. Eine Löschung per Skript gibt es bewusst nicht, weil das Skript nie Daten löscht.
+
 ## 5. Nicht Teil des Skripts
 
-- **Rollen** (Administrator, Innendienst, Führungskraft, Bearbeiter, Marketing Manager) richtet ein Workspace-Admin von Hand ein, wie in [Zeilenfilter, Abschnitt 1](review/2026-10-zeilenfilter-fuehrungskraft.md#1-rolle-führungskraft-anlegen-konfiguration) beschrieben. Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.
-- **Sichtbereich (PEGA-141):** Die Rollen Führungskraft, Innendienst und Bearbeiter bekommen im Rolleneditor unter „Aufgaben“ den Schalter „Sicht aus dem Hub (Einheiten)“. Sie sehen dann nur die Karten der Einheiten, die der Hub für die Person überträgt; für Bearbeiter überträgt der Hub „nur zugewiesene“. Administrator und das Systemkonto „Pegasus-Hub“ bekommen den Schalter **nicht** und bleiben uneingeschränkt; das Systemkonto braucht Administrator, weil die Übertragung `workspace:manage_settings` verlangt. Den Schalter erst setzen, wenn der Hub Karten-Einheiten und Nutzer übertragen hat; ohne übertragenen Stand sieht eine Rolle mit Schalter nichts. Details: [Sichtbereich-Review](review/2026-11-sichtbereich-einheiten.md).
+- **Rollen (PEGA-142):** Was ein Mitglied bei Leads sieht und tun darf, kommt aus dem Pegasus-Hub, nicht aus der Kaneo-Rolle. Im Board gibt es deshalb nur zwei Rollen:
+  - **Administrator** für Plattform-Admins, Key-Account-Admins und das Systemkonto „Pegasus-Hub“. Die Rolle regelt das Board-Eigene: Labels, Spalten, Felder, Workspace-Einstellungen. Das Systemkonto braucht sie, weil die Übertragung `workspace:manage_settings` verlangt.
+  - **Pegasus** für alle übrigen, mit Lesen von Projekten, Aufgaben, Labels und Workspace. Mehr ist nicht nötig: Anlegen, Bearbeiten, Verschieben, Zuweisen, Löschen, Export und Statistik entscheidet der Hub je Person.
+
+  Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.
+- **Sichtbereich und Rechte aus dem Hub (PEGA-141, PEGA-142):**
+  - Mit der ersten Übertragung von Nutzern übernimmt der Hub den Workspace. Ab dann gelten sein Sichtbereich und seine Rechte für **jedes** Mitglied, gleich welcher Rolle. Kein Board-Admin kann das abschalten.
+  - Ausgenommen sind nur der Owner, Instanz-Admins und das Systemkonto, dessen Nutzer-ID in `PEGASUS_HUB_USER_ID` steht. Nur sie dürfen danach die Push-API nutzen; ein Hub-gesteuerter Administrator bekommt 403 `HUB_GOVERNED`.
+  - Ein Mitglied, das der Hub nicht überträgt, sieht und darf nichts. Fehlt ein Recht, antwortet die API mit 403 `MISSING_PERMISSION`, und die Oberfläche blendet die Aktion aus.
+  - „Nur zugewiesene“ im Rolleneditor schränkt zusätzlich ein. Den früheren Schalter „Sicht aus dem Hub“ gibt es nicht mehr.
+  - Details: [Rechte-Review](review/2026-11-rechte-aus-dem-hub.md), [Sichtbereich-Review](review/2026-11-sichtbereich-einheiten.md).
+- **Reihenfolge bei der Umstellung:**
+  1. `PEGASUS_HUB_USER_ID` im Root-`.env` setzen (Helm: `kaneo.extraEnv`) und die API neu starten. Die ID liefert `SELECT id FROM "user" WHERE email = '<Login-E-Mail des Systemkontos>';`. Ohne die Variable ist das Systemkonto nach dem ersten Push selbst Hub-gesteuert und kann nicht erneut übertragen.
+  2. Den Hub Karten-Einheiten und dann Nutzer mit Rechten übertragen lassen.
+  3. Mitglieder auf die Rolle „Pegasus“ umstellen.
 - **Workspace und Mitglieder** legt ein Admin über die Oberfläche oder per Einladung an.
 - **Webhooks zum Hub** gehören zur Einrichtung des Hubs.
+
+## 6. Neuen Key Account anbinden
+
+Jeder Key Account ist ein eigener Workspace. Ein API-Schlüssel gehört in Kaneo zu einem **Nutzer**, nicht zu einem Workspace. Das Systemkonto „Pegasus-Hub“ hat deshalb genau einen Schlüssel und ist in jedem Key-Account-Workspace Administrator.
+
+| Wo | Was |
+|---|---|
+| Hub, Umgebung (einmal) | `KANEO_API_URL`, `KANEO_API_KEY` (Schlüssel des Systemkontos), `KANEO_WEBHOOK_SECRET` (eines für alle Projekte) |
+| Hub, Datenbank (je Key Account) | Projekt-ID im Board; die Workspace-ID liest der Hub über `GET /api/project/{id}`. Spalten, Felder und Labels findet er zur Laufzeit am Namen. |
+| Board, Umgebung (einmal) | `PEGASUS_HUB_USER_ID` (Nutzer-ID des Systemkontos) |
+
+Keine Projekt- oder Workspace-ID gehört in die Umgebung des Hubs (heute `KANEO_PROJECT_ID`): Jeder weitere Key Account wäre sonst ein neues Deployment.
+
+**Ablauf je Key Account:**
+
+1. Workspace in der Oberfläche anlegen und das Systemkonto als Administrator hinzufügen.
+2. Das Board mit dem Schlüssel des Systemkontos einrichten: `node scripts/board-setup/setup-board.mjs --workspace <ID>` (Abschnitt 2). Die Projekt-ID steht in der Ausgabe bzw. mit `--ids-out` in der JSON-Datei.
+3. Im Hub-Admin am Key Account die Projekt-ID hinterlegen.
+4. Der Hub registriert seinen Webhook am Projekt (`createGenericWebhookIntegration`, `/api/generic-webhook-integration/project/{projectId}`), wie heute für das eine Projekt. Eingehende Webhooks ordnet er über die Projekt-ID dem Key Account zu.
+5. Der Hub überträgt Karten-Einheiten, dann Nutzer mit Rechten. Die erste Übertragung schaltet die Durchsetzung im Workspace ein.
+6. Mitglieder auf die Rolle „Pegasus“ umstellen.
+
+### Ausblick: Automatisierung über den Hub
+
+Nur beschrieben, nicht gebaut:
+
+- **Schritte 2 bis 5** kann der Hub selbst ausführen, sobald im Hub-Admin ein Key Account mit Workspace-ID angelegt wird:
+  - die Board-Einrichtung aus `board.json` (dieselbe Logik wie das Skript, im Hub statt per Kommandozeile),
+  - die Projekt-ID am Key Account speichern,
+  - den Webhook registrieren,
+  - den ersten Stand übertragen.
+
+  Alles läuft über die öffentliche API mit dem Schlüssel des Systemkontos; das Board braucht dafür nichts Neues.
+- **Schritt 1** (Workspace anlegen) könnte der Hub ebenfalls übernehmen, hat aber zwei Grenzen:
+  - Wer einen Workspace anlegt, wird dessen Owner und kann ihn löschen.
+  - Mit `DISABLE_WORKSPACE_CREATION=true` dürfen nur Instanz-Admins Workspaces anlegen; das Systemkonto bräuchte dann Instanz-Admin-Rechte im ganzen Board.
+
+  Empfehlung: Schritt 1 bleibt manuell bei einem Plattform-Admin.

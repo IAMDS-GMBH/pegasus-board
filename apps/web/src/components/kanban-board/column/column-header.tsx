@@ -3,7 +3,7 @@ import { Archive, Plus, ArchiveIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CreateTaskModal from "@/components/shared/modals/create-task-modal";
-import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
+import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-status";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { toast } from "@/lib/toast";
@@ -22,9 +22,11 @@ export function ColumnHeader({
 }: ColumnHeaderProps) {
   const { t } = useTranslation();
   const { project, setProject } = useProjectStore();
-  const { mutate: updateTask } = useUpdateTask();
-  const { canUpdateTasks, canCreateTasks } = useWorkspacePermission();
-  const canTask = canUpdateTasks();
+  // Pegasus fork (PEGA-142): archiving is a status change, so it uses the
+  // status route and needs only the right to move cards.
+  const { mutate: updateTaskStatus } = useUpdateTaskStatus();
+  const { canMoveTasks, canCreateTasks } = useWorkspacePermission();
+  const canArchive = canMoveTasks();
   const canCreate = canCreateTasks();
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
@@ -40,7 +42,7 @@ export function ColumnHeader({
       if (!archivedColumn) return;
 
       for (const task of archivedColumn.tasks) {
-        updateTask({
+        updateTaskStatus({
           ...task,
           status: "archived",
         });
@@ -71,7 +73,7 @@ export function ColumnHeader({
       </div>
 
       <div className="flex items-center">
-        {canTask && column.isFinal && column.tasks.length > 0 && (
+        {canArchive && column.isFinal && column.tasks.length > 0 && (
           <button
             type="button"
             disabled={disableCollectionActions}

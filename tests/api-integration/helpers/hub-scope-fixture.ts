@@ -1,10 +1,11 @@
+import { eq } from "drizzle-orm";
 import { expect } from "vite-plus/test";
 import db, { schema } from "../../../apps/api/src/database";
 import { createApp } from "../../../apps/api/src/index";
 import { mockAuthenticatedSession } from "./auth";
 import { createProjectFixture, createWorkspaceMember } from "./fixtures";
 
-// Pegasus fork (PEGA-141): the test tree from SPEC Rollen & Rechte §12, with
+// Pegasus fork (PEGA-141, PEGA-142): the test tree from SPEC Rollen & Rechte §12, with
 // unit ids as plain strings. The Hub flattens the tree, so the board only
 // ever sees unit sets:
 //
@@ -40,10 +41,23 @@ export type TaskName = keyof typeof TASK_UNITS;
 export type User = typeof schema.userTable.$inferSelect;
 export type App = ReturnType<typeof createApp>["app"];
 
-type ScopeInput = {
+// What the Hub grants a Führungskraft today; tests take single rights away.
+export const LEAD_RIGHTS = [
+  "LEAD_READ",
+  "LEAD_EDIT",
+  "LEAD_MOVE_STAGE",
+  "LEAD_CREATE",
+  "LEAD_ASSIGN_PROCESSOR",
+  "LEAD_DELETE",
+  "LEAD_EXPORT",
+  "REPORTING_VIEW",
+];
+
+export type ScopeInput = {
   email: string;
   mode: "all" | "units" | "assigned";
   unitIds: string[];
+  permissions?: string[];
 };
 
 async function addMember(workspaceId: string, email: string, role: string) {
@@ -72,7 +86,6 @@ export async function createHubScopeFixture() {
     workspaceId: workspace.id,
     role: HUB_ROLE,
     permission: JSON.stringify(HUB_ROLE_PERMISSION),
-    hubScoped: true,
   });
 
   // fkBD's account email differs in case from what the Hub sends.
@@ -116,13 +129,22 @@ export async function createHubScopeFixture() {
     tasks[name] = task;
   }
 
-  const hub = asUser(owner.user);
+  // Cards created through the API continue the numbering.
+  await db
+    .update(schema.projectTable)
+    .set({ lastTaskNumber: names.length })
+    .where(eq(schema.projectTable.id, project.id));
+
+  // Signs in as the owner on every push: tests switch the session between.
   const put = async (path: string, body: unknown) => {
-    const response = await hub.request(`/api/pegasus-visibility${path}`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const response = await asUser(owner.user).request(
+      `/api/pegasus-visibility${path}`,
+      {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
     expect(response.status, path).toBe(200);
   };
 
@@ -140,7 +162,19 @@ export async function createHubScopeFixture() {
     { email: "bearbeiter@wwk.test", mode: "assigned", unitIds: [] },
   ];
   const pushScopes = (scopes: ScopeInput[]) =>
-    put(`/workspace/${workspace.id}/users`, { users: scopes });
+    put(`/workspace/${workspace.id}/users`, {
+      users: scopes.map((scope) => ({
+        ...scope,
+        permissions: scope.permissions ?? LEAD_RIGHTS,
+      })),
+    });
+  // Re-pushes the default snapshot with other rights for one user.
+  const pushPermissions = (email: string, permissions: string[]) =>
+    pushScopes(
+      defaultScopes.map((scope) =>
+        scope.email === email ? { ...scope, permissions } : scope,
+      ),
+    );
   await pushScopes(defaultScopes);
 
   const idOf = new Map(names.map((name) => [tasks[name].id, name]));
@@ -156,6 +190,7 @@ export async function createHubScopeFixture() {
     tasks,
     defaultScopes,
     pushScopes,
+    pushPermissions,
     namesOf,
   };
 }

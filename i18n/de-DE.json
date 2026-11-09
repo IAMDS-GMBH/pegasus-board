@@ -1333,6 +1333,7 @@
 			"title": "Rollen",
 			"subtitle": "Lege fest, welche Aktionen Mitglieder in {{workspaceName}} ausführen können.",
 			"thisWorkspace": "diesem Workspace",
+			"hubManagedHint": "In Workspaces, die der Pegasus-Hub verwaltet, kommt aus dem Hub, was Mitglieder bei Leads sehen und tun dürfen. Rollen regeln dort nur Labels, Spalten und Workspace-Einstellungen. Für Owner gilt das nicht.",
 			"noAccess": "Du benötigst Admin- oder Eigentümerrechte, um Workspace-Rollen zu verwalten.",
 			"sectionTitle": "Workspace-Rollen",
 			"sectionSubtitle": "Bearbeite die Standardrollen oder füge eine maßgeschneiderte hinzu. Mitglieder behalten ihren zugewiesenen Rollennamen über Änderungen hinweg.",
@@ -1417,10 +1418,6 @@
 					"view_assigned_only": {
 						"label": "Nur zugewiesene",
 						"description": "Sieht nur Aufgaben, die der Person zugewiesen sind"
-					},
-					"view_hub_scoped": {
-						"label": "Sicht aus dem Hub (Einheiten)",
-						"description": "Sieht nur Aufgaben der Einheiten, die der Hub für die Person überträgt"
 					}
 				},
 				"label": {

@@ -155,10 +155,16 @@ vi.mock("@/hooks/queries/workspace-users/use-get-project-members", () => ({
   default: () => ({ data: undefined }),
 }));
 
+const permissions = vi.hoisted(() => ({
+  canAssignTasks: vi.fn(() => true),
+  canLabelTasks: vi.fn(() => true),
+}));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canCreateTasks: () => true,
     canCreateLabels: () => true,
+    canAssignTasks: permissions.canAssignTasks,
+    canLabelTasks: permissions.canLabelTasks,
   }),
 }));
 
@@ -487,6 +493,26 @@ describe("CreateTaskModal", () => {
         expect.objectContaining({ status: "planned" }),
       ),
     );
+  });
+
+  // Pegasus fork (PEGA-142): the API refuses both on a new lead without the
+  // right, so the modal does not offer them.
+  it.each([
+    ["assignee", permissions.canAssignTasks, "common:modals.createTask.assign"],
+    ["label", permissions.canLabelTasks, "common:modals.createTask.labels"],
+  ])("hides the %s picker without the right", (_name, capability, label) => {
+    useLocation.mockReturnValue({
+      pathname: "/dashboard/workspace/workspace-1/project/project-1/board",
+    });
+    const view = render(<CreateTaskModal open onClose={vi.fn()} />, {
+      wrapper: createWrapper(),
+    });
+    expect(screen.getByText(label).closest("button")?.hidden).toBe(false);
+
+    capability.mockReturnValue(false);
+    view.rerender(<CreateTaskModal open onClose={vi.fn()} />);
+    expect(screen.getByText(label).closest("button")?.hidden).toBe(true);
+    capability.mockReturnValue(true);
   });
 
   it("hides the picker when a project is in scope from the route", () => {

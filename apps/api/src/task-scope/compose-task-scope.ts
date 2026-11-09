@@ -1,21 +1,25 @@
 import type { HubScope, TaskScope } from "./task-scope";
 
-// Both restrictions narrow what a member sees; when a role carries both, a
-// task is visible if either admits it. A hub-scoped member the Hub did not
-// send (`hub: null`) sees nothing through that restriction.
+// In a workspace the Hub manages, its scope applies to every governed member
+// and the board's "assigned only" narrows it further; a member the Hub did
+// not send (`hub: null`) sees nothing. Elsewhere only "assigned only" applies.
 export function composeTaskScope(input: {
   userId: string;
   assignedOnly: boolean;
-  hubScoped: boolean;
+  managed: boolean;
   hub: HubScope | null;
 }): TaskScope | null {
-  const hub = input.hubScoped ? input.hub : null;
-  if (!input.assignedOnly && !input.hubScoped) return null;
-  if (hub?.mode === "all") return null;
+  const { userId, managed, hub } = input;
+  const assignedOnly =
+    input.assignedOnly || (managed && hub?.mode === "assigned");
+  const unitIds = !managed
+    ? null
+    : !hub
+      ? []
+      : hub.mode === "units"
+        ? hub.unitIds
+        : null;
 
-  return {
-    userId: input.userId,
-    assigned: input.assignedOnly || hub?.mode === "assigned",
-    unitIds: hub?.mode === "units" ? hub.unitIds : [],
-  };
+  if (!assignedOnly && unitIds === null) return null;
+  return { userId, assignedOnly, unitIds };
 }

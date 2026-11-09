@@ -35,9 +35,13 @@ export function TaskShortcuts({
   const { mutateAsync: updateAssignee } = useUpdateTaskAssignee();
   const { mutateAsync: updateDueDate } = useUpdateTaskDueDate();
   const openRelationPicker = useRelationPickerStore((state) => state.open);
-  const { canUpdateTasks, canAssignTasks } = useWorkspacePermission();
+  const { canUpdateTasks, canAssignTasks, canMoveTasks, canLabelTasks } =
+    useWorkspacePermission();
   const active = { enabled: enabled && Boolean(task) };
   const editable = { enabled: active.enabled && canUpdateTasks() };
+  // Pegasus fork (PEGA-142): moving and labelling have their own rights.
+  const movable = { enabled: active.enabled && canMoveTasks() };
+  const labelable = { enabled: active.enabled && canLabelTasks() };
   const assignable = { enabled: active.enabled && canAssignTasks() };
 
   const openTask = (id: string | undefined) => {
@@ -48,12 +52,12 @@ export function TaskShortcuts({
     });
   };
 
-  useShortcut("changeStatus", () => clickTaskAction("status"), editable);
+  useShortcut("changeStatus", () => clickTaskAction("status"), movable);
   useShortcut("changePriority", () => clickTaskAction("priority"), editable);
   useShortcut("assignTask", () => clickTaskAction("assignee"), assignable);
-  useShortcut("changeLabels", () => clickTaskAction("labels"), editable);
+  useShortcut("changeLabels", () => clickTaskAction("labels"), labelable);
   useShortcut("setDueDate", () => clickTaskAction("dueDate"), editable);
-  useShortcut("moveToProject", () => clickTaskAction("move"), editable);
+  useShortcut("moveToProject", () => clickTaskAction("move"), movable);
   useShortcut("addLink", () => clickTaskAction("addLink"), editable);
   useShortcut("createSubtask", () => clickTaskAction("addSubtask"), editable);
   useShortcut("toggleResources", () => clickTaskAction("resources"), active);

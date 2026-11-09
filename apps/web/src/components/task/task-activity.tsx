@@ -4,6 +4,7 @@ import CommentInput from "@/components/activity/comment-input";
 import useAuth from "@/components/providers/auth-provider/hooks/use-auth";
 import { Timeline } from "@/components/ui/timeline";
 import useGetActivitiesByTaskId from "@/hooks/queries/activity/use-get-activities-by-task-id";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 
 type TaskActivityProps = {
@@ -19,6 +20,8 @@ export function TaskActivity({
 }: TaskActivityProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  // Pegasus fork (PEGA-142): commenting edits the lead.
+  const { canUpdateTasks } = useWorkspacePermission();
   const { data: newestFirst = [] } = useGetActivitiesByTaskId(taskId);
   const activities = [...newestFirst].reverse();
 
@@ -43,7 +46,7 @@ export function TaskActivity({
         </p>
       )}
 
-      {user?.id && (
+      {user?.id && canUpdateTasks() && (
         <div className="pt-2">
           <CommentInput taskId={taskId} projectId={projectId} />
         </div>

@@ -857,6 +857,7 @@
 			"title": "Vai trò",
 			"subtitle": "Xác định các hành động mà thành viên có thể thực hiện trong {{workspaceName}}.",
 			"thisWorkspace": "không gian làm việc này",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Bạn cần quyền quản trị viên hoặc chủ sở hữu để quản lý vai trò không gian làm việc.",
 			"sectionTitle": "Vai trò không gian làm việc",
 			"sectionSubtitle": "Chỉnh sửa vai trò mặc định hoặc thêm vai trò tùy chỉnh. Thành viên giữ nguyên tên vai trò đã gán qua các lần chỉnh sửa.",
@@ -940,10 +941,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

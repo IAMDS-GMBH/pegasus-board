@@ -101,10 +101,11 @@ export function BulkBar({
 
   const can = actions.permissions;
   if (!mounted) return null;
-  if (!can.edit && !can.delete && !can.assign && !can.labels) return null;
+  if (!can.edit && !can.move && !can.delete && !can.assign && !can.labels)
+    return null;
 
   const groups: BulkCommandGroup[] = [
-    variant === "board" && can.edit
+    variant === "board" && can.move
       ? {
           value: "status",
           label: t("tasks:bulk.changeStatus"),
@@ -148,12 +149,12 @@ export function BulkBar({
           ),
         }
       : null,
-    can.edit || can.delete
+    can.move || can.delete
       ? {
           value: "actions",
           label: t("tasks:bulk.actions"),
           items: [
-            ...(can.edit
+            ...(can.move
               ? [
                   {
                     value: "bulk-archive",
@@ -194,7 +195,7 @@ export function BulkBar({
       <Toolbar className="h-10 items-center gap-0.5 rounded-xl border-border/80 bg-popover px-1.5 py-0 shadow-lg/8 max-sm:h-12 max-sm:justify-between">
         <BulkCountChip count={displayCount} onClear={clearSelection} />
         <div className="ms-1.5 flex items-center gap-0.5">
-          {variant === "board" && can.edit && (
+          {variant === "board" && can.move && (
             <BulkOptionPopover
               icon={<CircleDot />}
               label={t("tasks:status.label")}
@@ -249,7 +250,7 @@ export function BulkBar({
               returnFocus={focusedTaskElement}
             />
           )}
-          {can.edit &&
+          {can.move &&
             (variant === "board" ? (
               <BarTooltip label={moveLabel}>
                 <button
@@ -277,7 +278,7 @@ export function BulkBar({
           {groups.length > 0 && (
             <BulkMoreMenu
               onSearch={() => setCommandOpen(true)}
-              onArchive={can.edit ? () => void actions.archive() : undefined}
+              onArchive={can.move ? () => void actions.archive() : undefined}
               onDelete={can.delete ? actions.deleteConfirm.request : undefined}
             />
           )}

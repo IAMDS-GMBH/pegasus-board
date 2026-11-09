@@ -1,7 +1,9 @@
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 
 type ProjectProgressProps = {
-  percentage: number;
+  // Absent when the API leaves statistics out (PEGA-142).
+  percentage: number | undefined;
   className?: string;
 };
 
@@ -13,6 +15,9 @@ export function ProjectProgress({
   percentage,
   className,
 }: ProjectProgressProps) {
+  // Pegasus fork (PEGA-142): REPORTING_VIEW where the Hub governs.
+  const { canViewReports } = useWorkspacePermission();
+  if (!canViewReports() || percentage === undefined) return null;
   const clamped = Math.min(100, Math.max(0, percentage));
 
   return (

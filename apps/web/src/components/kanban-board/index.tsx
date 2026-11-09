@@ -29,6 +29,7 @@ import { useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
 import { useProjectBackground } from "@/hooks/use-project-background";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { EASE_OUT_CSS } from "@/lib/motion";
 import { useBackgroundStore } from "@/store/background";
@@ -53,7 +54,7 @@ type KanbanBoardProps = {
 
 function KanbanBoard({
   project,
-  disableDragDrop = false,
+  disableDragDrop: viewDisablesDragDrop = false,
   disableCollectionActions = false,
   sortedByNumber = false,
   sortedByPriority = false,
@@ -61,6 +62,14 @@ function KanbanBoard({
 }: KanbanBoardProps) {
   const isAutomaticallySorted = sortedByNumber || sortedByPriority;
   const appendOnly = isAutomaticallySorted || serverFiltered;
+  // Pegasus fork (PEGA-142): moving a card to another column needs its own
+  // right (LEAD_MOVE_STAGE where the Hub governs), reordering within its
+  // column only the right to edit (LEAD_EDIT), as POST /task/reorder checks.
+  const { canMoveTasks, canUpdateTasks } = useWorkspacePermission();
+  const canChangeColumn = canMoveTasks();
+  const canReorder = canUpdateTasks() && !appendOnly;
+  const disableDragDrop =
+    viewDisablesDragDrop || (!canChangeColumn && !canReorder);
   const queryClient = useQueryClient();
   const { project: storedProject, setProject } = useProjectStore();
   const setAvailableTasks = useBulkSelectionStore(
@@ -188,7 +197,11 @@ function KanbanBoard({
       return;
     }
     if (!appendOnly) {
-      dragPreview.hover(active, over);
+      const activeColumn = findTaskColumn(project, active.id.toString());
+      const overColumn = findTaskColumn(project, over.id.toString());
+      if (canChangeColumn || activeColumn?.id === overColumn?.id)
+        dragPreview.hover(active, over);
+      else dragPreview.clear();
       return;
     }
     setSortHintColumnId(
@@ -215,6 +228,8 @@ function KanbanBoard({
         ? moveBoardTask(canonical, activeId, overId, appendOnly)
         : moveBoardTask(canonical, activeId, overId, false, insertAfterTarget);
     if (!moved || !moved.tasks.length) return;
+    if (!canChangeColumn && moved.tasks.some((task) => "status" in task))
+      return;
     for (const task of moved.tasks)
       markBoardCacheChanged(queryClient, project.id, task.id);
     setProject(moved.project);

@@ -5,23 +5,33 @@ import type { UserScopeInput } from "../schema";
 // Postgres allows 65,535 bind parameters per statement; a unit row takes 3.
 const UNIT_ROWS_PER_INSERT = 10_000;
 
-// The Hub sends the full snapshot: a user it leaves out sees nothing.
+// The Hub sends the full snapshot: a user it leaves out sees and does
+// nothing. The first snapshot, even an empty one, hands the workspace to the
+// Hub for good (PEGA-142).
 async function replaceUserScopes(
   workspaceId: string,
   users: readonly UserScopeInput[],
 ) {
   await db.transaction(async (tx) => {
+    const updatedAt = new Date();
+    await tx
+      .insert(schema.pegasusWorkspaceTable)
+      .values({ workspaceId, updatedAt })
+      .onConflictDoUpdate({
+        target: schema.pegasusWorkspaceTable.workspaceId,
+        set: { updatedAt },
+      });
     await tx
       .delete(schema.pegasusUserScopeTable)
       .where(eq(schema.pegasusUserScopeTable.workspaceId, workspaceId));
     if (users.length === 0) return;
 
-    const updatedAt = new Date();
     await tx.insert(schema.pegasusUserScopeTable).values(
       users.map((user) => ({
         workspaceId,
         email: user.email,
         mode: user.mode,
+        permissions: [...new Set(user.permissions)].sort(),
         updatedAt,
       })),
     );

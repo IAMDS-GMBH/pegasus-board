@@ -5,6 +5,10 @@ import type Task from "@/types/task";
 import TaskStatusPopover from "./task-status-popover";
 
 const useGetColumns = vi.fn();
+const permissions = vi.hoisted(() => ({
+  canUpdateTasks: vi.fn(() => true),
+  canMoveTasks: vi.fn(() => true),
+}));
 
 afterEach(() => {
   cleanup();
@@ -20,7 +24,7 @@ vi.mock("@/hooks/mutations/task/use-update-task-status", () => ({
 }));
 
 vi.mock("@/hooks/use-workspace-permission", () => ({
-  useWorkspacePermission: () => ({ canUpdateTasks: () => true }),
+  useWorkspacePermission: () => permissions,
 }));
 
 vi.mock("react-i18next", () => ({
@@ -45,6 +49,26 @@ const task: Task = {
 };
 
 describe("TaskStatusPopover", () => {
+  // Pegasus fork (PEGA-142): a status change moves the card to another column.
+  it("offers no status choice without canMoveTasks, even with canUpdateTasks", () => {
+    permissions.canMoveTasks.mockReturnValueOnce(false);
+    useGetColumns.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+    });
+
+    render(
+      <TaskStatusPopover task={task}>
+        <Button>Status</Button>
+      </TaskStatusPopover>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Status" }));
+
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(screen.queryByText("common:empty.loading")).toBeNull();
+  });
+
   it("loads status options for the task project without relying on board state", async () => {
     useGetColumns.mockReturnValue({
       data: [

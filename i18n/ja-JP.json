@@ -857,6 +857,7 @@
 			"title": "ロール",
 			"subtitle": "{{workspaceName}} 内でメンバーが実行できる操作を定義します。",
 			"thisWorkspace": "このワークスペース",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "ワークスペースのロールを管理するには管理者またはオーナーの権限が必要です。",
 			"sectionTitle": "ワークスペースのロール",
 			"sectionSubtitle": "デフォルトのロールを編集するか、カスタムロールを追加します。メンバーに割り当てられたロール名は編集後も維持されます。",
@@ -940,10 +941,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

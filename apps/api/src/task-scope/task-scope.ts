@@ -1,11 +1,12 @@
-// Pegasus fork (PEGA-6, PEGA-141): what a restricted member may see in one
-// workspace. A task is visible when it is assigned to `userId` (if `assigned`)
-// or its unit (`pegasus_task_unit`) is in `unitIds`. `null` stands for
-// unrestricted: instance admins, owners and roles without a restriction.
+// Pegasus fork (PEGA-6, PEGA-141, PEGA-142): what a restricted member may see
+// in one workspace. A task is visible when both hold: it is assigned to
+// `userId` (only if `assignedOnly`), and its unit (`pegasus_task_unit`) is in
+// `unitIds` (only if not `null`; an empty list admits nothing). `null` for the
+// whole scope stands for unrestricted.
 export type TaskScope = {
   userId: string;
-  assigned: boolean;
-  unitIds: readonly string[];
+  assignedOnly: boolean;
+  unitIds: readonly string[] | null;
 };
 
 // Scopes by workspace id, holding only the workspaces where the user is

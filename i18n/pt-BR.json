@@ -873,6 +873,7 @@
 			"title": "Funções",
 			"subtitle": "Defina quais ações os membros podem realizar em {{workspaceName}}.",
 			"thisWorkspace": "este espaço de trabalho",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Você precisa de permissões de administrador ou proprietário para gerenciar funções do espaço de trabalho.",
 			"sectionTitle": "Funções do espaço de trabalho",
 			"sectionSubtitle": "Edite as funções padrão ou adicione uma personalizada. Os membros mantêm o nome da função atribuída após as edições.",
@@ -957,10 +958,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

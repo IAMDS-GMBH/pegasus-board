@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Archive, ChevronRight, Plus } from "lucide-react";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
 import { EASE_OUT } from "@/lib/motion";
@@ -37,6 +38,8 @@ const ListColumnSection = memo(function ListColumnSection({
   onArchive,
 }: ListColumnSectionProps) {
   const { t } = useTranslation();
+  // Pegasus fork (PEGA-142): archiving all moves the cards out of the column.
+  const { canCreateTasks, canMoveTasks } = useWorkspacePermission();
   const [animateExpand, setAnimateExpand] = useState(false);
   const { setNodeRef } = useDroppable({
     id: column.id,
@@ -78,17 +81,19 @@ const ListColumnSection = memo(function ListColumnSection({
         </button>
 
         <div className="flex items-center gap-1 pointer-coarse:gap-6">
-          <button
-            type="button"
-            onClick={() => onAddTask(column.id)}
-            className="touch-hitbox relative p-1 hover:bg-accent rounded text-muted-foreground hover:text-foreground transition-colors"
-            title={t("tasks:listView.addTask")}
-            aria-label={t("tasks:listView.addTask")}
-          >
-            <Plus className="w-3 h-3" />
-          </button>
+          {canCreateTasks() && (
+            <button
+              type="button"
+              onClick={() => onAddTask(column.id)}
+              className="touch-hitbox relative p-1 hover:bg-accent rounded text-muted-foreground hover:text-foreground transition-colors"
+              title={t("tasks:listView.addTask")}
+              aria-label={t("tasks:listView.addTask")}
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          )}
 
-          {column.isFinal && column.tasks.length > 0 && (
+          {canMoveTasks() && column.isFinal && column.tasks.length > 0 && (
             <button
               type="button"
               disabled={disableCollectionActions}

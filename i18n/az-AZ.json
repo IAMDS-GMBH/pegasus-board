@@ -865,6 +865,7 @@
 			"title": "Rollar",
 			"subtitle": "Üzvlərin {{workspaceName}} iş sahəsində hansı əməliyyatları edə biləcəyini müəyyən edin.",
 			"thisWorkspace": "bu iş sahəsi",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "İş sahəsinin rollarını idarə etmək üçün inzibatçı və ya sahib icazələri lazımdır.",
 			"sectionTitle": "İş sahəsinin rolları",
 			"sectionSubtitle": "Standart rolları redaktə edin və ya fərdi rol əlavə edin. Redaktələr zamanı üzvlərə təyin edilmiş rol adları saxlanılır.",
@@ -949,10 +950,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {

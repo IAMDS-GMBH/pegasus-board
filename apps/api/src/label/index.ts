@@ -6,6 +6,10 @@ import {
 } from "../openapi";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import {
+  requireHubPermissionWhen,
+  requireLeadPermission,
+} from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import assignLabelToTask from "./controllers/assign-label-to-task";
 import createLabel from "./controllers/create-label";
@@ -70,6 +74,11 @@ const createLabelRoute = createRoute({
   middleware: [
     workspaceAccess.fromBody(),
     requireWorkspacePermission({ label: ["create"] }),
+    // Pegasus fork (PEGA-142): a taskId labels that lead right away.
+    requireHubPermissionWhen(
+      (body) => typeof body.taskId === "string",
+      "LEAD_EDIT",
+    ),
   ] as const,
   request: {
     body: {
@@ -80,7 +89,9 @@ const createLabelRoute = createRoute({
   responses: {
     200: jsonResponse("Label created successfully", labelSchema),
     400: errorResponse("Invalid body, or workspace ID could not be determined"),
-    403: errorResponse("Missing label:create permission"),
+    403: errorResponse(
+      "Missing label:create permission, or, for a member the Pegasus Hub governs, LEAD_EDIT when taskId is set",
+    ),
     404: errorResponse("Workspace or task not found"),
     409: errorResponse("The workspace label is being deleted"),
   },
@@ -111,7 +122,7 @@ const attachLabelToTaskRoute = createRoute({
   description: "Attach an existing label to a task",
   middleware: [
     workspaceAccess.fromLabel(),
-    requireWorkspacePermission({ label: ["update"] }),
+    requireLeadPermission({ label: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: {
     params: labelParam,
@@ -140,7 +151,7 @@ const detachLabelFromTaskRoute = createRoute({
   description: "Detach a label from its current task",
   middleware: [
     workspaceAccess.fromLabel(),
-    requireWorkspacePermission({ label: ["update"] }),
+    requireLeadPermission({ label: ["update"] }, "LEAD_EDIT"),
   ] as const,
   request: { params: labelParam },
   responses: {

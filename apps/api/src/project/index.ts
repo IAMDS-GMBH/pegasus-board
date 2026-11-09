@@ -23,6 +23,7 @@ import {
 } from "../storage/s3";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
 import { resolveTaskScope } from "../task-scope/resolve-task-scope";
+import { hubAllows } from "../utils/require-hub-permission";
 import {
   hasWorkspacePermission,
   requireWorkspacePermission,
@@ -99,7 +100,7 @@ const listProjectsRoute = createRoute({
   tags: ["Projects"],
   summary: "List projects",
   description:
-    "List a workspace's projects in sidebar order, each with rollup task statistics. Archived projects are excluded unless includeArchived is set.",
+    "List a workspace's projects in sidebar order, each with rollup task statistics (left out for a member the Pegasus Hub governs without REPORTING_VIEW). Archived projects are excluded unless includeArchived is set.",
   middleware: [workspaceAccess.fromQuery()] as const,
   request: { query: listProjectsQuery },
   responses: {
@@ -431,6 +432,7 @@ const project = apiRouter<BaseVariables & { workspaceId: string }>()
       c.get("userId"),
       includeArchived === "true",
       await resolveTaskScope(c), // Fork (PEGA-141)
+      await hubAllows(c, "REPORTING_VIEW"), // Fork (PEGA-142)
     );
     return c.json(projects.map(toPublicProject), 200);
   })

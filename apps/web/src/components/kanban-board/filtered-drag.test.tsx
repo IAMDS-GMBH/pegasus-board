@@ -13,6 +13,8 @@ import type { ProjectWithTasks } from "@/types/project";
 import KanbanBoard from "./index";
 
 const mocks = vi.hoisted(() => ({
+  canMoveTasks: vi.fn(() => true),
+  canUpdateTasks: vi.fn(() => true),
   project: null as unknown,
   setProject: vi.fn(),
   reorder: vi.fn(),
@@ -58,6 +60,12 @@ vi.mock("@/hooks/use-project-background", () => ({
   useProjectBackground: () => null,
 }));
 vi.mock("../bulk-selection/bulk-toolbar", () => ({ default: () => null }));
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({
+    canMoveTasks: mocks.canMoveTasks,
+    canUpdateTasks: mocks.canUpdateTasks,
+  }),
+}));
 vi.mock("./column", () => ({
   default: ({
     column,
@@ -124,7 +132,11 @@ vi.mock("@dnd-kit/core", () => ({
   defaultDropAnimationSideEffects: vi.fn(),
 }));
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.canMoveTasks.mockReturnValue(true);
+  mocks.canUpdateTasks.mockReturnValue(true);
+});
 afterEach(cleanup);
 describe("filtered board dragging", () => {
   it("moves visible tasks in canonical state and sends one ordering mutation", () => {
@@ -488,5 +500,80 @@ describe.each([
     expect(view.getByTestId("column-doing")).not.toHaveAttribute(
       "data-sort-hint",
     );
+  });
+});
+
+// Pegasus fork (PEGA-142): moving to another column needs the right to move
+// cards (LEAD_MOVE_STAGE where the Hub governs), reordering within a column
+// only the right to edit them (LEAD_EDIT), as POST /task/reorder checks.
+describe("dragging with partial rights", () => {
+  const board = () =>
+    ({
+      id: "p",
+      columns: [
+        {
+          id: "todo",
+          slug: "todo",
+          tasks: [
+            { id: "a", status: "todo", position: 0 },
+            { id: "b", status: "todo", position: 1 },
+          ],
+        },
+        {
+          id: "doing",
+          slug: "doing",
+          tasks: [{ id: "c", status: "doing", position: 0 }],
+        },
+      ],
+      plannedTasks: [],
+      archivedTasks: [],
+    }) as unknown as ProjectWithTasks;
+
+  it("drops nothing without canMoveTasks and canUpdateTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    mocks.canUpdateTasks.mockReturnValue(false);
+    const project = board();
+    mocks.project = project;
+
+    const view = render(<KanbanBoard project={project} />);
+    fireEvent.click(view.getByText("drop"));
+    fireEvent.click(view.getByText("drop-c"));
+
+    expect(mocks.setProject).not.toHaveBeenCalled();
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
+  });
+
+  it("reorders within the column but neither previews nor drops into another without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    const project = board();
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    fireEvent.click(view.getByText("start"));
+    fireEvent.click(view.getByText("over-c"));
+    expect(shownIds(view, "doing")).toBe("c");
+    fireEvent.click(view.getByText("drop-c"));
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    expect(mocks.setProject).not.toHaveBeenCalled();
+
+    fireEvent.click(view.getByText("drop"));
+    expect(mocks.reorder).toHaveBeenCalledOnce();
+    const sent = mocks.reorder.mock.calls[0][0].tasks as Array<object>;
+    expect(sent.length).toBeGreaterThan(0);
+    for (const task of sent) expect(task).not.toHaveProperty("status");
+    view.unmount();
+  });
+
+  it("offers no dragging on a sorted board without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    const project = board();
+    mocks.project = project;
+
+    const view = render(<KanbanBoard project={project} sortedByNumber />);
+    fireEvent.click(view.getByText("drop-c"));
+
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
   });
 });

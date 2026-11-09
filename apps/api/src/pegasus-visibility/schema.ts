@@ -21,6 +21,10 @@ const userScope = z
       description:
         "Every unit the user sees, already including the units below; must be empty unless `mode` is `units`.",
     }),
+    permissions: z.array(z.string().trim().min(1).max(100)).max(200).openapi({
+      description:
+        "The user's effective rights in this workspace, as computed by the Hub (`LEAD_READ`, `LEAD_EDIT`, `LEAD_MOVE_STAGE`, `LEAD_CREATE`, `LEAD_ASSIGN_PROCESSOR`, `LEAD_DELETE`, `LEAD_EXPORT`, `REPORTING_VIEW`, ...). A right that is missing is denied. Unknown keys are stored, not rejected. Required: a snapshot without it is refused so an older Hub cannot switch a workspace to Hub rights.",
+    }),
   })
   .refine((user) => user.mode === "units" || user.unitIds.length === 0, {
     message: "unitIds must be empty unless mode is units",
@@ -68,6 +72,7 @@ export const userScopesResponse = z.object({
       email: z.string(),
       mode: z.enum(VISIBILITY_MODES),
       unitIds: z.array(z.string()),
+      permissions: z.array(z.string()),
       updatedAt: responseTimestamp,
     }),
   ),

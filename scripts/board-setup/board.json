@@ -28,9 +28,6 @@
 		{ "name": "Paket 1", "color": "orange" },
 		{ "name": "Paket 2", "color": "orange" },
 		{ "name": "Paket 3", "color": "orange" },
-		{ "name": "Vertriebsweg: WWK", "color": "purple" },
-		{ "name": "Vertriebsweg: 1zu1", "color": "purple" },
-		{ "name": "Vertriebsweg: Clarus", "color": "purple" },
 		{ "name": "Kampagne: ohne Kampagne", "color": "dark-gray" },
 		{ "name": "Dublette?", "color": "yellow" },
 		{ "name": "unvollständig", "color": "yellow" },
@@ -56,11 +53,6 @@
 			"type": "dropdown",
 			"options": ["Paket 1", "Paket 2", "Paket 3"],
 			"showOnCard": true
-		},
-		{
-			"name": "Vertriebsweg",
-			"type": "dropdown",
-			"options": ["WWK", "1zu1", "Clarus"]
 		}
 	]
 }

@@ -1202,6 +1202,7 @@
 			"title": "Roles",
 			"subtitle": "Define qué acciones pueden realizar los miembros en {{workspaceName}}.",
 			"thisWorkspace": "este espacio de trabajo",
+			"hubManagedHint": "In workspaces the Pegasus Hub manages, what members see and may do with leads comes from the Hub. There, roles only decide labels, columns and workspace settings. Owners are not affected.",
 			"noAccess": "Necesitas permisos de admin o propietario para gestionar los roles del espacio de trabajo.",
 			"sectionTitle": "Roles del espacio de trabajo",
 			"sectionSubtitle": "Edita los roles por defecto o añade uno a medida. Los miembros conservan el nombre de su rol asignado entre ediciones.",
@@ -1286,10 +1287,6 @@
 					"view_assigned_only": {
 						"description": "Can only see tasks assigned to them",
 						"label": "Only assigned"
-					},
-					"view_hub_scoped": {
-						"description": "Sees only tasks of the units the Hub sends for this person",
-						"label": "Visibility from the Hub (units)"
 					}
 				},
 				"label": {
