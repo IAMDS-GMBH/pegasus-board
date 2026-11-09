@@ -107,6 +107,7 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 
 ## 5. Nicht Teil des Skripts
 
-- **Rollen** (Administrator, Innendienst, Führungskraft, Marketing Manager) richtet ein Workspace-Admin von Hand ein, wie in [Zeilenfilter, Abschnitt 1](review/2026-10-zeilenfilter-fuehrungskraft.md#1-rolle-führungskraft-anlegen-konfiguration) beschrieben. Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.
+- **Rollen** (Administrator, Innendienst, Führungskraft, Bearbeiter, Marketing Manager) richtet ein Workspace-Admin von Hand ein, wie in [Zeilenfilter, Abschnitt 1](review/2026-10-zeilenfilter-fuehrungskraft.md#1-rolle-führungskraft-anlegen-konfiguration) beschrieben. Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.
+- **Sichtbereich (PEGA-141):** Die Rollen Führungskraft, Innendienst und Bearbeiter bekommen im Rolleneditor unter „Aufgaben“ den Schalter „Sicht aus dem Hub (Einheiten)“. Sie sehen dann nur die Karten der Einheiten, die der Hub für die Person überträgt; für Bearbeiter überträgt der Hub „nur zugewiesene“. Administrator und das Systemkonto „Pegasus-Hub“ bekommen den Schalter **nicht** und bleiben uneingeschränkt; das Systemkonto braucht Administrator, weil die Übertragung `workspace:manage_settings` verlangt. Den Schalter erst setzen, wenn der Hub Karten-Einheiten und Nutzer übertragen hat; ohne übertragenen Stand sieht eine Rolle mit Schalter nichts. Details: [Sichtbereich-Review](review/2026-11-sichtbereich-einheiten.md).
 - **Workspace und Mitglieder** legt ein Admin über die Oberfläche oder per Einladung an.
 - **Webhooks zum Hub** gehören zur Einrichtung des Hubs.

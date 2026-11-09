@@ -4,6 +4,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import assignLabelToTask from "./controllers/assign-label-to-task";
@@ -216,7 +217,11 @@ const label = apiRouter()
   .openapi(getWorkspaceLabelsRoute, async (c) => {
     const { workspaceId } = c.req.valid("param");
     return c.json(
-      await getLabelsByWorkspaceId(workspaceId, c.get("userId")),
+      await getLabelsByWorkspaceId(
+        workspaceId,
+        c.get("userId"),
+        await resolveTaskScope(c), // Fork (PEGA-141)
+      ),
       200,
     );
   })
@@ -224,7 +229,14 @@ const label = apiRouter()
     const { name, color, workspaceId, taskId } = c.req.valid("json");
     const userId = c.get("userId");
     return c.json(
-      await createLabel(name, color, taskId, workspaceId, userId),
+      await createLabel(
+        name,
+        color,
+        taskId,
+        workspaceId,
+        userId,
+        await resolveTaskScope(c), // Fork (PEGA-141)
+      ),
       200,
     );
   })
@@ -236,7 +248,10 @@ const label = apiRouter()
     const { id } = c.req.valid("param");
     const { taskId } = c.req.valid("json");
     const userId = c.get("userId");
-    return c.json(await assignLabelToTask(id, taskId, userId), 200);
+    return c.json(
+      await assignLabelToTask(id, taskId, userId, await resolveTaskScope(c)), // Fork (PEGA-141)
+      200,
+    );
   })
   .openapi(detachLabelFromTaskRoute, async (c) => {
     const { id } = c.req.valid("param");

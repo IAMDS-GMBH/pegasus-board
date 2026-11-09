@@ -3,10 +3,7 @@ import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
 import { assertProjectAccess } from "../project-access/assert-project-access";
-import {
-  assertTasksVisible,
-  resolveAssignedOnlyUserId,
-} from "./assigned-only-scope";
+import { assertTasksVisible } from "../task-scope/assert-tasks-visible";
 import { validateWorkspaceAccess } from "./validate-workspace-access";
 
 type LookupResource =
@@ -57,9 +54,9 @@ type WorkspaceAccessMiddlewareConfig = {
 type ResourceScope = {
   workspaceId: string;
   projectId: string | null;
-  // Pegasus fork: set only when the resource resolves through a task
-  // (undefined otherwise); `null` means the task exists but has no assignee.
-  assigneeId?: string | null;
+  // Pegasus fork: set only when the resource resolves through a task, so the
+  // task scope (PEGA-6, PEGA-141) can be checked once the role is known.
+  taskId?: string;
 };
 
 async function readJsonObjectBody(
@@ -85,9 +82,9 @@ export function workspaceAccessMiddleware(
     let workspaceId: string | null = null;
     let projectIds: string[] = [];
     let notFoundMessage = WORKSPACE_NOT_FOUND;
-    // Assignees of the task(s) the request targets, when the workspace was
-    // resolved through a task. Checked after the role is known (below).
-    let taskAssignees: Array<string | null> | null = null;
+    // The task(s) the request targets, when the workspace was resolved
+    // through a task. Checked after the role is known (below).
+    let taskIds: string[] = [];
 
     for (const source of config.sources) {
       if (source.type === "query") {
@@ -115,31 +112,29 @@ export function workspaceAccessMiddleware(
           }
           workspaceId = scope.workspaceId;
           projectIds = scope.projectId ? [scope.projectId] : [];
-          if (scope.assigneeId !== undefined) {
-            taskAssignees = [scope.assigneeId];
-          }
+          taskIds = scope.taskId ? [scope.taskId] : [];
         }
       } else if (source.type === "lookupMany") {
         const body = await readJsonObjectBody(c);
         const ids = body[source.idKey];
         if (Array.isArray(ids)) {
-          const taskIds = ids.filter(
+          const requestedIds = ids.filter(
             (id): id is string => typeof id === "string",
           );
-          if (taskIds.length > 0) {
+          if (requestedIds.length > 0) {
             notFoundMessage = TASKS_NOT_FOUND;
             const tasks = await db
               .select({
                 workspaceId: schema.projectTable.workspaceId,
                 projectId: schema.projectTable.id,
-                assigneeId: schema.taskTable.userId,
+                taskId: schema.taskTable.id,
               })
               .from(schema.taskTable)
               .innerJoin(
                 schema.projectTable,
                 eq(schema.taskTable.projectId, schema.projectTable.id),
               )
-              .where(inArray(schema.taskTable.id, taskIds));
+              .where(inArray(schema.taskTable.id, requestedIds));
             const workspaceIds = [
               ...new Set(tasks.map((task) => task.workspaceId)),
             ];
@@ -153,7 +148,7 @@ export function workspaceAccessMiddleware(
             }
             workspaceId = workspaceIds[0] ?? null;
             projectIds = [...new Set(tasks.map((task) => task.projectId))];
-            taskAssignees = tasks.map((task) => task.assigneeId);
+            taskIds = tasks.map((task) => task.taskId);
           }
         }
       }
@@ -179,13 +174,11 @@ export function workspaceAccessMiddleware(
 
     c.set("workspaceId", workspaceId);
 
-    // A role restricted to assigned tasks must not reach a task it is not
-    // assigned to. This runs here, after the workspace is known, and throws
-    // instead of returning null so the `?workspaceId=` fallback source above
-    // can never be used to slip past it.
-    if (taskAssignees) {
-      assertTasksVisible(taskAssignees, await resolveAssignedOnlyUserId(c));
-    }
+    // A restricted role (assigned-only, Hub scope) must not reach a task
+    // outside its scope. This runs here, after the workspace is known, and
+    // throws instead of returning null so the `?workspaceId=` fallback source
+    // above can never be used to slip past it.
+    await assertTasksVisible(c, taskIds);
 
     return next();
   };
@@ -213,7 +206,7 @@ async function lookupScope(
         .select({
           workspaceId: schema.projectTable.workspaceId,
           projectId: schema.projectTable.id,
-          assigneeId: schema.taskTable.userId,
+          taskId: schema.taskTable.id,
         })
         .from(schema.taskTable)
         .innerJoin(
@@ -232,7 +225,6 @@ async function lookupScope(
           taskId: schema.labelTable.taskId,
           taskWorkspaceId: schema.projectTable.workspaceId,
           taskProjectId: schema.projectTable.id,
-          assigneeId: schema.taskTable.userId,
         })
         .from(schema.labelTable)
         .leftJoin(
@@ -251,8 +243,8 @@ async function lookupScope(
       return {
         workspaceId: label.workspaceId,
         projectId: label.taskProjectId ?? null,
-        // Workspace-level label definitions (no task) are not assignee-scoped.
-        ...(label.taskId ? { assigneeId: label.assigneeId } : {}),
+        // Workspace-level label definitions (no task) are not task-scoped.
+        ...(label.taskId ? { taskId: label.taskId } : {}),
       };
     }
 
@@ -261,7 +253,7 @@ async function lookupScope(
         .select({
           workspaceId: schema.projectTable.workspaceId,
           projectId: schema.projectTable.id,
-          assigneeId: schema.taskTable.userId,
+          taskId: schema.taskTable.id,
         })
         .from(schema.timeEntryTable)
         .innerJoin(
@@ -282,7 +274,7 @@ async function lookupScope(
         .select({
           workspaceId: schema.projectTable.workspaceId,
           projectId: schema.projectTable.id,
-          assigneeId: schema.taskTable.userId,
+          taskId: schema.taskTable.id,
         })
         .from(schema.activityTable)
         .innerJoin(
@@ -303,7 +295,7 @@ async function lookupScope(
         .select({
           workspaceId: schema.projectTable.workspaceId,
           projectId: schema.projectTable.id,
-          assigneeId: schema.taskTable.userId,
+          taskId: schema.taskTable.id,
         })
         .from(schema.activityTable)
         .innerJoin(

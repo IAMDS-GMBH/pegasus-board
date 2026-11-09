@@ -182,6 +182,11 @@ const PERMISSION_LABELS: Record<
     description:
       "Restricts this role to tasks assigned to the member. Other tasks respond as not found, including in search and export.",
   },
+  "task:view_hub_scoped": {
+    label: "Visibility from the Hub (units)",
+    description:
+      "Restricts this role to the tasks of the units the Pegasus Hub sends for the member. Other tasks respond as not found, including in search and export.",
+  },
   "label:create": {
     label: "Create labels",
     description: "Add new labels to tasks in this workspace.",
@@ -236,46 +241,53 @@ function isDefaultRole(name: string) {
   return DEFAULT_ROLE_NAME_SET.has(name);
 }
 
-// `task:view_assigned_only` is toggled next to the task permissions but saved
-// as the role's `assignedOnly` field, not in `permission`: better-auth only
-// lets a member grant permissions they hold (see `roleRestrictions`).
-const ASSIGNED_ONLY_RESOURCE = "task";
-const ASSIGNED_ONLY_ACTION = "view_assigned_only";
+// Role restrictions (`task:view_assigned_only`, `task:view_hub_scoped`) are
+// toggled next to the task permissions but saved as their own role fields,
+// not in `permission`: better-auth only lets a member grant permissions they
+// hold (see `roleRestrictions`).
+type RestrictionFlags = { assignedOnly: boolean; hubScoped: boolean };
+
+const RESTRICTIONS = Object.entries(roleRestrictions).flatMap(
+  ([resource, actions]) =>
+    Object.entries(actions).map(([action, field]) => ({
+      resource,
+      action,
+      field: field as keyof RestrictionFlags,
+    })),
+);
 
 function toEditorSelection(
   permission: Record<string, string[]>,
-  assignedOnly: boolean,
+  flags: RestrictionFlags,
 ): Record<string, Set<string>> {
   const out: Record<string, Set<string>> = Object.create(null);
   for (const [r, actions] of Object.entries(permission)) {
     out[r] = new Set(actions);
   }
-  if (assignedOnly) {
-    out[ASSIGNED_ONLY_RESOURCE] = new Set([
-      ...(out[ASSIGNED_ONLY_RESOURCE] ?? []),
-      ASSIGNED_ONLY_ACTION,
-    ]);
+  for (const { resource, action, field } of RESTRICTIONS) {
+    if (flags[field]) {
+      out[resource] = new Set([...(out[resource] ?? []), action]);
+    }
   }
   return out;
 }
 
-function fromEditorSelection(selected: Record<string, Set<string>>): {
-  permission: Record<string, string[]>;
-  assignedOnly: boolean;
-} {
+function fromEditorSelection(
+  selected: Record<string, Set<string>>,
+): { permission: Record<string, string[]> } & RestrictionFlags {
   const permission: Record<string, string[]> = Object.create(null);
-  let assignedOnly = false;
+  const flags: RestrictionFlags = { assignedOnly: false, hubScoped: false };
   for (const [r, set] of Object.entries(selected)) {
     const actions = Array.from(set).filter((action) => {
-      if (r === ASSIGNED_ONLY_RESOURCE && action === ASSIGNED_ONLY_ACTION) {
-        assignedOnly = true;
-        return false;
-      }
-      return true;
+      const restriction = RESTRICTIONS.find(
+        (entry) => entry.resource === r && entry.action === action,
+      );
+      if (restriction) flags[restriction.field] = true;
+      return !restriction;
     });
     if (actions.length > 0) permission[r] = actions;
   }
-  return { permission, assignedOnly };
+  return { permission, ...flags };
 }
 
 function permissionsEqual(
@@ -705,7 +717,8 @@ function DraftEditor({
       toast.error(t("settings:workspaceRoles.validation.nameExists"));
       return;
     }
-    const { permission, assignedOnly } = fromEditorSelection(permissions);
+    const { permission, assignedOnly, hubScoped } =
+      fromEditorSelection(permissions);
     if (Object.keys(permission).length === 0) {
       toast.error(t("settings:workspaceRoles.validation.permissionRequired"));
       return;
@@ -716,6 +729,7 @@ function DraftEditor({
         role: trimmed,
         permission,
         assignedOnly,
+        hubScoped,
       });
       toast.success(t("settings:workspaceRoles.toast.created"), {
         icon: ShieldPlusIcon,
@@ -792,7 +806,7 @@ export function CustomRoleEditor({
 }) {
   const { t } = useTranslation();
   const [permissions, setPermissions] = useState<Record<string, Set<string>>>(
-    () => toEditorSelection(role.permission, role.assignedOnly),
+    () => toEditorSelection(role.permission, role),
   );
   const { mutateAsync: updateRole, isPending } = useUpdateWorkspaceRole();
 
@@ -803,7 +817,8 @@ export function CustomRoleEditor({
 
   const dirty =
     !permissionsEqual(current.permission, role.permission) ||
-    current.assignedOnly !== role.assignedOnly;
+    current.assignedOnly !== role.assignedOnly ||
+    current.hubScoped !== role.hubScoped;
 
   const togglePermission = (resource: string, action: string) => {
     setPermissions((prev) => {
@@ -823,6 +838,7 @@ export function CustomRoleEditor({
         roleName: role.role,
         permission: current.permission,
         assignedOnly: current.assignedOnly,
+        hubScoped: current.hubScoped,
       });
       toast.success(t("settings:workspaceRoles.toast.updated"), {
         icon: ShieldCheckIcon,

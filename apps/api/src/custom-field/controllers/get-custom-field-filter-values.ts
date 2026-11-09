@@ -5,13 +5,15 @@ import {
   customFieldValueTable,
   taskTable,
 } from "../../database/schema";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
-// Pegasus fork: `restrictToUserId` applies the assigned-only row filter.
-// Definitions stay visible (project schema, not task data); only the
-// distinct values are limited to the caller's own tasks.
+// Pegasus fork: `scope` applies the task row filter (assigned-only, Hub
+// scope). Definitions stay visible (project schema, not task data); only the
+// distinct values are limited to the tasks the caller sees.
 export default async function getCustomFieldFilterValues(
   projectId: string,
-  restrictToUserId: string | null = null,
+  scope: TaskScope | null = null,
 ) {
   const fields = await db
     .select()
@@ -36,7 +38,7 @@ export default async function getCustomFieldFilterValues(
         ),
         isNotNull(customFieldValueTable.value),
         ne(customFieldValueTable.value, ""),
-        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
+        taskVisibleCondition(scope),
       ),
     );
   const valuesByField = new Map<string, string[]>();

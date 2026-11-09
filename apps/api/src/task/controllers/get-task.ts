@@ -2,6 +2,8 @@ import { boundedTaskRead } from "../bounded-read";
 import { alias } from "drizzle-orm/pg-core";
 import { boardDescription, descriptionDeferred } from "../description-pages";
 import { getSubtaskCounts } from "../get-subtask-counts";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import { and, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
@@ -12,7 +14,12 @@ import {
   taskRelationTable,
 } from "../../database/schema";
 
-async function getTask(taskId: string, board = false, userId?: string) {
+async function getTask(
+  taskId: string,
+  board = false,
+  userId?: string,
+  scope?: TaskScope | null, // Fork (PEGA-141)
+) {
   const task = await db
     .select({
       id: taskTable.id,
@@ -61,6 +68,10 @@ async function getTask(taskId: string, board = false, userId?: string) {
         eq(taskRelationTable.targetTaskId, taskId),
         eq(taskRelationTable.relationType, "subtask"),
         eq(parent.projectId, result.projectId),
+        taskVisibleCondition(scope ?? null, {
+          id: parent.id,
+          assigneeId: parent.userId,
+        }),
       ),
     );
   const counts = await boundedTaskRead((tx) =>
@@ -70,6 +81,7 @@ async function getTask(taskId: string, board = false, userId?: string) {
       workspaceId,
       false,
       userId,
+      scope,
     ),
   );
   return {

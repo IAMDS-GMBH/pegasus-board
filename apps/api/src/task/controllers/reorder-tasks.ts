@@ -3,6 +3,8 @@ import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { columnTable, projectTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import { assertValidTaskStatus } from "../validate-task-fields";
 import { assertTaskPosition } from "./next-task-position";
 import { publishTaskMutation } from "./task-mutation-effects";
@@ -13,6 +15,9 @@ export default async function reorderTasks(
   tasks: Reorder[],
   userId: string,
   expectedTasks?: { id: string; position: number | null; status: string }[],
+  // Fork (PEGA-141): hidden tasks are neither moved nor compared, so they
+  // answer 404 and never make a restricted member's snapshot look stale.
+  scope?: TaskScope | null,
 ) {
   if (new Set(tasks.map((task) => task.id)).size !== tasks.length)
     throw new HTTPException(400, { message: "Task IDs must be unique" });
@@ -65,6 +70,7 @@ export default async function reorderTasks(
                 taskTable.id,
                 tasks.map((task) => task.id),
               ),
+          taskVisibleCondition(scope ?? null),
         ),
       )
       .orderBy(asc(taskTable.id))
@@ -114,6 +120,7 @@ export default async function reorderTasks(
         and(
           eq(taskTable.projectId, projectId),
           sql`${taskTable.id} = changes.id`,
+          taskVisibleCondition(scope ?? null),
         ),
       )
       .returning({

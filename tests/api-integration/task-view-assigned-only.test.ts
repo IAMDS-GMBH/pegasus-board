@@ -492,7 +492,6 @@ describe("API integration: task:view_assigned_only row filter", () => {
         query: "Bewerber",
         userId: f.restricted.user.id,
         type: "tasks",
-        assignedOnlyWorkspaceIds: [f.workspace.id],
       });
 
       expect(result.results.map((entry) => entry.id).sort()).toEqual(

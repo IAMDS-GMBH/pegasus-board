@@ -1,10 +1,12 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { assertProjectAccess } from "../project-access/assert-project-access";
+import { assertAssetTaskVisible } from "../task-scope/assert-asset-task-visible";
 import { resolveAssetBearerOrCookie } from "./authenticate-api-request";
 import { validateWorkspaceAccess } from "./validate-workspace-access";
 
 type AssetAccessTarget = {
+  id: string;
   workspaceId: string;
   projectId: string;
   isPublic: boolean | null;
@@ -34,4 +36,5 @@ export async function authorizeAssetAccess(
       message: "Staged uploads are private to their owner",
     });
   await assertProjectAccess(userId, asset.projectId);
+  await assertAssetTaskVisible(userId, asset); // Fork (PEGA-141)
 }

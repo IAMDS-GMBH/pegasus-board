@@ -8,11 +8,14 @@ import {
 } from "../../database/schema";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
 import { taskIsCompleted } from "../../task/task-is-completed";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 
 async function getTaskRelations(
   taskId: string,
   workspaceId: string,
   userId: string,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-141): hides counterparts
 ) {
   const relations = await db
     .select({
@@ -72,6 +75,7 @@ async function getTaskRelations(
           inArray(taskTable.id, [...taskIds]),
           eq(projectTable.workspaceId, workspaceId),
           projectAccessCondition(userId, projectTable.id),
+          taskVisibleCondition(scope),
         ),
       );
 

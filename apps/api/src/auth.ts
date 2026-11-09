@@ -465,9 +465,16 @@ export const auth = betterAuth({
           },
           additionalFields: {
             // `task:view_assigned_only` restriction (see
-            // utils/assigned-only-scope.ts). Saved through create-role /
+            // task-scope/load-task-scopes.ts). Saved through create-role /
             // update-role, which only require `ac:create` / `ac:update`.
             assignedOnly: {
+              type: "boolean",
+              required: false,
+              defaultValue: false,
+              input: true,
+            },
+            // Fork (PEGA-141): restriction to the scope pushed by the Hub.
+            hubScoped: {
               type: "boolean",
               required: false,
               defaultValue: false,

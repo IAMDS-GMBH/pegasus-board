@@ -8,7 +8,7 @@ import {
 } from "../openapi";
 import { readSyncRules } from "../plugins/sync/rules";
 import db from "../database";
-import { denyAssignedOnly } from "../utils/assigned-only-scope";
+import { denyTaskScoped } from "../task-scope/deny-task-scoped";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { getSyncIntegration } from "./controllers/get-integration";
@@ -31,7 +31,7 @@ const access = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ project: ["read"], task: ["read"] }),
   // Sync scope lists tasks across the whole project.
-  denyAssignedOnly,
+  denyTaskScoped,
 ];
 const manage = [
   ...access,

@@ -8,6 +8,8 @@ export type WorkspaceRole = {
   permission: Record<string, string[]>;
   // `task:view_assigned_only`, stored outside `permission`.
   assignedOnly: boolean;
+  // `task:view_hub_scoped` (Pegasus fork, PEGA-141), likewise.
+  hubScoped: boolean;
   createdAt: Date | string;
   updatedAt?: Date | string | null;
 };
@@ -48,6 +50,7 @@ function useWorkspaceRoles(workspaceId: string | undefined) {
         role: r.role,
         permission: parsePermission(r.permission),
         assignedOnly: r.assignedOnly === true,
+        hubScoped: r.hubScoped === true,
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,
       }));

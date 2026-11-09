@@ -9,6 +9,8 @@ import {
   userTable,
 } from "../../database/schema";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import { commentExcerpt } from "../comment-excerpt";
 
 export const WORKSPACE_ACTIVITY_LIMIT = 20;
@@ -20,7 +22,7 @@ const WINDOW_DAYS = 30;
 async function getWorkspaceActivities(
   workspaceId: string,
   userId: string,
-  restrictToUserId: string | null = null,
+  scope: TaskScope | null = null, // Pegasus fork (PEGA-6, PEGA-141)
 ) {
   const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
@@ -67,7 +69,7 @@ async function getWorkspaceActivities(
         sql`${taskTable.projectId} = ANY(${sql.param(projects.map((project) => project.id))}::text[])`,
         isNull(projectTable.archivedAt),
         gte(activityTable.createdAt, since),
-        restrictToUserId ? eq(taskTable.userId, restrictToUserId) : undefined,
+        taskVisibleCondition(scope),
       ),
     )
     .orderBy(desc(activityTable.createdAt), desc(activityTable.id))

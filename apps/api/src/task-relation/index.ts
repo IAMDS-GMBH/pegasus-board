@@ -11,6 +11,8 @@ import {
   jsonResponse,
 } from "../openapi";
 import { assertProjectAccess } from "../project-access/assert-project-access";
+import { assertTasksVisible } from "../task-scope/assert-tasks-visible";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { validateWorkspaceAccess } from "../utils/validate-workspace-access";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
@@ -72,6 +74,7 @@ async function scopeToSourceTask(c: Context, next: Next) {
   });
   await assertProjectAccess(userId, scope.projectId);
   c.set("workspaceId", scope.workspaceId);
+  await assertTasksVisible(c, [sourceTaskId]); // Fork (PEGA-141)
   return next();
 }
 
@@ -98,6 +101,7 @@ async function scopeToRelation(c: Context, next: Next) {
   });
   await assertProjectAccess(userId, scope.projectId);
   c.set("workspaceId", scope.workspaceId);
+  await assertTasksVisible(c, [rel.sourceTaskId]); // Fork (PEGA-141)
   return next();
 }
 
@@ -178,6 +182,7 @@ const taskRelation = apiRouter<BaseVariables & { workspaceId: string }>()
         c.req.valid("param").taskId,
         c.get("workspaceId"),
         c.get("userId"),
+        await resolveTaskScope(c), // Fork (PEGA-141)
       ),
       200,
     ),
@@ -191,6 +196,7 @@ const taskRelation = apiRouter<BaseVariables & { workspaceId: string }>()
         relationType,
         userId: c.get("userId"),
         workspaceId: c.get("workspaceId"),
+        scope: await resolveTaskScope(c), // Fork (PEGA-141)
       }),
       200,
     );
@@ -201,6 +207,7 @@ const taskRelation = apiRouter<BaseVariables & { workspaceId: string }>()
         c.req.valid("param").id,
         c.get("userId"),
         c.get("workspaceId"),
+        await resolveTaskScope(c), // Fork (PEGA-141)
       ),
       200,
     ),
