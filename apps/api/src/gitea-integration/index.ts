@@ -19,6 +19,7 @@ import {
   hasWorkspacePermission,
   requireWorkspacePermission,
 } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createGiteaIntegration from "./controllers/create-gitea-integration";
 import deleteGiteaIntegration from "./controllers/delete-gitea-integration";
@@ -199,7 +200,11 @@ const importIssuesRoute = createRoute({
     "Import the linked repository's issues as tasks. Issues that already have a task are refreshed rather than duplicated.",
   middleware: [
     scopeToProjectFromBody,
-    requireWorkspacePermission({ task: ["create", "update"] }),
+    // Pegasus fork (PEGA-142): imports create and update leads.
+    requireLeadPermission({ task: ["create", "update"] }, [
+      "LEAD_CREATE",
+      "LEAD_EDIT",
+    ]),
   ] as const,
   request: {
     body: {

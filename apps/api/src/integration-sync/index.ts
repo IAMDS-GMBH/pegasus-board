@@ -10,6 +10,7 @@ import { readSyncRules } from "../plugins/sync/rules";
 import db from "../database";
 import { denyTaskScoped } from "../task-scope/deny-task-scoped";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { getSyncIntegration } from "./controllers/get-integration";
 import { getAuthorizedSyncProject } from "./controllers/authorized-project";
@@ -126,7 +127,11 @@ const resumeRoute = createRoute({
   summary: "Resume a reviewed issue link",
   description:
     "Explicitly choose the current Kaneo or repository title, description and open/closed state. Existing links are reused; historical comments are not replayed. The task must still match its outgoing rule. A changed comparison requires another review.",
-  middleware: [...manage, requireWorkspacePermission({ task: ["update"] })],
+  middleware: [
+    ...manage,
+    // Pegasus fork (PEGA-142): resuming writes the task's fields.
+    requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
+  ],
   request: { params: resumeParams, body: body(resumeBody) },
   responses: {
     200: jsonResponse("Sync resumed", z.object({ success: z.boolean() })),

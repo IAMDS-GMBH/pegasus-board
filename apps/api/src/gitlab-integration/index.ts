@@ -23,6 +23,7 @@ import {
   hasWorkspacePermission,
   requireWorkspacePermission,
 } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createGitlabIntegration from "./controllers/create-gitlab-integration";
 import deleteGitlabIntegration from "./controllers/delete-gitlab-integration";
@@ -207,7 +208,11 @@ const importIssuesRoute = createRoute({
     "Import the linked project's open issues as tasks. Issues that already have a task are refreshed rather than duplicated. Requires task:create and task:update permissions.",
   middleware: [
     scopeToProjectFromBody,
-    requireWorkspacePermission({ task: ["create", "update"] }),
+    // Pegasus fork (PEGA-142): imports create and update leads.
+    requireLeadPermission({ task: ["create", "update"] }, [
+      "LEAD_CREATE",
+      "LEAD_EDIT",
+    ]),
   ] as const,
   request: {
     body: {

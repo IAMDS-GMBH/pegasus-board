@@ -115,6 +115,9 @@ function ProjectRow({
   const done = Math.round((pct / 100) * total);
   const due = project.statistics?.dueDate;
   const archived = !!project.archivedAt;
+  // Pegasus fork (PEGA-142): the API leaves statistics out for a member the
+  // Hub governs without REPORTING_VIEW; show no figures rather than zeros.
+  const hasStatistics = !!project.statistics;
   return (
     <Touch
       onPress={onPress}
@@ -139,15 +142,18 @@ function ProjectRow({
         <Txt variant="caption" tone="muted">
           {archived
             ? t("mobile:home.archived")
-            : due
-              ? t("mobile:home.due", { date: formatDate(due) })
-              : total
-                ? t("mobile:home.progress", { done, total })
-                : t("mobile:home.noTasks")}
+            : !hasStatistics
+              ? null
+              : due
+                ? t("mobile:home.due", { date: formatDate(due) })
+                : total
+                  ? t("mobile:home.progress", { done, total })
+                  : t("mobile:home.noTasks")}
         </Txt>
       </View>
       <View
         style={{
+          display: hasStatistics ? "flex" : "none",
           flexDirection: "row",
           alignItems: "center",
           gap: 12,

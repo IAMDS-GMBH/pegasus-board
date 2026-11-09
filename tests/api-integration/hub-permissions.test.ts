@@ -484,22 +484,19 @@ describe("API integration: rights pushed by the Hub", () => {
       );
       expect(response.status).toBe(200);
       const [project] = (await response.json()) as Array<{
-        statistics: { totalTasks: number; completionPercentage: number };
+        statistics?: { totalTasks: number; completionPercentage: number };
       }>;
       return project?.statistics;
     }
 
-    it("zeroes the project statistics without REPORTING_VIEW", async () => {
+    it("leaves the project statistics out without REPORTING_VIEW", async () => {
       const f = await createHubScopeFixture();
       await f.pushPermissions(
         FK_BD,
         LEAD_RIGHTS.filter((right) => right !== "REPORTING_VIEW"),
       );
 
-      expect(await statistics(f)).toMatchObject({
-        totalTasks: 0,
-        completionPercentage: 0,
-      });
+      expect(await statistics(f)).toBeUndefined();
     });
 
     it("counts the visible tasks with REPORTING_VIEW", async () => {
@@ -561,20 +558,31 @@ describe("API integration: rights pushed by the Hub", () => {
       await seesAndDeletes(f, asUser(f.users.noRow));
     });
 
-    it("does not restrict the Hub's system account named in PEGASUS_HUB_USER_EMAIL", async () => {
+    it("does not restrict the Hub's system account named in PEGASUS_HUB_USER_ID", async () => {
       const f = await createHubScopeFixture();
       const hub = await addHubAccount(f, "pegasus-hub@wwk.test");
-      vi.stubEnv("PEGASUS_HUB_USER_EMAIL", " Pegasus-Hub@WWK.test ");
+      vi.stubEnv("PEGASUS_HUB_USER_ID", ` ${hub.id} `);
 
       await seesAndDeletes(f, asUser(hub));
     });
 
     it("restricts an admin account the variable does not name", async () => {
       const f = await createHubScopeFixture();
+      const hub = await addHubAccount(f, "pegasus-hub@wwk.test");
       const other = await addHubAccount(f, "key-account-admin@wwk.test");
-      vi.stubEnv("PEGASUS_HUB_USER_EMAIL", "pegasus-hub@wwk.test");
+      vi.stubEnv("PEGASUS_HUB_USER_ID", hub.id);
 
       expect(await boardNames(f, asUser(other))).toEqual([]);
+    });
+
+    // The id, not the address: whoever signs up with or switches to the
+    // system account's email gains nothing.
+    it("restricts an account that only shares the system account's email", async () => {
+      const f = await createHubScopeFixture();
+      const lookalike = await addHubAccount(f, "pegasus-hub@wwk.test");
+      vi.stubEnv("PEGASUS_HUB_USER_ID", "user-the-real-hub");
+
+      expect(await boardNames(f, asUser(lookalike))).toEqual([]);
     });
   });
 

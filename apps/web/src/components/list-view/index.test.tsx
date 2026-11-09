@@ -30,13 +30,16 @@ const m = vi.hoisted(() => ({
     taskCount?: number;
   },
   mutate: vi.fn(),
+  mutateStatus: vi.fn(),
   setProject: vi.fn(),
   canMoveTasks: vi.fn(() => true),
+  canUpdateTasks: vi.fn(() => true),
   canCreateTasks: vi.fn(() => true),
 }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canMoveTasks: m.canMoveTasks,
+    canUpdateTasks: m.canUpdateTasks,
     canCreateTasks: m.canCreateTasks,
   }),
 }));
@@ -53,6 +56,9 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 vi.mock("@/hooks/mutations/task/use-update-task", () => ({
   useUpdateTask: () => ({ mutate: m.mutate }),
+}));
+vi.mock("@/hooks/mutations/task/use-update-task-status", () => ({
+  useUpdateTaskStatus: () => ({ mutate: m.mutateStatus }),
 }));
 vi.mock("@/store/project", () => ({
   default: () => ({ setProject: m.setProject }),
@@ -105,9 +111,10 @@ it("disables keyboard sensors and rejects drag completion on a partial board", (
   expect(m.setProject).not.toHaveBeenCalled();
 });
 
-// Pegasus fork (PEGA-142): no dragging without the right to move cards.
-it("offers no dragging without canMoveTasks", () => {
-  m.canMoveTasks.mockReturnValue(false);
+// Pegasus fork (PEGA-142): a drop saves full updates, which need the right
+// to edit cards (LEAD_EDIT where the Hub governs).
+it("offers no dragging without canUpdateTasks", () => {
+  m.canUpdateTasks.mockReturnValue(false);
   const project = {
     id: "p",
     workspaceId: "w",
@@ -134,6 +141,51 @@ it("offers no dragging without canMoveTasks", () => {
     } as DragEndEvent),
   );
   expect(m.mutate).not.toHaveBeenCalled();
+  m.canUpdateTasks.mockReturnValue(true);
+});
+
+// Pegasus fork (PEGA-142): another column also needs the right to move cards
+// (LEAD_MOVE_STAGE); reordering in place does not.
+it("reorders within a column but refuses another column without canMoveTasks", () => {
+  m.canMoveTasks.mockReturnValue(false);
+  const project = {
+    id: "p",
+    workspaceId: "w",
+    columns: [
+      {
+        id: "todo",
+        slug: "todo",
+        name: "To do",
+        tasks: [
+          { id: "a", position: 0, status: "todo" },
+          { id: "b", position: 1, status: "todo" },
+        ],
+      },
+      { id: "done", slug: "done", name: "Done", tasks: [] },
+    ],
+    plannedTasks: [],
+    archivedTasks: [],
+  } as unknown as ProjectWithTasks;
+  render(<ListView project={project} />, { wrapper: Providers });
+  expect(m.props.sensors?.length).toBeGreaterThan(0);
+
+  act(() =>
+    m.props.onDragEnd?.({
+      active: { id: "a" },
+      over: { id: "done" },
+    } as DragEndEvent),
+  );
+  expect(m.mutate).not.toHaveBeenCalled();
+  expect(m.setProject).not.toHaveBeenCalled();
+
+  act(() =>
+    m.props.onDragEnd?.({
+      active: { id: "a" },
+      over: { id: "b" },
+    } as DragEndEvent),
+  );
+  expect(m.mutate).toHaveBeenCalled();
+  for (const [task] of m.mutate.mock.calls) expect(task.status).toBe("todo");
   m.canMoveTasks.mockReturnValue(true);
 });
 
@@ -171,12 +223,17 @@ it("blocks archive-all during pagination or errors, including an already-open co
   );
   expect(m.archive.disabled).toBe(true);
   act(() => m.archive.onConfirm?.());
-  expect(m.mutate).not.toHaveBeenCalled();
+  expect(m.mutateStatus).not.toHaveBeenCalled();
   expect(m.setProject).not.toHaveBeenCalled();
   rerender(<ListView project={complete} />);
   expect(m.archive.taskCount).toBe(2);
   act(() => m.archive.onConfirm?.());
-  expect(m.mutate).toHaveBeenCalledTimes(2);
+  // Pegasus fork (PEGA-142): through the status route, not a full update.
+  expect(m.mutateStatus).toHaveBeenCalledTimes(2);
+  expect(m.mutateStatus).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "a", status: "archived" }),
+  );
+  expect(m.mutate).not.toHaveBeenCalled();
   expect(m.setProject).toHaveBeenCalledOnce();
 });
 

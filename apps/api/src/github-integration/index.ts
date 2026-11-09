@@ -21,6 +21,7 @@ import { handleGitHubWebhook } from "../plugins/github/webhook-handler";
 import { isGithubSsoConfigured } from "../utils/github-sso-env";
 import { requireUserSession } from "../utils/require-user-session";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createGithubIntegration from "./controllers/create-github-integration";
 import deleteGithubIntegration from "./controllers/delete-github-integration";
@@ -224,7 +225,11 @@ const importIssuesRoute = createRoute({
     "Import open issues and link open pull requests in bounded steps. Existing tasks are updated. Continue 202 responses with the returned runId until 200; the same runId safely retries completion. Progress is saved after each page. New calls without runId resume an unfinished import or start a new one after completion.",
   middleware: [
     scopeToProjectFromBody,
-    requireWorkspacePermission({ task: ["create", "update"] }),
+    // Pegasus fork (PEGA-142): imports create and update leads.
+    requireLeadPermission({ task: ["create", "update"] }, [
+      "LEAD_CREATE",
+      "LEAD_EDIT",
+    ]),
   ] as const,
   request: {
     body: {

@@ -31,8 +31,8 @@ import { useTranslation } from "react-i18next";
 import { TrialExpiredCallout } from "@/components/billing/trial-expired-callout";
 import WorkspaceLayout from "@/components/common/workspace-layout";
 import PageTitle from "@/components/page-title";
+import { ProjectStatisticsCells } from "@/components/project-statistics-cells";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -42,7 +42,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -58,7 +57,6 @@ import useGetProjects from "@/hooks/queries/project/use-get-projects";
 import { useCanImport } from "@/hooks/use-can-import";
 import { useShortcut } from "@/lib/shortcuts/use-shortcut";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
-import { formatDateMedium } from "@/lib/format";
 import { EASE_OUT_CSS } from "@/lib/motion";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -138,6 +136,9 @@ function RouteComponent() {
   // leaving a frame with the transforms gone and the rows not yet moved.
   const [droppedOrder, setDroppedOrder] = useState<string[] | null>(null);
 
+  // Pegasus fork (PEGA-142): the API leaves statistics out without
+  // REPORTING_VIEW; the columns go with them.
+  const showStatistics = Boolean(projects?.some((p) => p.statistics));
   const orderedProjects = useMemo(() => {
     if (!projects || !droppedOrder) return projects;
 
@@ -381,15 +382,19 @@ function RouteComponent() {
                 <TableHead className="text-foreground font-medium">
                   {t("workspace:projects.title")}
                 </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.progress")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.dueDate")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.status")}
-                </TableHead>
+                {showStatistics && (
+                  <>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.progress")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.dueDate")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.status")}
+                    </TableHead>
+                  </>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -398,25 +403,10 @@ function RouteComponent() {
                 strategy={verticalListSortingStrategy}
               >
                 {orderedProjects?.map((project) => {
-                  if (!project?.id || !project.statistics) return null;
+                  if (!project?.id) return null;
 
                   const IconComponent =
                     icons[project.icon as keyof typeof icons] || icons.Layout;
-
-                  const getStatusText = () => {
-                    if (project.statistics.totalTasks === 0)
-                      return t("workspace:projects.projectStatus.notStarted");
-                    if (project.statistics.completionPercentage === 100)
-                      return t("workspace:projects.projectStatus.complete");
-                    return t("workspace:projects.projectStatus.inProgress");
-                  };
-
-                  const getStatusVariant = () => {
-                    if (project.statistics.totalTasks === 0) return "secondary";
-                    if (project.statistics.completionPercentage === 100)
-                      return "default";
-                    return "outline";
-                  };
 
                   return (
                     <SortableProjectRow
@@ -431,29 +421,12 @@ function RouteComponent() {
                           <span className="font-medium">{project.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-3">
-                        <div className="flex items-center gap-2">
-                          <Progress
-                            value={project.statistics.completionPercentage}
-                            className="w-16 h-2"
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {project.statistics.completionPercentage}%
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <span className="text-sm text-muted-foreground">
-                          {project.statistics.dueDate
-                            ? formatDateMedium(project.statistics.dueDate)
-                            : t("workspace:projects.noDueDate")}
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <Badge variant={getStatusVariant()}>
-                          {getStatusText()}
-                        </Badge>
-                      </TableCell>
+                      {/* Pegasus fork (PEGA-142): absent without REPORTING_VIEW. */}
+                      {project.statistics && (
+                        <ProjectStatisticsCells
+                          statistics={project.statistics}
+                        />
+                      )}
                     </SortableProjectRow>
                   );
                 })}

@@ -20,6 +20,12 @@ describe("ProjectProgress", () => {
     expect(container.querySelector("svg")).not.toBeNull();
   });
 
+  it("shows nothing when the API left the statistics out", () => {
+    const { container } = render(<ProjectProgress percentage={undefined} />);
+
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it("shows nothing without canViewReports", () => {
     permissions.canViewReports.mockReturnValueOnce(false);
     const { container } = render(<ProjectProgress percentage={40} />);

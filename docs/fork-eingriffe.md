@@ -195,37 +195,43 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 
 **Regel:**
 - Ein Workspace gilt als vom Hub verwaltet, sobald `PUT …/users` einmal lief (Zeile in `pegasus_workspace`).
-- Dort ist jedes Mitglied Hub-gesteuert, außer `owner`, Instanz-Admins und dem Konto aus `PEGASUS_HUB_USER_EMAIL`.
+- Dort ist jedes Mitglied Hub-gesteuert, außer `owner`, Instanz-Admins und dem Konto mit der Nutzer-ID aus `PEGASUS_HUB_USER_ID`.
+- Nur diese drei dürfen die Push-API eines verwalteten Workspaces nutzen (sonst 403 `HUB_GOVERNED`), damit ein Hub-gesteuerter Admin seinen eigenen Stand nicht umschreibt.
 - Für Hub-gesteuerte Mitglieder ersetzt ein Hub-Recht auf Karten-Routen die Kaneo-Rollenprüfung (Tabelle im Review). Ein API-Key-Scope schränkt weiter ein.
 - Fehlt das Recht: 403 `MISSING_PERMISSION` mit `missingPermissions: ["LEAD_…"]`. Ohne Eintrag im Stand: nichts sehen, nichts dürfen.
 - Workspaces ohne Push verhalten sich wie Kaneo.
 
 **Dateien:**
-- Migration `apps/api/drizzle/0067_pegasus_permissions.sql` (idempotent: `pegasus_workspace`, `pegasus_user_scope.permissions`, `DROP COLUMN IF EXISTS workspace_role.hub_scoped`), `database/schema.ts`, `database/index.ts`
+- Migration `apps/api/drizzle/0067_pegasus_permissions.sql` (idempotent: `pegasus_workspace`, `pegasus_user_scope.permissions`, Workspaces mit Ständen aus PEGA-141 als verwaltet eintragen, `DROP COLUMN IF EXISTS workspace_role.hub_scoped`), `database/schema.ts`, `database/index.ts`
 - Neu:
   - `packages/permissions/src/hub-permissions.ts` (`HUB_PERMISSIONS`, `capabilityHubPermission`), neue Capabilities `moveTasks`, `labelTasks`, `exportTasks`, `viewReports` in `capabilities.ts`
-  - `apps/api/src/utils/require-hub-permission.ts` (`requireLeadPermission`, `requireHubPermission`, `hubAllows`, `hasLeadPermission`)
+  - `apps/api/src/utils/require-hub-permission.ts` (`requireLeadPermission`, `requireHubPermission`, `requireHubPermissionWhen`, `hubAllows`, `hasLeadPermission`), `apps/api/src/utils/read-json-body.ts`
   - `apps/api/src/task-scope/is-hub-system-account.ts`
+  - `apps/api/src/pegasus-visibility/deny-hub-governed.ts`
 - `task-scope/`:
   - `loadMemberAccess` (Sicht und Rechte), `resolveMemberAccess`
   - `TaskScope` mit UND-Semantik (`assignedOnly`, `unitIds | null`), `composeTaskScope` mit `managed`
-- Push-API `pegasus-visibility/{schema,controllers/*}.ts`: Pflichtfeld `permissions`, Marker `pegasus_workspace`
+- Push-API `pegasus-visibility/{index,schema,controllers/*}.ts`: Pflichtfeld `permissions`, Marker `pegasus_workspace`, `denyHubGoverned` an allen vier Routen
 - Gates (Einzeiler `requireLeadPermission(...)` statt `requireWorkspacePermission(...)`):
-  - `task/index.ts`, `task/controllers/require-task-permission.ts` (Bulk, Assignee, neu `requireTaskStatusPermission`, `requireReorderPermission`)
-  - `comment/index.ts`, `activity/index.ts`, `custom-field/index.ts`, `label/index.ts` (attach/detach), `task-relation/index.ts`, `time-entry/index.ts`, `external-link/index.ts`
-  - Statistik `project/{index.ts,controllers/get-projects.ts}`
+  - `task/index.ts`, `task/controllers/require-task-permission.ts` (Bulk, Assignee, neu `requireTaskStatusPermission`, `requireReorderPermission`, `requireCreateAssigneePermission`, `requireImportAssigneePermission`)
+  - `comment/index.ts`, `activity/index.ts`, `custom-field/index.ts`, `label/index.ts` (attach/detach; `createLabel` mit `taskId` über `requireHubPermissionWhen`), `task-relation/index.ts`, `time-entry/index.ts`, `external-link/index.ts`
+  - Issue-Import `{github,gitea,gitlab}-integration/index.ts` (`LEAD_CREATE` und `LEAD_EDIT`), `integration-sync/index.ts` (Resume, `LEAD_EDIT`)
+  - Statistik `project/{index.ts,response.ts,controllers/get-projects.ts}` (`statistics` optional, fehlt ohne `REPORTING_VIEW`)
   - Capabilities `workspace/{index.ts,controllers/get-my-capabilities.ts}`
   - `utils/require-workspace-permission.ts` exportiert `assertApiKeyScope`, `apiKeyAllows`
 - Rollenfeld `hubScoped` entfernt: `auth.ts`, `auth-openapi.ts`, `packages/permissions` (`roleRestrictions`), Web `lib/auth-client.ts`, `hooks/{mutations,queries}/workspace/use-*-workspace-role(s).ts`, `routes/.../settings/workspace/roles.tsx` (statt Schalter Hinweis `settings.workspaceRoles.hubManagedHint`)
 - Web-Gates über Capabilities:
   - `use-workspace-permission.ts` (`canMoveTasks`, `canLabelTasks`, `canExportTasks`, `canViewReports`)
-  - `kanban-board/{index,column/column-header,task-card-context-menu/task-card-context-menu-content}.tsx`, `list-view/{index,list-column-section}.tsx`, `bulk-selection/{bulk-bar.tsx,use-bulk-actions.ts}`
+  - `kanban-board/{index,column/column-header,task-card-context-menu/task-card-context-menu-content}.tsx`, `list-view/{index,list-column-section}.tsx`, `bulk-selection/{bulk-bar.tsx,use-bulk-actions.ts}`; „Alle archivieren“ über die Status-Route (`useUpdateTaskStatus`)
+  - `shared/modals/create-task-modal.tsx` (Assignee- und Label-Auswahl `hidden` ohne `canAssignTasks` bzw. `canLabelTasks`)
   - `task/{task-status-popover,subtask-status-popover,task-move-popover,task-labels-popover,task-activity,task-shortcuts}.tsx`, `activity/comment-card.tsx`, `project/task-view-keys/use-task-action-shortcuts.ts`, `project/tasks-import-export/export-tasks-row.tsx`, `project-progress.tsx`
+  - Statistik optional: `nav-projects.tsx`, `home/home-projects.tsx`, `routes/.../$workspaceId/projects.tsx` mit neuem `project-statistics-cells.tsx`; Mobile `features/home/home-tab.tsx`
 - i18n `settings.workspaceRoles.hubManagedHint` (en-US, de-DE; übrige Locales englisch), `view_hub_scoped` entfernt, `i18n/schema.json` von Hand; `.env.sample`; `apps/docs/openapi.json`
 
 **Beim Sync beachten:**
 - **Pfade und Operation-IDs der Push-API sind Vertrag mit dem Hub** (`replacePegasusUserScopes`, `getPegasusUserScopes`, `setPegasusTaskUnit`, `setPegasusTaskUnits`, `kaneo:spec:pull`). Ebenso die Rechte-Schlüssel (UPPER_SNAKE, unverändert vom Hub). Nicht umbenennen.
 - **Neue Upstream-Schreibrouten auf Karten** (alles mit `requireWorkspacePermission({ task: [...] })` oder `{ label: ["update"] }` an einer Karte): auf `requireLeadPermission(<Kaneo-Map>, "<Hub-Recht>")` umstellen und eine Zeile in `ACTIONS` von `hub-permissions.test.ts` ergänzen. Sonst entscheidet für Hub-gesteuerte Mitglieder wieder die Kaneo-Rolle.
+- **Felder im Body, die eine zweite Karten-Aktion auslösen** (Bearbeiter beim Anlegen, `taskId` beim Label-Anlegen): `requireHubPermissionWhen(...)` ergänzen und in `hub-permissions-side-routes.test.ts` absichern.
 - Neue In-Handler-Prüfungen `hasWorkspacePermission(c, { task: [...] })` auf `hasLeadPermission` umstellen.
 - Neue Upstream-Capabilities für Karten-Aktionen in `capabilityHubPermission` eintragen.
 - Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0067).

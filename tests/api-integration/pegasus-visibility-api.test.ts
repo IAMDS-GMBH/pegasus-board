@@ -1,6 +1,13 @@
 import { createHash, randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
-import { beforeEach, describe, expect, it } from "vite-plus/test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vite-plus/test";
 import db, { schema } from "../../apps/api/src/database";
 import { createApp } from "../../apps/api/src/index";
 import { mockAuthenticatedSession } from "./helpers/auth";
@@ -49,6 +56,9 @@ async function seedTask(projectId: string, columnId: string, number: number) {
 
 async function fixture() {
   const hub = await createWorkspaceMember({ role: "admin" });
+  // PEGA-142: an admin the variable does not name is governed after the
+  // first push and may not push again (hub-push-api-guard.test.ts).
+  vi.stubEnv("PEGASUS_HUB_USER_ID", hub.user.id);
   const member = await addMember(hub.workspace.id, "member");
   const { project, columns } = await createProjectFixture({
     workspaceId: hub.workspace.id,
@@ -120,6 +130,7 @@ async function storedTaskUnits() {
 
 describe("pegasus visibility API", () => {
   beforeEach(() => resetTestDatabase());
+  afterEach(() => vi.unstubAllEnvs());
 
   describe("user scopes", () => {
     it("stores a snapshot and returns it", async () => {

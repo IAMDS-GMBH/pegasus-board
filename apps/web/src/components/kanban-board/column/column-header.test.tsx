@@ -19,8 +19,10 @@ const m = vi.hoisted(() => ({
   setProject: vi.fn(),
   canMoveTasks: vi.fn(() => true),
 }));
-vi.mock("@/hooks/mutations/task/use-update-task", () => ({
-  useUpdateTask: () => ({ mutate: m.mutate }),
+// Pegasus fork (PEGA-142): archiving goes through the status route, which
+// needs only LEAD_MOVE_STAGE, not the full update and its LEAD_EDIT.
+vi.mock("@/hooks/mutations/task/use-update-task-status", () => ({
+  useUpdateTaskStatus: () => ({ mutate: m.mutate }),
 }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
@@ -73,6 +75,9 @@ it("prevents archive confirmation while the board is partial and uses the comple
   expect(m.archive.taskCount).toBe(2);
   act(() => m.archive.onConfirm?.());
   expect(m.mutate).toHaveBeenCalledTimes(2);
+  expect(m.mutate).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "a", status: "archived" }),
+  );
   expect(m.setProject).toHaveBeenCalledOnce();
 });
 

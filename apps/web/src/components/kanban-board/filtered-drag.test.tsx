@@ -14,6 +14,7 @@ import KanbanBoard from "./index";
 
 const mocks = vi.hoisted(() => ({
   canMoveTasks: vi.fn(() => true),
+  canUpdateTasks: vi.fn(() => true),
   project: null as unknown,
   setProject: vi.fn(),
   reorder: vi.fn(),
@@ -60,7 +61,10 @@ vi.mock("@/hooks/use-project-background", () => ({
 }));
 vi.mock("../bulk-selection/bulk-toolbar", () => ({ default: () => null }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
-  useWorkspacePermission: () => ({ canMoveTasks: mocks.canMoveTasks }),
+  useWorkspacePermission: () => ({
+    canMoveTasks: mocks.canMoveTasks,
+    canUpdateTasks: mocks.canUpdateTasks,
+  }),
 }));
 vi.mock("./column", () => ({
   default: ({
@@ -131,6 +135,7 @@ vi.mock("@dnd-kit/core", () => ({
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.canMoveTasks.mockReturnValue(true);
+  mocks.canUpdateTasks.mockReturnValue(true);
 });
 afterEach(cleanup);
 describe("filtered board dragging", () => {
@@ -498,12 +503,12 @@ describe.each([
   });
 });
 
-// Pegasus fork (PEGA-142): without the right to move cards (LEAD_MOVE_STAGE
-// where the Hub governs) the board does not reorder or move them.
-describe("dragging without canMoveTasks", () => {
-  it("drops nothing", () => {
-    mocks.canMoveTasks.mockReturnValue(false);
-    const project = {
+// Pegasus fork (PEGA-142): moving to another column needs the right to move
+// cards (LEAD_MOVE_STAGE where the Hub governs), reordering within a column
+// only the right to edit them (LEAD_EDIT), as POST /task/reorder checks.
+describe("dragging with partial rights", () => {
+  const board = () =>
+    ({
       id: "p",
       columns: [
         {
@@ -514,16 +519,60 @@ describe("dragging without canMoveTasks", () => {
             { id: "b", status: "todo", position: 1 },
           ],
         },
+        {
+          id: "doing",
+          slug: "doing",
+          tasks: [{ id: "c", status: "doing", position: 0 }],
+        },
       ],
       plannedTasks: [],
       archivedTasks: [],
-    } as unknown as ProjectWithTasks;
+    }) as unknown as ProjectWithTasks;
+
+  it("drops nothing without canMoveTasks and canUpdateTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    mocks.canUpdateTasks.mockReturnValue(false);
+    const project = board();
     mocks.project = project;
 
     const view = render(<KanbanBoard project={project} />);
     fireEvent.click(view.getByText("drop"));
+    fireEvent.click(view.getByText("drop-c"));
 
     expect(mocks.setProject).not.toHaveBeenCalled();
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
+  });
+
+  it("reorders within the column but neither previews nor drops into another without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    const project = board();
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    fireEvent.click(view.getByText("start"));
+    fireEvent.click(view.getByText("over-c"));
+    expect(shownIds(view, "doing")).toBe("c");
+    fireEvent.click(view.getByText("drop-c"));
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    expect(mocks.setProject).not.toHaveBeenCalled();
+
+    fireEvent.click(view.getByText("drop"));
+    expect(mocks.reorder).toHaveBeenCalledOnce();
+    const sent = mocks.reorder.mock.calls[0][0].tasks as Array<object>;
+    expect(sent.length).toBeGreaterThan(0);
+    for (const task of sent) expect(task).not.toHaveProperty("status");
+    view.unmount();
+  });
+
+  it("offers no dragging on a sorted board without canMoveTasks", () => {
+    mocks.canMoveTasks.mockReturnValue(false);
+    const project = board();
+    mocks.project = project;
+
+    const view = render(<KanbanBoard project={project} sortedByNumber />);
+    fireEvent.click(view.getByText("drop-c"));
+
     expect(mocks.reorder).not.toHaveBeenCalled();
     view.unmount();
   });

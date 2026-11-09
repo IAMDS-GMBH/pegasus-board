@@ -56,6 +56,8 @@ import {
 import {
   requireBulkTaskEntitlement,
   requireBulkTaskPermission,
+  requireCreateAssigneePermission,
+  requireImportAssigneePermission,
   requireReorderPermission,
   requireTaskAssigneePermission,
   requireTaskStatusPermission,
@@ -290,6 +292,7 @@ const createTaskRoute = createRoute({
   middleware: [
     workspaceAccess.fromProject("projectId"),
     requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
+    requireCreateAssigneePermission,
     requireEntitlement,
   ] as const,
   request: {
@@ -303,7 +306,7 @@ const createTaskRoute = createRoute({
     200: jsonResponse("The created task", taskSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing task:create permission",
+      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId)",
     ),
     404: errorResponse("Project not found"),
   },
@@ -476,6 +479,7 @@ const importTasksRoute = createRoute({
   middleware: [
     workspaceAccess.fromProject("projectId"),
     requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
+    requireImportAssigneePermission,
     requireEntitlement,
   ] as const,
   request: {
@@ -489,7 +493,7 @@ const importTasksRoute = createRoute({
     200: jsonResponse("Per-task import outcome", taskImportResultSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing task:create permission",
+      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee)",
     ),
     404: errorResponse("Project not found"),
   },

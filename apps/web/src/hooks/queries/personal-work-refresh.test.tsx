@@ -248,7 +248,7 @@ describe("personal work refresh", () => {
       });
     });
     await waitFor(() =>
-      expect(result.current.projects.data?.[0].statistics.totalTasks).toBe(2),
+      expect(result.current.projects.data?.[0].statistics?.totalTasks).toBe(2),
     );
     expect(mocks.projects).toHaveBeenCalledTimes(2);
     client.clear();
@@ -368,7 +368,7 @@ describe("personal work refresh", () => {
 
     expect(result.current.task?.title).toBe("After");
     expect(result.current.comments).toEqual([{ id: "comment" }]);
-    expect(result.current.projects?.[0].statistics.completionPercentage).toBe(
+    expect(result.current.projects?.[0].statistics?.completionPercentage).toBe(
       50,
     );
 

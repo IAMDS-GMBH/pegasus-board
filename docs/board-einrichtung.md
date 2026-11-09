@@ -125,12 +125,12 @@ Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten li
   Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.
 - **Sichtbereich und Rechte aus dem Hub (PEGA-141, PEGA-142):**
   - Mit der ersten Übertragung von Nutzern übernimmt der Hub den Workspace. Ab dann gelten sein Sichtbereich und seine Rechte für **jedes** Mitglied, gleich welcher Rolle. Kein Board-Admin kann das abschalten.
-  - Ausgenommen sind nur der Owner, Instanz-Admins und das Systemkonto, dessen Login-E-Mail in `PEGASUS_HUB_USER_EMAIL` steht.
+  - Ausgenommen sind nur der Owner, Instanz-Admins und das Systemkonto, dessen Nutzer-ID in `PEGASUS_HUB_USER_ID` steht. Nur sie dürfen danach die Push-API nutzen; ein Hub-gesteuerter Administrator bekommt 403 `HUB_GOVERNED`.
   - Ein Mitglied, das der Hub nicht überträgt, sieht und darf nichts. Fehlt ein Recht, antwortet die API mit 403 `MISSING_PERMISSION`, und die Oberfläche blendet die Aktion aus.
   - „Nur zugewiesene“ im Rolleneditor schränkt zusätzlich ein. Den früheren Schalter „Sicht aus dem Hub“ gibt es nicht mehr.
   - Details: [Rechte-Review](review/2026-11-rechte-aus-dem-hub.md), [Sichtbereich-Review](review/2026-11-sichtbereich-einheiten.md).
 - **Reihenfolge bei der Umstellung:**
-  1. `PEGASUS_HUB_USER_EMAIL` im Root-`.env` setzen (Helm: `kaneo.extraEnv`) und die API neu starten.
+  1. `PEGASUS_HUB_USER_ID` im Root-`.env` setzen (Helm: `kaneo.extraEnv`) und die API neu starten. Die ID liefert `SELECT id FROM "user" WHERE email = '<Login-E-Mail des Systemkontos>';`. Ohne die Variable ist das Systemkonto nach dem ersten Push selbst Hub-gesteuert und kann nicht erneut übertragen.
   2. Den Hub Karten-Einheiten und dann Nutzer mit Rechten übertragen lassen.
   3. Mitglieder auf die Rolle „Pegasus“ umstellen.
 - **Workspace und Mitglieder** legt ein Admin über die Oberfläche oder per Einladung an.
@@ -144,7 +144,7 @@ Jeder Key Account ist ein eigener Workspace. Ein API-Schlüssel gehört in Kaneo
 |---|---|
 | Hub, Umgebung (einmal) | `KANEO_API_URL`, `KANEO_API_KEY` (Schlüssel des Systemkontos), `KANEO_WEBHOOK_SECRET` (eines für alle Projekte) |
 | Hub, Datenbank (je Key Account) | Projekt-ID im Board; die Workspace-ID liest der Hub über `GET /api/project/{id}`. Spalten, Felder und Labels findet er zur Laufzeit am Namen. |
-| Board, Umgebung (einmal) | `PEGASUS_HUB_USER_EMAIL` (Login-E-Mail des Systemkontos) |
+| Board, Umgebung (einmal) | `PEGASUS_HUB_USER_ID` (Nutzer-ID des Systemkontos) |
 
 Keine Projekt- oder Workspace-ID gehört in die Umgebung des Hubs (heute `KANEO_PROJECT_ID`): Jeder weitere Key Account wäre sonst ein neues Deployment.
 

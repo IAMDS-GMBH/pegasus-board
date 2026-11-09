@@ -100,7 +100,7 @@ const listProjectsRoute = createRoute({
   tags: ["Projects"],
   summary: "List projects",
   description:
-    "List a workspace's projects in sidebar order, each with rollup task statistics. Archived projects are excluded unless includeArchived is set.",
+    "List a workspace's projects in sidebar order, each with rollup task statistics (left out for a member the Pegasus Hub governs without REPORTING_VIEW). Archived projects are excluded unless includeArchived is set.",
   middleware: [workspaceAccess.fromQuery()] as const,
   request: { query: listProjectsQuery },
   responses: {

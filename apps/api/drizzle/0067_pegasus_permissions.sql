@@ -9,4 +9,10 @@ CREATE TABLE IF NOT EXISTS "pegasus_workspace" (
 );
 --> statement-breakpoint
 ALTER TABLE "pegasus_user_scope" ADD COLUMN IF NOT EXISTS "permissions" text[] DEFAULT '{}'::text[] NOT NULL;--> statement-breakpoint
+-- Workspaces the Hub already scoped (PEGA-141) stay governed instead of falling
+-- open until its next push. Their stored rows carry no rights yet, so members
+-- only read until the Hub pushes again (fail closed).
+INSERT INTO "pegasus_workspace" ("workspace_id")
+SELECT DISTINCT "workspace_id" FROM "pegasus_user_scope"
+ON CONFLICT DO NOTHING;--> statement-breakpoint
 ALTER TABLE "workspace_role" DROP COLUMN IF EXISTS "hub_scoped";

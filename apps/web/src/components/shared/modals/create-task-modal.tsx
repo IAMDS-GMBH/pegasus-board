@@ -205,9 +205,14 @@ function CreateTaskModalContent({
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(
     workspace?.id || "",
   );
-  const { canCreateTasks, canCreateLabels } = useWorkspacePermission();
+  const { canCreateTasks, canCreateLabels, canAssignTasks, canLabelTasks } =
+    useWorkspacePermission();
   const canCreateTaskCapability = canCreateTasks();
   const canCreateLabelCapability = canCreateLabels();
+  // Pegasus fork (PEGA-142): the API refuses an assignee or a label on a new
+  // lead without the right to assign or to label it.
+  const canAssign = canAssignTasks();
+  const canLabel = canLabelTasks();
 
   const [title, setTitle] = useState("");
   const titleRef = useAutoGrowTextarea(title);
@@ -964,6 +969,7 @@ function CreateTaskModalContent({
                 <PopoverTrigger asChild>
                   <button
                     type="button"
+                    hidden={!canAssign}
                     className={cn(
                       "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors border border-border hover:bg-accent/50",
                       selectedUser
@@ -1081,6 +1087,7 @@ function CreateTaskModalContent({
                 <PopoverTrigger asChild>
                   <button
                     type="button"
+                    hidden={!canLabel}
                     className={cn(
                       "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors border border-border hover:bg-accent/50",
                       labels.length > 0

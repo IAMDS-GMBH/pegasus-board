@@ -93,11 +93,14 @@ async function getProjects(
 
   const statisticsByProject = withStatistics
     ? await getProjectStatistics(workspaceId, userId, includeArchived, scope)
-    : new Map<string, ProjectStatistics>();
+    : null;
 
   return projects.map((project) => ({
     ...project,
-    statistics: statisticsByProject.get(project.id) ?? EMPTY_STATISTICS,
+    // Left out rather than zeroed, so clients cannot show zeros as figures.
+    ...(statisticsByProject && {
+      statistics: statisticsByProject.get(project.id) ?? EMPTY_STATISTICS,
+    }),
     archivedTasks: [],
     plannedTasks: [],
     columns: [],

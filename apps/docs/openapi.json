@@ -868,7 +868,6 @@
               }
             },
             "required": [
-              "statistics",
               "archivedTasks",
               "plannedTasks",
               "columns"
@@ -898,7 +897,8 @@
           "completionPercentage",
           "totalTasks",
           "dueDate"
-        ]
+        ],
+        "description": "Rollup task statistics. Absent for a member the Pegasus Hub governs without REPORTING_VIEW."
       },
       "ProjectBackgroundUpload": {
         "type": "object",
@@ -8981,7 +8981,7 @@
           "Projects"
         ],
         "summary": "List projects",
-        "description": "List a workspace's projects in sidebar order, each with rollup task statistics. Archived projects are excluded unless includeArchived is set.",
+        "description": "List a workspace's projects in sidebar order, each with rollup task statistics (left out for a member the Pegasus Hub governs without REPORTING_VIEW). Archived projects are excluded unless includeArchived is set.",
         "parameters": [
           {
             "schema": {
@@ -11424,7 +11424,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing task:create permission",
+            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId)",
             "content": {
               "application/json": {
                 "schema": {
@@ -12231,7 +12231,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing task:create permission",
+            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee)",
             "content": {
               "application/json": {
                 "schema": {
@@ -14896,7 +14896,7 @@
             }
           },
           "403": {
-            "description": "Missing label:create permission",
+            "description": "Missing label:create permission, or, for a member the Pegasus Hub governs, LEAD_EDIT when taskId is set",
             "content": {
               "application/json": {
                 "schema": {
@@ -24570,7 +24570,7 @@
             }
           },
           "403": {
-            "description": "Missing workspace:manage_settings permission",
+            "description": "Missing workspace:manage_settings permission, or a member the Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -24681,7 +24681,7 @@
             }
           },
           "403": {
-            "description": "Missing workspace:manage_settings permission",
+            "description": "Missing workspace:manage_settings permission, or a member the Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -24795,7 +24795,7 @@
             }
           },
           "403": {
-            "description": "Missing workspace:manage_settings permission",
+            "description": "Missing workspace:manage_settings permission, or a member the Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -24916,7 +24916,7 @@
             }
           },
           "403": {
-            "description": "Missing workspace:manage_settings permission",
+            "description": "Missing workspace:manage_settings permission, or a member the Hub governs",
             "content": {
               "application/json": {
                 "schema": {

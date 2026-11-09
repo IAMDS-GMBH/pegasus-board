@@ -32,11 +32,7 @@ export async function loadMemberAccess(
     .from(schema.userTable)
     .where(eq(schema.userTable.id, userId))
     .limit(1);
-  if (
-    !user ||
-    hasInstanceAdminRole(user.role) ||
-    isHubSystemAccount(user.email)
-  ) {
+  if (!user || hasInstanceAdminRole(user.role) || isHubSystemAccount(userId)) {
     return access;
   }
 

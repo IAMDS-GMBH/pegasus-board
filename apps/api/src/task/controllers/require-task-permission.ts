@@ -4,10 +4,14 @@ import { HTTPException } from "hono/http-exception";
 import { requireEntitlement } from "../../billing/require-entitlement-middleware";
 import db from "../../database";
 import { taskTable } from "../../database/schema";
+import { resolveMemberAccess } from "../../task-scope/resolve-task-scope";
+import { readJsonBody } from "../../utils/read-json-body";
 import {
   requireHubPermission,
+  requireHubPermissionWhen,
   requireLeadPermission,
 } from "../../utils/require-hub-permission";
+import { requireWorkspacePermission } from "../../utils/require-workspace-permission";
 
 type BulkTaskOperation =
   | "updateStatus"
@@ -27,15 +31,6 @@ const BULK_OPERATIONS: readonly BulkTaskOperation[] = [
   "removeLabel",
   "updateDueDate",
 ];
-
-// Route middleware runs before the validators, so c.req.valid() is unavailable.
-async function readJsonBody(c: Context): Promise<Record<string, unknown>> {
-  const raw = (await c.req.json().catch(() => ({}))) as unknown;
-  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
-    return {};
-  }
-  return raw as Record<string, unknown>;
-}
 
 async function bulkOperation(c: Context): Promise<BulkTaskOperation> {
   const { operation } = await readJsonBody(c);
@@ -92,16 +87,27 @@ export async function requireBulkTaskEntitlement(c: Context, next: Next) {
   return requireEntitlement(c, next);
 }
 
+const EXISTING_TASK_KEY = "existingTaskForPermission";
+type ExistingTask = { status: string; userId: string | null } | null;
+
+// The status and assignee checks of a full update share one lookup.
+async function loadExistingTask(c: Context): Promise<ExistingTask> {
+  const cached = c.get(EXISTING_TASK_KEY) as ExistingTask | undefined;
+  if (cached !== undefined) return cached;
+  const [row] = await db
+    .select({ status: taskTable.status, userId: taskTable.userId })
+    .from(taskTable)
+    .where(eq(taskTable.id, c.req.param("id") ?? ""))
+    .limit(1);
+  const task = row ?? null;
+  c.set(EXISTING_TASK_KEY, task);
+  return task;
+}
+
 export async function requireTaskAssigneePermission(c: Context, next: Next) {
-  const id = c.req.param("id");
   const { userId } = await readJsonBody(c);
   const nextAssignee = typeof userId === "string" ? userId : null;
-
-  const [existingTask] = await db
-    .select({ userId: taskTable.userId })
-    .from(taskTable)
-    .where(eq(taskTable.id, id ?? ""))
-    .limit(1);
+  const existingTask = await loadExistingTask(c);
 
   if (existingTask && existingTask.userId !== nextAssignee) {
     return requireLeadPermission({ task: ["assign"] }, "LEAD_ASSIGN_PROCESSOR")(
@@ -116,15 +122,10 @@ export async function requireTaskAssigneePermission(c: Context, next: Next) {
 // Pegasus fork (PEGA-142): a full update that changes the column is a stage
 // move for governed members. Kaneo needs nothing beyond task:update for it.
 export async function requireTaskStatusPermission(c: Context, next: Next) {
-  const id = c.req.param("id");
+  if (!(await resolveMemberAccess(c)).permissions) return next();
+
   const { status } = await readJsonBody(c);
-
-  const [existingTask] = await db
-    .select({ status: taskTable.status })
-    .from(taskTable)
-    .where(eq(taskTable.id, id ?? ""))
-    .limit(1);
-
+  const existingTask = await loadExistingTask(c);
   if (
     existingTask &&
     typeof status === "string" &&
@@ -136,8 +137,13 @@ export async function requireTaskStatusPermission(c: Context, next: Next) {
 }
 
 // Pegasus fork (PEGA-142): moving a card to another column needs
-// LEAD_MOVE_STAGE, reordering within its column LEAD_EDIT.
+// LEAD_MOVE_STAGE, reordering within its column LEAD_EDIT. Kaneo needs
+// task:update for both, so only governed members pay for the lookup.
 export async function requireReorderPermission(c: Context, next: Next) {
+  if (!(await resolveMemberAccess(c)).permissions) {
+    return requireWorkspacePermission({ task: ["update"] })(c, next);
+  }
+
   const { tasks } = await readJsonBody(c);
   const moves = Array.isArray(tasks)
     ? (tasks as Array<{ id?: unknown; status?: unknown }>).filter(
@@ -166,3 +172,20 @@ export async function requireReorderPermission(c: Context, next: Next) {
     changesColumn ? "LEAD_MOVE_STAGE" : "LEAD_EDIT",
   )(c, next);
 }
+
+const namesAssignee = (value: unknown) =>
+  typeof value === "string" && value.trim() !== "";
+
+// Pegasus fork (PEGA-142): a lead created with an assignee is an assignment,
+// so governed members need LEAD_ASSIGN_PROCESSOR on top of LEAD_CREATE.
+export const requireCreateAssigneePermission = requireHubPermissionWhen(
+  (body) => namesAssignee(body.userId),
+  "LEAD_ASSIGN_PROCESSOR",
+);
+
+export const requireImportAssigneePermission = requireHubPermissionWhen(
+  (body) =>
+    Array.isArray(body.tasks) &&
+    body.tasks.some((task) => namesAssignee(task?.userId)),
+  "LEAD_ASSIGN_PROCESSOR",
+);
