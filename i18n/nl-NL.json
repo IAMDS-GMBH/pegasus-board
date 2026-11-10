@@ -3328,6 +3328,11 @@
 			"startsOn": "Begint {{date}}",
 			"beforeStart": "{{date}} ligt vóór de startdatum",
 			"afterDue": "{{date}} ligt na de vervaldatum"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

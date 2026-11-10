@@ -66,6 +66,7 @@ function RouteComponent() {
   const isLoading =
     isTaskLoading || isProjectLoading || isActivitiesLoading || !isShikiReady;
 
+  // A deleted task, or one the user returned and may no longer see.
   const handleDeleted = () => {
     navigate({
       to: "/dashboard/workspace/$workspaceId/project/$projectId/board",
@@ -98,6 +99,7 @@ function RouteComponent() {
             projectId={projectId}
             workspaceId={workspaceId}
             className="w-80 shrink-0"
+            onReturned={handleDeleted}
           />
         )
       }
@@ -166,6 +168,7 @@ function RouteComponent() {
               projectId={projectId}
               workspaceId={workspaceId}
               className="pb-5 lg:hidden"
+              onReturned={handleDeleted}
             />
           }
         />

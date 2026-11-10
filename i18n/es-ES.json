@@ -3385,6 +3385,11 @@
 			"startsOn": "Empieza: {{date}}",
 			"beforeStart": "{{date}} es anterior a la fecha de inicio",
 			"afterDue": "{{date}} es posterior a la fecha límite"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

@@ -3134,6 +3134,11 @@
 			"success": "Task deleted successfully",
 			"error": "Failed to delete task"
 		},
+		"return": {
+			"action": "Return to unit",
+			"success": "Task returned to the unit",
+			"error": "Failed to return the task"
+		},
 		"duplicate": {
 			"titleSuffix": "{{title}} (copy)",
 			"success": "Task duplicated successfully",

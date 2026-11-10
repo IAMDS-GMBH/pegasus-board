@@ -3328,6 +3328,11 @@
 			"startsOn": "Ξεκινά {{date}}",
 			"beforeStart": "Η {{date}} είναι πριν από την ημερομηνία έναρξης",
 			"afterDue": "Η {{date}} είναι μετά την προθεσμία"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

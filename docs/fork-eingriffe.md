@@ -27,6 +27,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-86 | Custom-Field-Typen `email` und `phone` (Mail und Anruf mit einem Tipp), Typwechsel Text ↔ E-Mail ↔ Telefon | API, Web, Mobile, CLI, MCP, i18n, Board-Skript | `tests/api-integration/custom-field-contact.test.ts`, `tests/api/custom-field/{email-value,phone-value,stored-value,plan-text-value-changes,resolve-field-update}.test.ts`, Web: `custom-field-{email,phone,href,row,chip}.test.ts(x)`, `card-field-{rows,list}.test.tsx`, `kanban-board/task-card.test.tsx`, `field-dialog/{field-form,custom-field-dialog}.test.ts(x)`, `custom-field-error-key.test.ts`, `lib/i18n/custom-field-translations.test.ts`, `scripts/board-setup/plan-fields.test.mjs` |
 | PEGA-141 | Sichtbereich nach Einheiten aus dem Hub (Tabellen `pegasus_*`, Push-API; Rollenschalter `hub_scoped` seit PEGA-142 entfallen); ein gemeinsames Sicht-Prädikat für „Sicht aus dem Hub“ und „Nur zugewiesene“, schließt die Lücken des PEGA-6-Reviews | Datenmodell, API, API-Scope, Benachrichtigungen, Web, i18n | `tests/api-integration/{task-view-hub-scope,notification-hub-scope,pegasus-visibility-api}.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, weiterhin `task-view-assigned-only.test.ts`, `workspace-role-assigned-only.test.ts`; Web `roles.test.tsx`, `packages/permissions/src/index.test.ts` |
 | PEGA-142 | Rechte je Nutzer aus dem Hub (`pegasus_user_scope.permissions`, `pegasus_workspace`): ab dem ersten Push gelten Sicht und Lead-Rechte des Hubs für jedes Mitglied; ersetzen auf Karten-Routen die Kaneo-Rolle; Capabilities fürs Web | Datenmodell, API, Web, i18n, Doku | `tests/api-integration/hub-permissions.test.ts`, `pegasus-visibility-api.test.ts`, `task-view-hub-scope.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, `packages/permissions/src/hub-permissions.test.ts`; Web `bulk-bar`, `filtered-drag`, `list-view`, `column-header`, `task-card-context-menu-content`, `task-status-popover`, `task-move-popover`, `task-labels-popover`, `task-activity`, `comment-card`, `export-tasks-row`, `project-progress`, `task-shortcuts`, `use-task-action-shortcuts`, `use-workspace-permission`, `roles` |
+| PEGA-143 | Bearbeiter: Karte „An Einheit zurückgeben“ (`PUT /task/return/{id}`, Recht `LEAD_RETURN_OR_REPORT`, Capability `returnTasks`); Mitgliedschaft aus dem Hub-Stand ohne Einladung | API, Auth-Hooks, Web, i18n, Doku | `tests/api-integration/{hub-return-task,hub-membership}.test.ts`, `hub-permissions.test.ts` (Capabilities), `packages/permissions/src/hub-permissions.test.ts`; Web `task-return-button.test.tsx` |
 
 ---
 
@@ -235,6 +236,27 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - Neue In-Handler-Prüfungen `hasWorkspacePermission(c, { task: [...] })` auf `hasLeadPermission` umstellen.
 - Neue Upstream-Capabilities für Karten-Aktionen in `capabilityHubPermission` eintragen.
 - Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0067).
+
+### PEGA-143 — Bearbeiter: zurückgeben und Mitgliedschaft aus dem Hub
+
+**Zweck:** Bearbeiter (Selbstständige ohne LDAP-Konto, Basisrolle PROCESSOR im Hub) bekommen einzelne Karten zugewiesen, sehen nur diese (Modus `assigned`) und geben sie an ihre Einheit zurück. Ihr Konto legt der Hub in Keycloak an; ins Board kommen sie ohne Einladung.
+
+**Regel:**
+- `PUT /task/return/{id}` (`returnTask`, ohne Body) entfernt die Zuweisung, nur durch den aktuellen Bearbeiter der Karte (sonst 403 `NOT_TASK_ASSIGNEE`). Hub-gesteuerte Mitglieder brauchen `LEAD_RETURN_OR_REPORT` (sonst 403 `MISSING_PERMISSION`), alle anderen `task:update`: Wer die Karte hält, gibt sie zurück, ohne jemand anderem etwas zuzuweisen, deshalb nicht `task:assign`. Unbekannte oder verdeckte Karte: 404.
+- Die Rückgabe ist eine gewöhnliche Entzuweisung mit dem Bearbeiter als Akteur (`updateTaskAssignee` mit `onlyIfAssignedTo`, Prüfung unter der Zeilensperre): Aktivität `unassigned`, Ereignis und Webhook `task.unassigned`, Live-Update. Der Hub liest eine Entzuweisung durch den Bearbeiter selbst als „zurückgegeben“.
+- Mitgliedschaft: Wer im Stand eines Workspaces steht (`pegasus_user_scope.email`) und ein Konto mit **bestätigter** E-Mail hat, wird Mitglied mit der lesenden Workspace-Rolle `pegasus` („Pegasus“, `HUB_MEMBER_ROLE` in `add-hub-members.ts`), ohne Einladung. Hat der Workspace die Rolle nicht, wird niemand aufgenommen (Warnung im Log), statt auf `member` auszuweichen, das Projekte und Labels anlegen darf. Abgleich in Kleinbuchstaben. Zeitpunkte: beim Push (`replace-user-scopes.ts`, in derselben Transaktion) und bei Anlage des Kontos bzw. jeder Anmeldung (Better-Auth `databaseHooks.user.create.after` und `session.create.after` in `auth.ts`). Bestehende Mitglieder und ihre Rolle bleiben unverändert; entfernt wird niemand (wer nicht im Stand steht, sieht und darf ohnehin nichts). Ein Mitglied, das ein Admin entfernt, aber der Hub weiter überträgt, ist nach dem nächsten Push wieder da.
+- Bestätigt sind Konten aus Keycloak: Der Provider `custom` (genericOAuth) übernimmt `email_verified` aus ID-Token bzw. Userinfo. Selbst registrierte Konten sind unbestätigt und bekommen keine Mitgliedschaft.
+
+**Dateien:**
+- API: `task/controllers/return-task.ts` (neu), `task/controllers/update-task-assignee.ts` (`onlyIfAssignedTo`), `task/index.ts` (Route); `pegasus-visibility/{add-hub-members,join-hub-workspaces}.ts` (neu), `pegasus-visibility/controllers/replace-user-scopes.ts` (Workspace-Sperre zuerst, dann `addHubMembers`), `pegasus-visibility/index.ts` (Beschreibung), `auth.ts` (zwei Hooks); `packages/permissions/src/{capabilities,hub-permissions}.ts` (`returnTasks` → `LEAD_RETURN_OR_REPORT`); `apps/docs/openapi.json`
+- Web: `components/task/task-return-button.tsx` (neu), `fetchers/task/return-task.ts` (neu), `hooks/mutations/task/use-return-task.ts` (neu), `hooks/use-workspace-permission.ts` (`canReturnTasks`), `task/properties/{properties-rail,property-chips}.tsx` (`onReturned`), `task/task-details-sheet.tsx` (schließt), `routes/.../task/$taskId_.tsx` (zurück zum Board)
+- i18n `tasks.return.{action,success,error}` (en-US, de-DE „An Einheit zurückgeben“; übrige Locales englisch), `i18n/schema.json` von Hand
+
+**Beim Sync beachten:**
+- Pfad und Operation-ID `returnTask` sind Vertrag mit dem Hub.
+- Ändert Upstream `update-task-assignee.ts` oder `publishTaskMutation`, muss die Rückgabe weiter `task.unassigned` mit dem Bearbeiter als `userId` senden; `hub-return-task.test.ts` prüft das.
+- Ändert Upstream die `databaseHooks` in `auth.ts`, die beiden Aufrufe von `joinHubWorkspaces` erhalten; `hub-membership.test.ts` schlägt sonst fehl.
+- `workspace_member` hat keinen Unique-Index auf `(workspace_id, user_id)`; doppelte Mitgliedschaften verhindert die Workspace-Sperre (`admin/lock-workspace.ts`). Neue Upstream-Pfade, die Mitglieder anlegen, sollten sie ebenfalls nehmen.
 
 ---
 

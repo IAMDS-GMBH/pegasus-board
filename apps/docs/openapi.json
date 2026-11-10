@@ -4509,6 +4509,9 @@
           "viewReports": {
             "type": "boolean"
           },
+          "returnTasks": {
+            "type": "boolean"
+          },
           "createLabels": {
             "type": "boolean"
           },
@@ -4554,6 +4557,7 @@
           "labelTasks",
           "exportTasks",
           "viewReports",
+          "returnTasks",
           "createLabels",
           "updateLabels",
           "deleteLabels",
@@ -12532,6 +12536,71 @@
           },
           "404": {
             "description": "Task not found, or assignee is not a member of the workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiKeyRateLimited"
+          }
+        }
+      }
+    },
+    "/task/return/{id}": {
+      "put": {
+        "operationId": "returnTask",
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Return task to unit",
+        "description": "The task's assignee gives the task back: it becomes unassigned, recorded as an unassignment by the caller (activity, `task.unassigned` event and webhook). Only the current assignee may do this.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The unassigned task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No access to the project, the caller is not the task's assignee, or missing task:update permission or, for a member the Pegasus Hub governs, LEAD_RETURN_OR_REPORT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -24454,7 +24523,7 @@
           "Pegasus visibility"
         ],
         "summary": "Replace the visibility of all users",
-        "description": "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing.",
+        "description": "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing. Listed users whose account has a verified email and who are not yet members join the workspace with its read-only role `pegasus` (nobody joins while the workspace has no such role); members are never removed or changed here.",
         "parameters": [
           {
             "schema": {

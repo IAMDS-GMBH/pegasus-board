@@ -28,6 +28,8 @@ import {
 // user snapshot on, every member except owners, instance admins and the Hub's
 // system account is bound by it (`task-scope/`, `utils/require-hub-permission`),
 // and only those three may use these routes (`deny-hub-governed`).
+// A listed user with a verified email becomes a member without an invitation
+// (PEGA-143, `add-hub-members`).
 // These are the only routes that write the pegasus_* tables. Paths and
 // operation ids are the contract with the Hub: do not rename them.
 
@@ -44,7 +46,7 @@ const replaceUserScopesRoute = createRoute({
   tags: TAGS,
   summary: "Replace the visibility of all users",
   description:
-    "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing.",
+    "Replaces every user scope and right of the workspace with this snapshot in one transaction. The first snapshot hands the workspace to the Hub: from then on every member except owners, instance admins and the Hub's system account (`PEGASUS_HUB_USER_EMAIL`) sees and does only what the snapshot grants. A user who is not listed sees and does nothing. Listed users whose account has a verified email and who are not yet members join the workspace with its read-only role `pegasus` (nobody joins while the workspace has no such role); members are never removed or changed here.",
   middleware: [workspaceAccess.fromParam(), ...manageSettings] as const,
   request: {
     params: workspaceIdParam,

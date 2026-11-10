@@ -3271,6 +3271,11 @@
 			"startsOn": "Mulai {{date}}",
 			"beforeStart": "{{date}} sebelum tanggal mulai",
 			"afterDue": "{{date}} setelah tenggat"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

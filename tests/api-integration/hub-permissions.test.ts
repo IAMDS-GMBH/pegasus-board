@@ -667,6 +667,7 @@ describe("API integration: rights pushed by the Hub", () => {
         deleteTasks: true,
         exportTasks: false,
         viewReports: false,
+        returnTasks: false,
         // Board-own things stay with the Kaneo role.
         manageSettings: false,
       });
@@ -684,6 +685,7 @@ describe("API integration: rights pushed by the Hub", () => {
         deleteTasks: false,
         exportTasks: true,
         viewReports: true,
+        returnTasks: true,
       });
     });
   });

@@ -44,6 +44,7 @@ import {
 import db, { schema } from "./database";
 import { authDatabaseAdapter } from "./database/auth-adapter";
 import { publishEvent } from "./events";
+import { joinHubWorkspaces } from "./pegasus-visibility/join-hub-workspaces";
 import { applyInvitationProjectAccess } from "./project-access/apply-invitation-project-access";
 import { resolveInvitationProjectAccess } from "./project-access/resolve-invitation-project-access";
 import { clearMemberProjectAccess } from "./project-access/clear-member-project-access";
@@ -789,6 +790,23 @@ export const auth = betterAuth({
           }
 
           await promoteInitialAdministrator(user.id);
+          // Pegasus fork (PEGA-143): join every workspace whose Hub snapshot
+          // lists the account's verified email.
+          await joinHubWorkspaces(user.id).catch((error) => {
+            console.error("Joining Hub workspaces failed:", error);
+          });
+        },
+      },
+    },
+    session: {
+      create: {
+        // Pegasus fork (PEGA-143): also on every sign-in, for accounts that
+        // existed before the Hub listed them or were verified later. A
+        // failure must not block the sign-in.
+        after: async (session) => {
+          await joinHubWorkspaces(session.userId).catch((error) => {
+            console.error("Joining Hub workspaces failed:", error);
+          });
         },
       },
     },

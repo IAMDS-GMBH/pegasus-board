@@ -133,7 +133,8 @@ Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten li
   1. `PEGASUS_HUB_USER_ID` im Root-`.env` setzen (Helm: `kaneo.extraEnv`) und die API neu starten. Die ID liefert `SELECT id FROM "user" WHERE email = '<Login-E-Mail des Systemkontos>';`. Ohne die Variable ist das Systemkonto nach dem ersten Push selbst Hub-gesteuert und kann nicht erneut übertragen.
   2. Den Hub Karten-Einheiten und dann Nutzer mit Rechten übertragen lassen.
   3. Mitglieder auf die Rolle „Pegasus“ umstellen.
-- **Workspace und Mitglieder** legt ein Admin über die Oberfläche oder per Einladung an.
+- **Workspace und Mitglieder:** Den Workspace legt ein Admin über die Oberfläche an. Mitglieder braucht niemand einzuladen (PEGA-143): Wer im Stand des Hubs steht und sich mit bestätigter E-Mail anmeldet (Keycloak), wird beim nächsten Push bzw. bei der Anmeldung Mitglied mit der Rolle „Pegasus“ (gespeichert als `pegasus`). Die Rolle muss im Workspace angelegt sein (siehe oben); fehlt sie, nimmt das Board niemanden auf und schreibt eine Warnung ins Log, statt auf eine Rolle mit mehr Rechten auszuweichen. Bestehende Mitglieder und ihre Rolle ändert der Hub nicht. Einladungen bleiben für Konten ohne Eintrag im Stand.
+- **Bearbeiter (PEGA-143):** sieht nur Karten, die ihm zugewiesen sind (Modus `assigned`), und gibt sie mit „An Einheit zurückgeben“ an die Einheit zurück (Recht `LEAD_RETURN_OR_REPORT`). Zuweisen dürfen nur Mitglieder mit `LEAD_ASSIGN_PROCESSOR`.
 - **Webhooks zum Hub** gehören zur Einrichtung des Hubs.
 
 ## 6. Neuen Key Account anbinden

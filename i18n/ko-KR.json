@@ -3271,6 +3271,11 @@
 			"startsOn": "시작: {{date}}",
 			"beforeStart": "{{date}}은(는) 시작일 이전입니다",
 			"afterDue": "{{date}}은(는) 마감일 이후입니다"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

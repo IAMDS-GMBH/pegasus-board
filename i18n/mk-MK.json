@@ -3328,6 +3328,11 @@
 			"startsOn": "Почнува: {{date}}",
 			"beforeStart": "{{date}} е пред датумот на почеток",
 			"afterDue": "{{date}} е по рокот"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {

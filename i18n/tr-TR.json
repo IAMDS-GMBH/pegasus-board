@@ -3328,6 +3328,11 @@
 			"startsOn": "Başlangıç: {{date}}",
 			"beforeStart": "{{date}} başlangıç tarihinden önce",
 			"afterDue": "{{date}} bitiş tarihinden sonra"
+		},
+		"return": {
+			"action": "Return to unit",
+			"error": "Failed to return the task",
+			"success": "Task returned to the unit"
 		}
 	},
 	"invitations": {
