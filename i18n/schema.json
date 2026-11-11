@@ -12911,6 +12911,22 @@
 					},
 					"required": ["title", "description", "action", "success", "error"]
 				},
+				"return": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"action": {
+							"type": "string"
+						},
+						"success": {
+							"type": "string"
+						},
+						"error": {
+							"type": "string"
+						}
+					},
+					"required": ["action", "success", "error"]
+				},
 				"duplicate": {
 					"type": "object",
 					"additionalProperties": false,
@@ -13531,6 +13547,7 @@
 				"calendar",
 				"gantt",
 				"delete",
+				"return",
 				"duplicate",
 				"archive",
 				"listView",

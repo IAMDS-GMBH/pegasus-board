@@ -126,6 +126,7 @@ export default function TaskDetailsSheet({
                     projectId={projectId}
                     workspaceId={workspaceId}
                     className="pb-5 lg:hidden"
+                    onReturned={onClose}
                   />
                 }
               />
@@ -135,6 +136,7 @@ export default function TaskDetailsSheet({
               projectId={projectId}
               workspaceId={workspaceId}
               className="hidden w-73 shrink-0 overflow-y-auto border-border border-l lg:flex"
+              onReturned={onClose}
             />
           </div>
         )}

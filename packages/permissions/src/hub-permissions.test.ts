@@ -15,6 +15,7 @@ describe("capabilityHubPermission", () => {
       deleteTasks: "LEAD_DELETE",
       exportTasks: "LEAD_EXPORT",
       viewReports: "REPORTING_VIEW",
+      returnTasks: "LEAD_RETURN_OR_REPORT",
     });
   });
 

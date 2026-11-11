@@ -66,6 +66,8 @@ export function useWorkspacePermission() {
       canLabelTasks: () => can.labelTasks,
       canExportTasks: () => can.exportTasks,
       canViewReports: () => can.viewReports,
+      // PEGA-143: the right to give back one's own card.
+      canReturnTasks: () => can.returnTasks,
       canCreateLabels: () => can.createLabels,
       canUpdateLabels: () => can.updateLabels,
       canDeleteLabels: () => can.deleteLabels,

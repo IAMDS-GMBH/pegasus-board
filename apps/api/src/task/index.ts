@@ -49,6 +49,7 @@ import getTasks from "./controllers/get-tasks";
 import importTasks from "./controllers/import-tasks";
 import moveTask from "./controllers/move-task";
 import reorderTasks from "./controllers/reorder-tasks";
+import returnTask from "./controllers/return-task";
 import {
   stageTaskAssetUpload,
   finalizeStagedTaskAsset,
@@ -612,6 +613,33 @@ const updateTaskAssigneeRoute = createRoute({
   },
 });
 
+// Pegasus fork (PEGA-143): a Bearbeiter (assigned-only) gives a card back.
+// For a member the Hub governs, LEAD_RETURN_OR_REPORT replaces the Kaneo
+// check. Anyone else needs only task:update, the right to edit the task they
+// hold, not task:assign: giving back one's own card assigns nobody else.
+const returnTaskRoute = createRoute({
+  method: "put",
+  operationId: "returnTask",
+  path: "/return/{id}",
+  tags: ["Tasks"],
+  summary: "Return task to unit",
+  description:
+    "The task's assignee gives the task back: it becomes unassigned, recorded as an unassignment by the caller (activity, `task.unassigned` event and webhook). Only the current assignee may do this.",
+  middleware: [
+    workspaceAccess.fromTask(),
+    requireLeadPermission({ task: ["update"] }, "LEAD_RETURN_OR_REPORT"),
+    requireEntitlement,
+  ] as const,
+  request: { params: taskParam },
+  responses: {
+    200: jsonResponse("The unassigned task", taskSchema),
+    403: errorResponse(
+      "No access to the project, the caller is not the task's assignee, or missing task:update permission or, for a member the Pegasus Hub governs, LEAD_RETURN_OR_REPORT",
+    ),
+    404: errorResponse("Task not found"),
+  },
+});
+
 const updateTaskDueDateRoute = createRoute({
   method: "put",
   operationId: "updateTaskDueDate",
@@ -1088,6 +1116,12 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
     const currentUserId = c.get("userId");
 
     const task = await updateTaskAssignee({ id, userId, currentUserId });
+
+    return c.json(task, 200);
+  })
+  .openapi(returnTaskRoute, async (c) => {
+    const { id } = c.req.valid("param");
+    const task = await returnTask(id, c.get("userId"));
 
     return c.json(task, 200);
   })

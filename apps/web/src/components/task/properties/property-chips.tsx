@@ -14,6 +14,7 @@ import TaskLabelsPopover from "../task-labels-popover";
 import TaskMovePopover from "../task-move-popover";
 import TaskPriorityPopover from "../task-priority-popover";
 import TaskStartDatePopover from "../task-start-date-popover";
+import { TaskReturnButton } from "../task-return-button";
 import TaskStatusPopover from "../task-status-popover";
 import { AssigneeAvatar } from "./assignee-avatar";
 import { dueDateTextClass } from "./due-date-text-class";
@@ -25,6 +26,8 @@ type PropertyChipsProps = {
   projectId: string;
   workspaceId: string;
   className?: string;
+  // PEGA-143: closes the view once the user has returned the task.
+  onReturned?: () => void;
 };
 
 const chip = cn(
@@ -39,6 +42,7 @@ export function PropertyChips({
   projectId,
   workspaceId,
   className,
+  onReturned,
 }: PropertyChipsProps) {
   const { t } = useTranslation();
   const { task, project, labels, status, assignee, dueStatus, canMoveTask } =
@@ -157,6 +161,7 @@ export function PropertyChips({
           projectId={projectId}
           className="h-8"
         />
+        <TaskReturnButton task={task} onReturned={onReturned} />
       </div>
     </div>
   );

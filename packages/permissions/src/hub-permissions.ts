@@ -4,8 +4,8 @@ import type { WorkspaceCapability } from "./capabilities.js";
 // pushes with the visibility (`PUT /pegasus-visibility/workspace/{id}/users`).
 // Keys are the Hub's, unchanged. The board stores unknown keys too; these are
 // the ones it knows. Only some guard a board action today; the others
-// (archive, reassign, return, BSI handover, mails, admin) wait for their
-// process stories.
+// (archive, reassign, BSI handover, mails, admin) wait for their process
+// stories.
 export const HUB_PERMISSIONS = [
   "LEAD_READ",
   "LEAD_EDIT",
@@ -41,4 +41,5 @@ export const capabilityHubPermission = {
   deleteTasks: "LEAD_DELETE",
   exportTasks: "LEAD_EXPORT",
   viewReports: "REPORTING_VIEW",
+  returnTasks: "LEAD_RETURN_OR_REPORT",
 } as const satisfies Partial<Record<WorkspaceCapability, HubPermission>>;

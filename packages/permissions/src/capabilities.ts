@@ -18,6 +18,10 @@ export const workspaceCapabilities = {
   labelTasks: { label: ["update"] },
   exportTasks: { task: ["read"] },
   viewReports: { project: ["read"] },
+  // Pegasus fork (PEGA-143): giving back one's own card. The route also
+  // requires the caller to be the assignee; the capability only says whether
+  // the right is there.
+  returnTasks: { task: ["update"] },
   createLabels: { label: ["create"] },
   updateLabels: { label: ["update"] },
   deleteLabels: { label: ["delete"] },

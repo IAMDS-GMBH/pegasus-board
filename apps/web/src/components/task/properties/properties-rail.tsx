@@ -13,6 +13,7 @@ import TaskLabelsPopover from "../task-labels-popover";
 import TaskMovePopover from "../task-move-popover";
 import TaskPriorityPopover from "../task-priority-popover";
 import TaskStartDatePopover from "../task-start-date-popover";
+import { TaskReturnButton } from "../task-return-button";
 import TaskStatusPopover from "../task-status-popover";
 import { AssigneeAvatar } from "./assignee-avatar";
 import { dueDateTextClass } from "./due-date-text-class";
@@ -26,6 +27,8 @@ type PropertiesRailProps = {
   projectId: string;
   workspaceId: string;
   className?: string;
+  // PEGA-143: closes the view once the user has returned the task.
+  onReturned?: () => void;
 };
 
 export function PropertiesRail({
@@ -33,6 +36,7 @@ export function PropertiesRail({
   projectId,
   workspaceId,
   className,
+  onReturned,
 }: PropertiesRailProps) {
   const { t } = useTranslation();
   const { task, project, labels, status, assignee, dueStatus, canMoveTask } =
@@ -99,6 +103,11 @@ export function PropertiesRail({
             </PropertyValue>
           </TaskAssigneePopover>
         </PropertyRow>
+        <TaskReturnButton
+          task={task}
+          onReturned={onReturned}
+          className="mb-1 ml-21"
+        />
 
         <PropertyRow label={t("tasks:properties.labels")} align="start">
           <TaskLabelsPopover task={task} workspaceId={workspaceId}>
