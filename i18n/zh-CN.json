@@ -2342,7 +2342,8 @@
 		},
 		"shared": {
 			"autosave": "更改会自动保存"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

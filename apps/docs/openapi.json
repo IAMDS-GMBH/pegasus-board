@@ -608,6 +608,13 @@
           },
           "billingEnabled": {
             "type": "boolean"
+          },
+          "notificationSettingsUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Where users manage their notification settings when an external service (the Pegasus Hub) owns them. Null means the board's own settings page is not offered."
           }
         },
         "required": [
@@ -628,7 +635,8 @@
           "customOAuthName",
           "customOAuthAutoLogin",
           "customOAuthLogoutUrl",
-          "billingEnabled"
+          "billingEnabled",
+          "notificationSettingsUrl"
         ]
       },
       "McpClientRegistration": {
@@ -4527,6 +4535,9 @@
           "manageSettings": {
             "type": "boolean"
           },
+          "manageIntegrations": {
+            "type": "boolean"
+          },
           "deleteWorkspace": {
             "type": "boolean"
           },
@@ -4563,6 +4574,7 @@
           "deleteLabels",
           "manageWorkspace",
           "manageSettings",
+          "manageIntegrations",
           "deleteWorkspace",
           "inviteUsers",
           "manageTeam",
@@ -16415,7 +16427,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing permission, or role limited to assigned tasks",
+            "description": "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -16646,7 +16658,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing permission, or role limited to assigned tasks",
+            "description": "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -16873,7 +16885,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing permission, or role limited to assigned tasks",
+            "description": "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -16980,7 +16992,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing permission, or role limited to assigned tasks",
+            "description": "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17134,7 +17146,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing permission, or role limited to assigned tasks",
+            "description": "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17285,7 +17297,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17381,7 +17393,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17545,7 +17557,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17646,7 +17658,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17719,7 +17731,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -17940,7 +17952,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18044,7 +18056,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18086,7 +18098,7 @@
           "Gitea"
         ],
         "summary": "Get Gitea integration",
-        "description": "Get the Gitea integration for a project, or null when none is configured. The webhook secret is included only for callers with workspace:manage_settings.",
+        "description": "Get the Gitea integration for a project, or null when none is configured. The webhook secret is included only for callers with workspace:manage_settings whom the Pegasus Hub does not govern.",
         "parameters": [
           {
             "schema": {
@@ -18225,7 +18237,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18316,7 +18328,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18389,7 +18401,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18574,7 +18586,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18682,7 +18694,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18714,7 +18726,7 @@
           "GitLab"
         ],
         "summary": "Get GitLab integration",
-        "description": "Get the GitLab integration for a project, or null when none is configured. The masked access token and the webhook secret are included only for callers with workspace:manage_settings.",
+        "description": "Get the GitLab integration for a project, or null when none is configured. The masked access token and the webhook secret are included only for callers with workspace:manage_settings whom the Pegasus Hub does not govern.",
         "parameters": [
           {
             "schema": {
@@ -18856,7 +18868,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -18957,7 +18969,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19030,7 +19042,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19178,7 +19190,7 @@
             }
           },
           "403": {
-            "description": "No access to the project",
+            "description": "No access to the project, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19321,7 +19333,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19466,7 +19478,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19537,7 +19549,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19602,7 +19614,7 @@
             }
           },
           "403": {
-            "description": "No access to the project",
+            "description": "No access to the project, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19720,7 +19732,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19840,7 +19852,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19911,7 +19923,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -19976,7 +19988,7 @@
             }
           },
           "403": {
-            "description": "No access to the project",
+            "description": "No access to the project, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20094,7 +20106,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20214,7 +20226,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20285,7 +20297,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20350,7 +20362,7 @@
             }
           },
           "403": {
-            "description": "No access to the project",
+            "description": "No access to the project, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20468,7 +20480,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20588,7 +20600,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20659,7 +20671,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20724,7 +20736,7 @@
             }
           },
           "403": {
-            "description": "No access to the project",
+            "description": "No access to the project, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20851,7 +20863,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -20980,7 +20992,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {
@@ -21051,7 +21063,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing workspace:manage_settings",
+            "description": "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
             "content": {
               "application/json": {
                 "schema": {

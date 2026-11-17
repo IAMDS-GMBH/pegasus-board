@@ -103,4 +103,5 @@ export {
   capabilityHubPermission,
   HUB_PERMISSIONS,
   type HubPermission,
+  hubUngovernedCapabilities,
 } from "./hub-permissions.js";

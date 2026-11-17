@@ -1,3 +1,4 @@
+import { Bell } from "lucide-react";
 import { describe, expect, it } from "vite-plus/test";
 import { buildSettingsNav } from "@/components/settings/nav/build-settings-nav";
 
@@ -12,6 +13,8 @@ function build(
     billingEnabled: false,
     canImport: false,
     hasAdminAccess: false,
+    notificationSettingsUrl: null,
+    canManageIntegrations: false,
     projects: [],
     ...overrides,
   });
@@ -63,6 +66,7 @@ describe("buildSettingsNav", () => {
 
   it("gives every project its own settings pages", () => {
     const nav = build({
+      canManageIntegrations: true,
       projects: [{ id: "p1", name: "Kaneo Web", icon: "Unknown" }],
     });
 
@@ -79,5 +83,55 @@ describe("buildSettingsNav", () => {
       "settings:projectCustomFields.title",
     );
     expect(nav.projects[0]?.icon).toBeDefined();
+  });
+
+  // Pegasus fork (PEGA-80): the Pegasus Hub owns notification settings and
+  // only members it does not govern may manage integrations.
+  describe("Pegasus Hub", () => {
+    const accountLink = (nav: ReturnType<typeof build>, id: string) =>
+      nav.account.links.find((link) => link.id === id);
+
+    it("links notifications to the Hub's settings in a new tab", () => {
+      const link = accountLink(
+        build({
+          notificationSettingsUrl: "https://admin.example.com/notifications",
+        }),
+        "notifications",
+      );
+
+      expect(link).toMatchObject({
+        to: "https://admin.example.com/notifications",
+        external: true,
+        label: "settings:notifications",
+        icon: Bell,
+      });
+    });
+
+    it("offers no notification settings without the Hub's URL", () => {
+      expect(accountLink(build(), "notifications")).toBeUndefined();
+      expect(build().account.links.map((link) => link.id)).toEqual([
+        "information",
+        "preferences",
+        "security",
+        "developer",
+      ]);
+    });
+
+    it("only offers project integrations to people who can manage them", () => {
+      const sections = (canManageIntegrations: boolean) =>
+        build({
+          canManageIntegrations,
+          projects: [{ id: "p1", name: "Pool" }],
+        }).projects[0]?.links.map((link) => link.id);
+
+      expect(sections(true)).toContain("project-p1-integrations");
+      expect(sections(false)).toEqual([
+        "project-p1-general",
+        "project-p1-workflow",
+        "project-p1-custom-fields",
+        "project-p1-visibility",
+        "project-p1-calendar",
+      ]);
+    });
   });
 });

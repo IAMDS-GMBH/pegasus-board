@@ -106,6 +106,31 @@ describe("useWorkspacePermission", () => {
     expect(result.current.canLabelTasks()).toBe(false);
   });
 
+  // Pegasus fork (PEGA-80): the server withholds integrations from members
+  // the Hub governs, even with manage_settings.
+  it.each([true, false])(
+    "reports canManageIntegrations as the server's manageIntegrations (%s)",
+    async (manageIntegrations) => {
+      getMyCapabilities.mockResolvedValue({
+        ...Object.fromEntries(
+          Object.keys(workspaceCapabilities).map((name) => [name, false]),
+        ),
+        manageSettings: true,
+        manageIntegrations,
+      });
+
+      const { result } = renderHook(() => useWorkspacePermission(), {
+        wrapper: createWrapper(),
+      });
+      await waitFor(() => {
+        expect(result.current.isCheckingPermissions).toBe(false);
+      });
+
+      expect(result.current.canManageSettings()).toBe(true);
+      expect(result.current.canManageIntegrations()).toBe(manageIntegrations);
+    },
+  );
+
   it("loads every capability in a single request", async () => {
     getMyCapabilities.mockResolvedValue({});
 

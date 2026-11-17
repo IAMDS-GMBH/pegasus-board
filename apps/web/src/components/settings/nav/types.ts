@@ -8,6 +8,8 @@ export type SettingsNavSubLink = {
 
 export type SettingsNavLink = SettingsNavSubLink & {
   icon: LucideIcon;
+  // Pegasus fork (PEGA-80): `to` is an absolute URL opened in a new tab.
+  external?: boolean;
 };
 
 export type SettingsNavGroup = {

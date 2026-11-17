@@ -1,5 +1,6 @@
 import {
   capabilityHubPermission,
+  hubUngovernedCapabilities,
   WORKSPACE_CAPABILITY_NAMES,
   type WorkspaceCapability,
   workspaceCapabilities,
@@ -12,6 +13,10 @@ type HubRights = {
   permissions: ReadonlySet<string>;
   keyAllows: (permissions: PermissionMap) => boolean;
 };
+
+const ungovernedOnly: ReadonlySet<WorkspaceCapability> = new Set(
+  hubUngovernedCapabilities,
+);
 
 function getMyCapabilities(
   allows: (permissions: PermissionMap) => boolean,
@@ -27,6 +32,11 @@ function getMyCapabilities(
     }
     const hubRight =
       capabilityHubPermission[name as keyof typeof capabilityHubPermission];
+    if (hub && ungovernedOnly.has(name)) {
+      // PEGA-80: no governed member has these, whatever their role.
+      result[name] = false;
+      continue;
+    }
     result[name] =
       hub && hubRight
         ? hub.keyAllows(permissions) && hub.permissions.has(hubRight)

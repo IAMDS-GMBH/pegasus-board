@@ -26,6 +26,10 @@ type BuildSettingsNavInput = {
   billingEnabled: boolean;
   canImport: boolean;
   hasAdminAccess: boolean;
+  // Pegasus fork (PEGA-80): the Pegasus Hub owns notification settings, and
+  // only members it does not govern may manage integrations.
+  notificationSettingsUrl: string | null;
+  canManageIntegrations: boolean;
   projects: { id: string; name: string; icon?: string | null }[];
 };
 
@@ -41,6 +45,7 @@ const PROJECT_SECTIONS = [
 function buildProject(
   t: Translate,
   project: BuildSettingsNavInput["projects"][number],
+  canManageIntegrations: boolean,
 ): SettingsNavProject {
   const icon =
     projectIcons[project.icon as keyof typeof projectIcons] ??
@@ -50,7 +55,9 @@ function buildProject(
     id: project.id,
     name: project.name,
     icon,
-    links: PROJECT_SECTIONS.map((section) => ({
+    links: PROJECT_SECTIONS.filter(
+      (section) => section.id !== "integrations" || canManageIntegrations,
+    ).map((section) => ({
       id: `project-${project.id}-${section.id}`,
       label: t(section.labelKey),
       to: `/dashboard/settings/projects/${project.id}/${section.id}`,
@@ -64,6 +71,8 @@ export function buildSettingsNav({
   billingEnabled,
   canImport,
   hasAdminAccess,
+  notificationSettingsUrl,
+  canManageIntegrations,
   projects,
 }: BuildSettingsNavInput): SettingsNav {
   return {
@@ -83,12 +92,17 @@ export function buildSettingsNav({
           to: "/dashboard/settings/account/preferences",
           icon: SlidersHorizontal,
         },
-        {
-          id: "notifications",
-          label: t("settings:notifications"),
-          to: "/dashboard/settings/account/notifications",
-          icon: Bell,
-        },
+        ...(notificationSettingsUrl
+          ? [
+              {
+                id: "notifications",
+                label: t("settings:notifications"),
+                to: notificationSettingsUrl,
+                icon: Bell,
+                external: true,
+              },
+            ]
+          : []),
         {
           id: "security",
           label: t("settings:security"),
@@ -147,7 +161,9 @@ export function buildSettingsNav({
           : []),
       ],
     },
-    projects: projects.map((project) => buildProject(t, project)),
+    projects: projects.map((project) =>
+      buildProject(t, project, canManageIntegrations),
+    ),
     admin: hasAdminAccess
       ? {
           id: "admin",

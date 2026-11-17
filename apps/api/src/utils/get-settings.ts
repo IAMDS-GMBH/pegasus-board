@@ -5,6 +5,7 @@ import { isStorageConfigured } from "../storage/s3";
 import { resolveFileSecret } from "./file-secret";
 import { isGithubSsoConfigured } from "./github-sso-env";
 import { isCloud } from "./is-cloud";
+import { getNotificationSettingsUrl } from "./notification-settings-url";
 
 config();
 
@@ -40,6 +41,7 @@ function getSettings() {
     customOAuthAutoLogin: process.env.CUSTOM_OAUTH_AUTO_LOGIN === "true",
     customOAuthLogoutUrl: process.env.CUSTOM_OAUTH_LOGOUT_URL || null,
     billingEnabled: isBillingEnabled(),
+    notificationSettingsUrl: getNotificationSettingsUrl(), // Fork (PEGA-80)
   };
 }
 

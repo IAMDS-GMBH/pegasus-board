@@ -43,3 +43,9 @@ export const capabilityHubPermission = {
   viewReports: "REPORTING_VIEW",
   returnTasks: "LEAD_RETURN_OR_REPORT",
 } as const satisfies Partial<Record<WorkspaceCapability, HubPermission>>;
+
+// Pegasus fork (PEGA-80): capabilities no member the Hub governs has, whatever
+// their Kaneo role. The API refuses the matching routes with `HUB_GOVERNED`.
+export const hubUngovernedCapabilities = [
+  "manageIntegrations",
+] as const satisfies readonly WorkspaceCapability[];

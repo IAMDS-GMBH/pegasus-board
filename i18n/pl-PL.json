@@ -3154,7 +3154,8 @@
 		},
 		"shared": {
 			"autosave": "Zmiany zapisują się automatycznie"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"tasks": {
 		"title": "Zadania",

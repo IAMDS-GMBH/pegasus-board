@@ -2342,7 +2342,8 @@
 		},
 		"shared": {
 			"autosave": "Thay đổi được lưu tự động"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

@@ -2426,7 +2426,8 @@
 		},
 		"shared": {
 			"autosave": "Les modifications sont enregistrées automatiquement"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {
