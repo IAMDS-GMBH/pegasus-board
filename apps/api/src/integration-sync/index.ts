@@ -10,6 +10,7 @@ import { readSyncRules } from "../plugins/sync/rules";
 import db from "../database";
 import { denyTaskScoped } from "../task-scope/deny-task-scoped";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
+import { denyHubGoverned } from "../utils/deny-hub-governed";
 import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { getSyncIntegration } from "./controllers/get-integration";
@@ -38,10 +39,13 @@ const manage = [
   ...access,
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
 ];
+// Pegasus fork (PEGA-80): changing rules is integration management; reviewing
+// and resuming a paused card stay card actions.
+const manageRules = [...manage, denyHubGoverned];
 const errors = {
   400: errorResponse("Invalid rule or workspace label"),
   403: errorResponse(
-    "No access to the project, missing permission, or role limited to assigned tasks",
+    "No access to the project, missing permission, role limited to assigned tasks, or (rule changes) a member the Pegasus Hub governs",
   ),
   404: errorResponse("Project, integration, or linked task not found"),
   409: errorResponse(
@@ -80,7 +84,7 @@ const previewRoute = createRoute({
   summary: "Preview a sync rule change",
   description:
     "Returns matching tasks, new exports, paused links and a token bound to the current integration and impact. Outgoing labels are workspace label IDs; incoming labels are exact repository label names.",
-  middleware: manage,
+  middleware: manageRules,
   request: { params: syncParams, body: body(rulesBody) },
   responses: {
     200: jsonResponse("Proposed rule impact", syncPreviewSchema),
@@ -95,7 +99,7 @@ const saveRoute = createRoute({
   summary: "Apply a previewed sync rule",
   description:
     "Save shared integration rules only if the preview is still current. Excluded links are paused, never deleted. Newly matching unlinked tasks are exported through the integration event path. Paused links require explicit review to resume.",
-  middleware: manage,
+  middleware: manageRules,
   request: { params: syncParams, body: body(saveRulesBody) },
   responses: {
     200: jsonResponse("Saved rules and current scope", syncPreviewSchema),

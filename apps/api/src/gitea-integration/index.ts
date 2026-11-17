@@ -15,6 +15,7 @@ import {
 } from "../openapi";
 import { type GiteaConfig, validateGiteaConfig } from "../plugins/gitea/config";
 import { handleGiteaWebhookRequest } from "../plugins/gitea/webhook-handler";
+import { denyHubGoverned, isHubGoverned } from "../utils/deny-hub-governed";
 import {
   hasWorkspacePermission,
   requireWorkspacePermission,
@@ -42,9 +43,12 @@ import {
   verifyGiteaBody,
 } from "./schema";
 
+// Pegasus fork (PEGA-80): in a workspace the Hub manages, only members it
+// does not govern may change integrations.
 const manageAccess = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
 ];
 
 const listRepositoriesRoute = createRoute({
@@ -66,7 +70,7 @@ const listRepositoriesRoute = createRoute({
     200: jsonResponse("Accessible repositories", giteaRepositoryListSchema),
     400: errorResponse("Invalid body, or invalid Gitea credentials"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -93,7 +97,7 @@ const verifyRoute = createRoute({
     500: errorResponse("Gitea verification failed"),
     400: errorResponse("Invalid body, or invalid Gitea credentials"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -106,7 +110,7 @@ const getIntegrationRoute = createRoute({
   tags: ["Gitea"],
   summary: "Get Gitea integration",
   description:
-    "Get the Gitea integration for a project, or null when none is configured. The webhook secret is included only for callers with workspace:manage_settings.",
+    "Get the Gitea integration for a project, or null when none is configured. The webhook secret is included only for callers with workspace:manage_settings whom the Pegasus Hub does not govern.",
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
@@ -139,7 +143,7 @@ const createIntegrationRoute = createRoute({
     200: jsonResponse("The stored integration", giteaIntegrationSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -165,7 +169,7 @@ const updateIntegrationRoute = createRoute({
     200: jsonResponse("The updated integration", giteaIntegrationSchema),
     400: errorResponse("The resulting config failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or integration not found"),
     409: errorResponse("Integration changed; refresh before updating settings"),
@@ -184,7 +188,7 @@ const deleteIntegrationRoute = createRoute({
   responses: {
     200: jsonResponse("The integration was removed", giteaDeleteResultSchema),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or Gitea integration not found"),
   },
@@ -236,9 +240,12 @@ const giteaIntegration = apiRouter<BaseVariables & { workspaceId: string }>()
   })
   .openapi(getIntegrationRoute, async (c) => {
     const { projectId } = c.req.valid("param");
-    const includeWebhookSecret = await hasWorkspacePermission(c, {
-      workspace: ["manage_settings"],
-    });
+    // Fork (PEGA-80): board features read the link; its secrets only for
+    // members the Hub does not govern.
+    const includeWebhookSecret =
+      (await hasWorkspacePermission(c, {
+        workspace: ["manage_settings"],
+      })) && !(await isHubGoverned(c));
     const integration = await getGiteaIntegration(
       projectId,
       includeWebhookSecret,

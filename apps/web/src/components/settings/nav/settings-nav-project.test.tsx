@@ -20,6 +20,8 @@ const [project] = buildSettingsNav({
   billingEnabled: false,
   canImport: false,
   hasAdminAccess: false,
+  notificationSettingsUrl: null,
+  canManageIntegrations: true,
   projects: [{ id: "p1", name: "Kaneo Web" }],
 }).projects;
 

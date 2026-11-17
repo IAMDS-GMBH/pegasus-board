@@ -2342,7 +2342,8 @@
 		},
 		"shared": {
 			"autosave": "Perubahan disimpan otomatis"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

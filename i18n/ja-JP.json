@@ -2342,7 +2342,8 @@
 		},
 		"shared": {
 			"autosave": "変更は自動的に保存されます"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

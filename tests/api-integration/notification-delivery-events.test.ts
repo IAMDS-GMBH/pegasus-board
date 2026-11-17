@@ -178,3 +178,30 @@ describe("status, comment and mention delivery", () => {
     expect(sendOutboundRequest).not.toHaveBeenCalled();
   });
 });
+
+// Pegasus fork (PEGA-80): the Pegasus Hub owns notification settings, so mails
+// link there instead of the board's own page.
+describe("notification settings link", () => {
+  it("links the email to PEGASUS_NOTIFICATION_SETTINGS_URL when set", async () => {
+    vi.stubEnv(
+      "PEGASUS_NOTIFICATION_SETTINGS_URL",
+      "https://admin.example.com/notifications",
+    );
+    const { actor, task, send } = await fixture();
+
+    await updateTaskStatus({
+      id: task.id,
+      status: "in-progress",
+      currentUserId: actor.user.id,
+    });
+
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1));
+    expect(send.mock.calls[0][2]).toHaveProperty(
+      "settingsUrl",
+      "https://admin.example.com/notifications",
+    );
+    await vi.waitFor(() =>
+      expect(sendOutboundRequest).toHaveBeenCalledTimes(1),
+    );
+  });
+});

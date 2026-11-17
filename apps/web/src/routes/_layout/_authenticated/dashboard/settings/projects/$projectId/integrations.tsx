@@ -1,11 +1,6 @@
-import { useProjectWebSocket } from "@/hooks/use-project-websocket";
-import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import PageTitle from "@/components/page-title";
-import { INTEGRATIONS } from "@/components/project/integrations/integration-definitions";
-import { IntegrationsGroup } from "@/components/project/integrations/integrations-group";
-import { useIntegrationStatuses } from "@/components/project/integrations/use-integration-statuses";
-import { SettingsPage } from "@/components/settings/settings-page";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { ProjectIntegrationsPage } from "@/components/project/integrations/project-integrations-page";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 
 export const Route = createFileRoute(
   "/_layout/_authenticated/dashboard/settings/projects/$projectId/integrations",
@@ -13,38 +8,23 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
+// Pegasus fork (PEGA-80): in a workspace the Pegasus Hub manages, only owners,
+// instance admins and the Hub's system account manage integrations. The page
+// mounts only once that is known, so its requests never start for others.
 function RouteComponent() {
-  const { t } = useTranslation();
   const { projectId } = Route.useParams();
-  useProjectWebSocket(projectId);
-  const { statuses, retry } = useIntegrationStatuses(projectId);
+  const { workspace, member, isCheckingPermissions, canManageIntegrations } =
+    useWorkspacePermission();
 
-  return (
-    <>
-      <PageTitle title={t("settings:projectIntegrations.pageTitle")} />
-      <SettingsPage
-        title={t("settings:projectIntegrations.title")}
-        description={t("settings:projectIntegrations.subtitle")}
-      >
-        <IntegrationsGroup
-          title={t("settings:projectIntegrations.codeHostingTitle")}
-          integrations={INTEGRATIONS.filter(
-            (integration) => integration.category === "code",
-          )}
-          projectId={projectId}
-          statuses={statuses}
-          onRetry={retry}
-        />
-        <IntegrationsGroup
-          title={t("settings:projectIntegrations.chatTitle")}
-          integrations={INTEGRATIONS.filter(
-            (integration) => integration.category === "chat",
-          )}
-          projectId={projectId}
-          statuses={statuses}
-          onRetry={retry}
-        />
-      </SettingsPage>
-    </>
-  );
+  if (!workspace || !member || isCheckingPermissions) return null;
+  if (!canManageIntegrations()) {
+    return (
+      <Navigate
+        to="/dashboard/settings/projects/$projectId/general"
+        params={{ projectId }}
+        replace
+      />
+    );
+  }
+  return <ProjectIntegrationsPage projectId={projectId} />;
 }

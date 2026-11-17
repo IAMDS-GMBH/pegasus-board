@@ -6,7 +6,7 @@ import {
 } from "../openapi";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
-import { denyHubGoverned } from "./deny-hub-governed";
+import { denyHubGoverned } from "../utils/deny-hub-governed";
 import getUserScopes from "./controllers/get-user-scopes";
 import replaceUserScopes from "./controllers/replace-user-scopes";
 import setTaskUnit from "./controllers/set-task-unit";
@@ -27,7 +27,7 @@ import {
 // and the rights, and pushes what each user may see and do. From the first
 // user snapshot on, every member except owners, instance admins and the Hub's
 // system account is bound by it (`task-scope/`, `utils/require-hub-permission`),
-// and only those three may use these routes (`deny-hub-governed`).
+// and only those three may use these routes (`utils/deny-hub-governed`).
 // A listed user with a verified email becomes a member without an invitation
 // (PEGA-143, `add-hub-members`).
 // These are the only routes that write the pegasus_* tables. Paths and
