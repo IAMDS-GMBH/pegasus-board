@@ -2349,7 +2349,8 @@
 		},
 		"shared": {
 			"autosave": "變更會自動儲存"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

@@ -2505,6 +2505,9 @@
 				"notifications": {
 					"type": "string"
 				},
+				"opensInNewTab": {
+					"type": "string"
+				},
 				"preferences": {
 					"type": "string"
 				},
@@ -10145,6 +10148,7 @@
 				"developer",
 				"information",
 				"notifications",
+				"opensInNewTab",
 				"preferences",
 				"apiKeys",
 				"adminUsers",

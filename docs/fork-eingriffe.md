@@ -29,6 +29,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-142 | Rechte je Nutzer aus dem Hub (`pegasus_user_scope.permissions`, `pegasus_workspace`): ab dem ersten Push gelten Sicht und Lead-Rechte des Hubs für jedes Mitglied; ersetzen auf Karten-Routen die Kaneo-Rolle; Capabilities fürs Web | Datenmodell, API, Web, i18n, Doku | `tests/api-integration/hub-permissions.test.ts`, `pegasus-visibility-api.test.ts`, `task-view-hub-scope.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, `packages/permissions/src/hub-permissions.test.ts`; Web `bulk-bar`, `filtered-drag`, `list-view`, `column-header`, `task-card-context-menu-content`, `task-status-popover`, `task-move-popover`, `task-labels-popover`, `task-activity`, `comment-card`, `export-tasks-row`, `project-progress`, `task-shortcuts`, `use-task-action-shortcuts`, `use-workspace-permission`, `roles` |
 | PEGA-143 | Bearbeiter: Karte „An Einheit zurückgeben“ (`PUT /task/return/{id}`, Recht `LEAD_RETURN_OR_REPORT`, Capability `returnTasks`); Mitgliedschaft aus dem Hub-Stand ohne Einladung | API, Auth-Hooks, Web, i18n, Doku | `tests/api-integration/{hub-return-task,hub-membership}.test.ts`, `hub-permissions.test.ts` (Capabilities), `packages/permissions/src/hub-permissions.test.ts`; Web `task-return-button.test.tsx` |
 | PEGA-170 | Spalten nach Fachkonzept (14 Stufen in 4 Phasen); Spalte mit Phase und Sperre (`column.phase`, `column.is_locked`); Phasenüberschriften im Board; gesperrte Spalten (403 `COLUMN_LOCKED`) außer für Owner, Instanz-Admins und Systemkonto | Datenmodell, API, Web, i18n, Board-Skript, Doku | `tests/api-integration/{column-lock,column-phase-lock}.test.ts`, `scripts/board-setup/plan-columns.test.mjs`; Web `group-columns-by-phase`, `is-locked-move`, `filtered-drag`, `list-view`, `column-header`, `column-list`, `option-menu`, `status-menu-options`, `task-card-context-menu-content` |
+| PEGA-80 | Benachrichtigungseinstellungen im Hub (`PEGASUS_NOTIFICATION_SETTINGS_URL`, `notificationSettingsUrl` in `GET /config`, eigene Seite leitet weiter); Integrationen in Hub-Workspaces nur für Owner, Instanz-Admins und das Systemkonto (403 `HUB_GOVERNED`, Capability `manageIntegrations`) | API, Web, i18n, Doku | `tests/api-integration/{hub-integration-guard,config,notification-delivery-events}.test.ts`, `hub-permissions.test.ts` (Capabilities), `tests/api/utils/notification-settings-url.test.ts`, `packages/permissions/src/hub-permissions.test.ts`; Web `build-settings-nav`, `settings-nav-group`, `account/notifications`, `projects/$projectId/integrations`, `use-workspace-permission` |
 
 ---
 
@@ -209,7 +210,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
   - `packages/permissions/src/hub-permissions.ts` (`HUB_PERMISSIONS`, `capabilityHubPermission`), neue Capabilities `moveTasks`, `labelTasks`, `exportTasks`, `viewReports` in `capabilities.ts`
   - `apps/api/src/utils/require-hub-permission.ts` (`requireLeadPermission`, `requireHubPermission`, `requireHubPermissionWhen`, `hubAllows`, `hasLeadPermission`), `apps/api/src/utils/read-json-body.ts`
   - `apps/api/src/task-scope/is-hub-system-account.ts`
-  - `apps/api/src/pegasus-visibility/deny-hub-governed.ts`
+  - `apps/api/src/utils/deny-hub-governed.ts` (bis PEGA-80 unter `pegasus-visibility/`)
 - `task-scope/`:
   - `loadMemberAccess` (Sicht und Rechte), `resolveMemberAccess`
   - `TaskScope` mit UND-Semantik (`assignedOnly`, `unitIds | null`), `composeTaskScope` mit `managed`
@@ -292,6 +293,34 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - Mobile-App: kennt Phase und Sperre nicht; Verschieben aus gesperrten Spalten scheitert mit der Meldung der API.
 - Listenansicht: Zeilen in gesperrten Spalten bleiben greifbar, der Ablageversuch wird verworfen.
 
+### PEGA-80 — Benachrichtigungseinstellungen im Hub, Integrationen nur ohne Hub-Steuerung
+
+**Zweck:** Der Pegasus Hub verschickt die Karten-Benachrichtigungen (zugewiesen, erwähnt, fällig) per Mail und verwaltet die Einstellungen jedes Nutzers in seiner Admin-App (`<ADMIN_URL>/notifications`, Keycloak-SSO). Das Board hat kein SMTP; seine eigene Seite „Benachrichtigungen“ ist überflüssig. Außerdem trägt der Hub in jedes Projekt eines von ihm verwalteten Workspaces einen Generic Webhook ein, den kein gewöhnliches Mitglied ändern oder löschen darf.
+
+**Regel:**
+- `PEGASUS_NOTIFICATION_SETTINGS_URL` (optional, absolute http(s)-URL, sonst ignoriert) erscheint als `notificationSettingsUrl` in `GET /config` (öffentlich, `null` ohne Variable). Mit URL zeigt das Kontomenü „Benachrichtigungen“ als externen Link (neuer Tab, Glocke, Hinweis „wird in einem neuen Tab geöffnet“ für Screenreader); ohne URL fehlt der Eintrag. Die Route `/dashboard/settings/account/notifications` rendert nichts mehr: mit URL `window.location.replace(url)`, sonst Weiterleitung auf `/dashboard/settings/account/information`. Mails aus `notification-preferences/delivery.ts` verlinken die Hub-URL als `settingsUrl`, wenn sie gesetzt ist. Der Posteingang (Glocke, Inbox) bleibt unverändert.
+- In einem Workspace, den der Hub verwaltet (Zeile in `pegasus_workspace`), verlangen alle Verwaltungsrouten der Integrationen zusätzlich zu `workspace:manage_settings` ein Mitglied, das der Hub nicht steuert: Owner, Instanz-Admin oder `PEGASUS_HUB_USER_ID` (`resolveMemberAccess(c).permissions === null`). Sonst 403 `HUB_GOVERNED` (`utils/deny-hub-governed.ts`, gemeinsam mit der Push-API aus PEGA-142, Meldung jetzt allgemein).
+  - Betroffen: Anlegen, Ändern, Löschen, Repository-Listen und Prüfen aller acht Integrationen (Generic Webhook, Slack, Discord, Mattermost, Telegram, GitHub, Gitea, GitLab) sowie Vorschau und Speichern der Sync-Regeln (`integration-sync`).
+  - Lesen: `GET` des Generic Webhooks und der vier Chat-Integrationen ebenfalls gesperrt, denn nur die Integrationsseite liest sie. `GET` von GitHub/Gitea/GitLab bleibt offen, weil Kartenkopf (Kopieraktionen) und Automationen sie für alle Mitglieder brauchen; Webhook-Secret und Token liefern Gitea und GitLab aber nur noch an nicht gesteuerte Mitglieder mit `manage_settings`.
+  - Unverändert: Issue-Import, Prüfung und Fortsetzen pausierter Sync-Links (Karten-Aktionen, `requireLeadPermission`), `getGitHubAppInfo`.
+  - Workspaces ohne Hub-Push verhalten sich wie Kaneo.
+- Capability `manageIntegrations` (`workspace:manage_settings`), in `hubUngovernedCapabilities`: `GET /workspace/{id}/capabilities` liefert sie für jedes Hub-gesteuerte Mitglied als `false`. Das Web zeigt den Projektbereich „Integrationen“ nur mit `canManageIntegrations`; die Route leitet ohne sie auf „Allgemein“ des Projekts um und rendert nichts, solange Workspace, Mitglied oder Capabilities laden.
+- Vertrag mit dem Hub: Das Systemkonto legt den Webhook per `POST /generic-webhook-integration/project/{projectId}` an und ersetzt ihn mit demselben Aufruf (Upsert), liest ihn per `GET` und ändert ihn per `PATCH`. Pfade und Operation-IDs unverändert.
+
+**Dateien:**
+- API: `utils/deny-hub-governed.ts` (verschoben aus `pegasus-visibility/`, plus `isHubGoverned`), `utils/notification-settings-url.ts` (neu), `utils/get-settings.ts`, `config/response.ts`, `notification-preferences/delivery.ts` (eine Zeile), `{generic-webhook,slack,discord,mattermost,telegram,github,gitea,gitlab}-integration/index.ts` (`manageAccess`, Chat-/Webhook-`GET`, GitHub-`verifyRoute`, Gitea/GitLab-Secrets), `integration-sync/index.ts` (`manageRules`), `workspace/controllers/get-my-capabilities.ts`, `pegasus-visibility/index.ts` (Import); `apps/docs/openapi.json`; `.env.sample`
+- Paket: `packages/permissions/src/{capabilities,hub-permissions,index}.ts`
+- Web: `components/settings/nav/{types,build-settings-nav,use-settings-nav,settings-nav-group}.ts(x)`, `hooks/use-workspace-permission.ts` (`canManageIntegrations`), `routes/.../settings/account/notifications.tsx`, `routes/.../settings/projects/$projectId/integrations.tsx`, `components/project/integrations/project-integrations-page.tsx` (neu, bisheriger Seiteninhalt)
+- i18n `settings.opensInNewTab` (en-US, de-DE; übrige Locales englisch), `i18n/schema.json` von Hand
+- `components/settings/notifications/**` und die API `notification-preferences` bleiben unverändert, nur erreicht sie niemand mehr.
+
+**Beim Sync beachten:**
+- Neue Upstream-Routen, die Integrationen anlegen, ändern oder löschen, brauchen `denyHubGoverned` hinter `requireWorkspacePermission({ workspace: ["manage_settings"] })`; neue lesende Integrationsrouten brauchen eine Entscheidung (nur Integrationsseite → sperren; von Board-Funktionen genutzt → offen, ohne Secrets). `hub-integration-guard.test.ts` deckt Webhook, Slack, Gitea und Sync-Regeln ab.
+- `routes/.../settings/account/notifications.tsx` muss weiterleiten. Baut Upstream die Seite um, den Fork-Stand übernehmen; `notifications.test.tsx` schlägt sonst fehl.
+- `delivery.ts` behält den Vorrang von `getNotificationSettingsUrl()` für `settingsUrl` (`notification-delivery-events.test.ts`).
+- Neue Upstream-Abschnitte in `PROJECT_SECTIONS` oder Konto-Links prüfen; `build-settings-nav` nimmt `notificationSettingsUrl` und `canManageIntegrations` als Pflichtfelder.
+- Neue Upstream-Felder in `GET /config` brauchen das Fork-Feld weiter in `configSchema` und `get-settings.ts`.
+
 ---
 
 ## 3. Ablauf eines Upstream-Syncs
@@ -302,6 +331,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 4. `pnpm i18n:check` (Fork-Schlüssel in allen Locales), `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:integration`. Bleibt die lokale Testdatenbank auf einem alten Migrationsstand hängen (Fehler „relation … does not exist“), `kaneo_test` verwerfen; die Tests legen sie neu an.
 5. Neue Upstream-Lesepfade gegen `taskVisibleCondition` prüfen und Lücken in `task-view-hub-scope.test.ts` bzw. `task-view-assigned-only.test.ts` absichern.
 6. Neue Upstream-Schreibpfade auf Karten gegen `requireLeadPermission` prüfen und in `hub-permissions.test.ts` absichern (PEGA-142); setzen sie den Status, auch gegen die Spaltensperre (`require-column-unlocked.ts`, `column-lock.test.ts`, PEGA-170).
+   Neue Integrationsrouten gegen `denyHubGoverned` prüfen und in `hub-integration-guard.test.ts` absichern (PEGA-80).
 7. Merge-Commit „Merge upstream usekaneo/kaneo main (vX.Y.Z+N) into pegasus-board“ mit Konfliktbericht, Nacharbeit als eigener Commit; dieses Register aktualisieren.
 
 ---

@@ -19,6 +19,7 @@ import {
 } from "../plugins/gitlab/config";
 import { tokenTypeOf } from "../plugins/gitlab/utils/gitlab-api";
 import { handleGitlabWebhookRequest } from "../plugins/gitlab/webhook-handler";
+import { denyHubGoverned, isHubGoverned } from "../utils/deny-hub-governed";
 import {
   hasWorkspacePermission,
   requireWorkspacePermission,
@@ -45,9 +46,12 @@ import {
   verifyGitlabBody,
 } from "./schema";
 
+// Pegasus fork (PEGA-80): in a workspace the Hub manages, only members it
+// does not govern may change integrations.
 const manageAccess = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
 ];
 
 const listProjectsRoute = createRoute({
@@ -72,7 +76,7 @@ const listProjectsRoute = createRoute({
       "GitLab rejected the token, or the instance is unreachable",
     ),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -98,7 +102,7 @@ const verifyRoute = createRoute({
     400: errorResponse("Invalid body"),
     401: errorResponse("GitLab rejected the token"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -111,7 +115,7 @@ const getIntegrationRoute = createRoute({
   tags: ["GitLab"],
   summary: "Get GitLab integration",
   description:
-    "Get the GitLab integration for a project, or null when none is configured. The masked access token and the webhook secret are included only for callers with workspace:manage_settings.",
+    "Get the GitLab integration for a project, or null when none is configured. The masked access token and the webhook secret are included only for callers with workspace:manage_settings whom the Pegasus Hub does not govern.",
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
@@ -144,7 +148,7 @@ const createIntegrationRoute = createRoute({
     200: jsonResponse("The stored integration", gitlabIntegrationSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     409: errorResponse(
       "That GitLab project is already linked to another Kaneo project",
@@ -173,7 +177,7 @@ const updateIntegrationRoute = createRoute({
     200: jsonResponse("The updated integration", gitlabIntegrationSchema),
     400: errorResponse("The resulting config failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or integration not found"),
     409: errorResponse("Integration changed; refresh before updating settings"),
@@ -192,7 +196,7 @@ const deleteIntegrationRoute = createRoute({
   responses: {
     200: jsonResponse("The integration was removed", gitlabDeleteResultSchema),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or GitLab integration not found"),
   },
@@ -250,9 +254,12 @@ const gitlabIntegration = apiRouter<BaseVariables & { workspaceId: string }>()
   })
   .openapi(getIntegrationRoute, async (c) => {
     const { projectId } = c.req.valid("param");
-    const includeSecrets = await hasWorkspacePermission(c, {
-      workspace: ["manage_settings"],
-    });
+    // Fork (PEGA-80): board features read the link; its secrets only for
+    // members the Hub does not govern.
+    const includeSecrets =
+      (await hasWorkspacePermission(c, {
+        workspace: ["manage_settings"],
+      })) && !(await isHubGoverned(c));
     const integration = await getGitlabIntegration(projectId, includeSecrets);
     if (!integration) {
       return c.json(null, 200);

@@ -2391,7 +2391,8 @@
 		},
 		"shared": {
 			"autosave": "Οι αλλαγές αποθηκεύονται αυτόματα"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

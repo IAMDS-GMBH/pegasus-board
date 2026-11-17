@@ -16,6 +16,7 @@ import {
   normalizeTelegramConfig,
   validateTelegramConfig,
 } from "../plugins/telegram/config";
+import { denyHubGoverned } from "../utils/deny-hub-governed";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import {
@@ -45,9 +46,12 @@ function safePublishIntegrationEvent(
   });
 }
 
+// Pegasus fork (PEGA-80): in a workspace the Hub manages, only members it
+// does not govern may change integrations.
 const manageAccess = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
 ];
 
 const getTelegramIntegrationRoute = createRoute({
@@ -58,14 +62,20 @@ const getTelegramIntegrationRoute = createRoute({
   summary: "Get Telegram integration",
   description:
     "Get the Telegram integration for a project, or null when none is configured.",
-  middleware: [workspaceAccess.fromProject("projectId")] as const,
+  // Fork (PEGA-80): only the integrations page reads this.
+  middleware: [
+    workspaceAccess.fromProject("projectId"),
+    denyHubGoverned,
+  ] as const,
   request: { params: projectIdParam },
   responses: {
     200: jsonResponse(
       "Telegram integration details, or null",
       telegramIntegrationSchema.nullable(),
     ),
-    403: errorResponse("No access to the project"),
+    403: errorResponse(
+      "No access to the project, or a member the Pegasus Hub governs",
+    ),
     404: errorResponse("Project not found"),
   },
 });
@@ -93,7 +103,7 @@ const createTelegramIntegrationRoute = createRoute({
     ),
     400: errorResponse("The bot token or chat failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -122,7 +132,7 @@ const updateTelegramIntegrationRoute = createRoute({
     ),
     400: errorResponse("The resulting config failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or Telegram integration not found"),
   },
@@ -140,7 +150,7 @@ const deleteTelegramIntegrationRoute = createRoute({
   responses: {
     200: jsonResponse("The integration was removed", deletedSchema),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or Telegram integration not found"),
   },

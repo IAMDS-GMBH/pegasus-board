@@ -16,6 +16,7 @@ import {
   normalizeDiscordConfig,
   validateDiscordConfig,
 } from "../plugins/discord/config";
+import { denyHubGoverned } from "../utils/deny-hub-governed";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import { discordIntegrationSchema } from "./response";
@@ -79,9 +80,12 @@ async function getDiscordIntegration(projectId: string) {
   return toResponse(integration);
 }
 
+// Pegasus fork (PEGA-80): in a workspace the Hub manages, only members it
+// does not govern may change integrations.
 const manageAccess = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
 ];
 
 const getDiscordIntegrationRoute = createRoute({
@@ -92,14 +96,20 @@ const getDiscordIntegrationRoute = createRoute({
   summary: "Get Discord integration",
   description:
     "Get the Discord integration for a project, or null when none is configured.",
-  middleware: [workspaceAccess.fromProject("projectId")] as const,
+  // Fork (PEGA-80): only the integrations page reads this.
+  middleware: [
+    workspaceAccess.fromProject("projectId"),
+    denyHubGoverned,
+  ] as const,
   request: { params: projectIdParam },
   responses: {
     200: jsonResponse(
       "Discord integration details, or null",
       discordIntegrationSchema.nullable(),
     ),
-    403: errorResponse("No access to the project"),
+    403: errorResponse(
+      "No access to the project, or a member the Pegasus Hub governs",
+    ),
     404: errorResponse("Project not found"),
   },
 });
@@ -127,7 +137,7 @@ const createDiscordIntegrationRoute = createRoute({
     ),
     400: errorResponse("The webhook URL failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -156,7 +166,7 @@ const updateDiscordIntegrationRoute = createRoute({
     ),
     400: errorResponse("The resulting config failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or Discord integration not found"),
   },
@@ -174,7 +184,7 @@ const deleteDiscordIntegrationRoute = createRoute({
   responses: {
     200: jsonResponse("The integration was removed", deletedSchema),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or Discord integration not found"),
   },

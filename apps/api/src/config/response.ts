@@ -26,5 +26,10 @@ export const configSchema = z
     customOAuthAutoLogin: z.boolean(),
     customOAuthLogoutUrl: z.string().nullable(),
     billingEnabled: z.boolean(),
+    // Pegasus fork (PEGA-80)
+    notificationSettingsUrl: z.string().nullable().openapi({
+      description:
+        "Where users manage their notification settings when an external service (the Pegasus Hub) owns them. Null means the board's own settings page is not offered.",
+    }),
   })
   .openapi("Config");

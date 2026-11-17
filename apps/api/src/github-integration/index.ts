@@ -20,6 +20,7 @@ import {
 import { handleGitHubWebhook } from "../plugins/github/webhook-handler";
 import { isGithubSsoConfigured } from "../utils/github-sso-env";
 import { requireUserSession } from "../utils/require-user-session";
+import { denyHubGoverned } from "../utils/deny-hub-governed";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { requireLeadPermission } from "../utils/require-hub-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
@@ -47,9 +48,12 @@ import {
   verifyGitHubBody,
 } from "./schema";
 
+// Pegasus fork (PEGA-80): in a workspace the Hub manages, only members it
+// does not govern may change integrations.
 const manageAccess = [
   workspaceAccess.fromProject("projectId"),
   requireWorkspacePermission({ workspace: ["manage_settings"] }),
+  denyHubGoverned,
 ];
 
 const getAppInfoRoute = createRoute({
@@ -81,7 +85,7 @@ const listRepositoriesRoute = createRoute({
       githubRepositoryListSchema,
     ),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -99,6 +103,7 @@ const verifyRoute = createRoute({
     requireUserSession,
     scopeToProjectFromBody,
     requireWorkspacePermission({ workspace: ["manage_settings"] }),
+    denyHubGoverned,
   ],
   request: {
     body: {
@@ -110,7 +115,7 @@ const verifyRoute = createRoute({
     200: jsonResponse("Verification result", verificationResultSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -159,7 +164,7 @@ const createIntegrationRoute = createRoute({
     ),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project not found"),
   },
@@ -191,7 +196,7 @@ const updateIntegrationRoute = createRoute({
     ),
     400: errorResponse("The resulting config failed validation"),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or integration not found"),
   },
@@ -209,7 +214,7 @@ const deleteIntegrationRoute = createRoute({
   responses: {
     200: jsonResponse("The integration was removed", deleteResultSchema),
     403: errorResponse(
-      "No access to the project, or missing workspace:manage_settings",
+      "No access to the project, missing workspace:manage_settings, or a member the Pegasus Hub governs",
     ),
     404: errorResponse("Project or GitHub integration not found"),
   },

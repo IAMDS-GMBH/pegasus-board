@@ -2433,7 +2433,8 @@
 		},
 		"shared": {
 			"autosave": "As alterações são salvas automaticamente"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

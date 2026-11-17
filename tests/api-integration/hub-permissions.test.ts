@@ -644,6 +644,8 @@ describe("API integration: rights pushed by the Hub", () => {
     });
   });
   describe("capabilities for the web app", () => {
+    afterEach(() => vi.unstubAllEnvs());
+
     async function capabilities(app: App, workspaceId: string) {
       const response = await app.request(
         `/api/workspace/${workspaceId}/capabilities`,
@@ -687,6 +689,46 @@ describe("API integration: rights pushed by the Hub", () => {
         viewReports: true,
         returnTasks: true,
       });
+    });
+
+    // PEGA-80: integrations belong to the owner, instance admins and the Hub.
+    it("withholds managing integrations from a governed admin", async () => {
+      const f = await createHubScopeFixture();
+      await db
+        .update(schema.workspaceUserTable)
+        .set({ role: "admin" })
+        .where(eq(schema.workspaceUserTable.userId, f.users.fkBD.id));
+
+      expect(
+        await capabilities(asUser(f.users.fkBD), f.workspace.id),
+      ).toMatchObject({ manageSettings: true, manageIntegrations: false });
+    });
+
+    it("lets the owner and the Hub's system account manage integrations", async () => {
+      const f = await createHubScopeFixture();
+      await db
+        .update(schema.workspaceUserTable)
+        .set({ role: "admin" })
+        .where(eq(schema.workspaceUserTable.userId, f.users.noRow.id));
+      vi.stubEnv("PEGASUS_HUB_USER_ID", f.users.noRow.id);
+
+      for (const user of [f.owner, f.users.noRow]) {
+        expect(await capabilities(asUser(user), f.workspace.id)).toMatchObject({
+          manageIntegrations: true,
+        });
+      }
+    });
+
+    it("ties managing integrations to manage_settings where the Hub does not manage", async () => {
+      const admin = await createWorkspaceMember({ role: "admin" });
+      const member = await createWorkspaceMember({ role: "member" });
+
+      expect(
+        await capabilities(asUser(admin.user), admin.workspace.id),
+      ).toMatchObject({ manageIntegrations: true });
+      expect(
+        await capabilities(asUser(member.user), member.workspace.id),
+      ).toMatchObject({ manageIntegrations: false });
     });
   });
 });

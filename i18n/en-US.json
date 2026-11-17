@@ -635,6 +635,7 @@
 		"developer": "Developer",
 		"information": "Profile",
 		"notifications": "Notifications",
+		"opensInNewTab": "(opens in a new tab)",
 		"preferences": "Preferences",
 		"apiKeys": "API keys",
 		"adminUsers": {

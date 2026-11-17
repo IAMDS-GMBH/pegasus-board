@@ -67,3 +67,30 @@ describe("API integration: config", () => {
     );
   });
 });
+
+// Pegasus fork (PEGA-80): the account menu links to the Hub's notification
+// settings.
+describe("API integration: notification settings URL", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("returns notificationSettingsUrl from PEGASUS_NOTIFICATION_SETTINGS_URL", async () => {
+    vi.stubEnv(
+      "PEGASUS_NOTIFICATION_SETTINGS_URL",
+      "https://admin.example.com/notifications",
+    );
+    const response = await createApp().app.request("/api/config");
+    expect(await response.json()).toHaveProperty(
+      "notificationSettingsUrl",
+      "https://admin.example.com/notifications",
+    );
+  });
+
+  it("returns null for notificationSettingsUrl without it", async () => {
+    vi.stubEnv("PEGASUS_NOTIFICATION_SETTINGS_URL", "");
+    const response = await createApp().app.request("/api/config");
+    expect(await response.json()).toHaveProperty(
+      "notificationSettingsUrl",
+      null,
+    );
+  });
+});
