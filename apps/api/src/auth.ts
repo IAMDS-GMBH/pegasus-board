@@ -57,6 +57,7 @@ import { hideInaccessibleInvitationProjects } from "./project-access/hide-inacce
 import clearEmailVerificationOnAdminChange from "./user/controllers/clear-email-verification-on-admin-change";
 import deleteAccountData from "./user/controllers/delete-account-data";
 import prepareAdminUserRemoval from "./user/controllers/prepare-admin-user-removal";
+import { resolveApiKeyRateLimitMax } from "./utils/api-key-rate-limit";
 import { resolveAuthSecret } from "./utils/auth-secret";
 import {
   canSendSignInEmail,
@@ -699,7 +700,7 @@ export const auth = betterAuth({
       apiKeyHeaders: "x-api-key",
       rateLimit: {
         enabled: true,
-        maxRequests: 100,
+        maxRequests: resolveApiKeyRateLimitMax(),
         timeWindow: 60 * 1000,
       },
     }),

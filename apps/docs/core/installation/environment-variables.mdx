@@ -115,6 +115,7 @@ Name | Description | Default |
 Name | Description | Default |
 --- | --- | --- |
 | `TRUSTED_PROXIES` | Comma-separated IPs or CIDR ranges of trusted reverse proxies. Kaneo first checks the actual TCP peer, then walks `X-Forwarded-For` right to left only through trusted hops. Defaults trust the bundled loopback nginx only. For a separate Docker/ingress proxy, explicitly add its IP or dedicated proxy subnet; avoid shared private-network ranges. Use `none` for direct API access without trusted proxies. Invalid entries prevent startup. `CF-Connecting-IP` and client-supplied `X-Kaneo-Client-IP` are never used. | `127.0.0.0/8, ::1/128` |
+| `API_KEY_RATE_LIMIT_MAX` | Requests per 60 seconds allowed for each newly created API key. Existing keys keep the limit stored on them. Must be a positive integer; anything else falls back to the default. | `1000` |
 
 <Warning>
   Only list addresses you control. Any host in this range can set `X-Forwarded-For` and have it believed, so do not include a range that clients can reach Kaneo from directly. The client IP is used for rate limiting and session records.
