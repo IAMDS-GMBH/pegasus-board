@@ -11,6 +11,9 @@ const dropdown: CurrentCustomField = {
   defaultValue: "Medium",
   options: ["Small", "Medium", "Large"],
   showOnCard: false,
+  section: null,
+  hubDefined: false,
+  hubManaged: false,
 };
 
 describe("resolveFieldUpdate", () => {
@@ -114,13 +117,24 @@ describe("resolveFieldUpdate", () => {
     );
   });
 
-  it("clears the default with null and requires one for required fields", () => {
+  it("clears the default with null, also for required fields", () => {
     expect(
       resolveFieldUpdate(dropdown, { defaultValue: null }).defaultValue,
     ).toBeNull();
-    expect(() =>
+    // Pegasus fork (PEGA-123): required no longer needs a default.
+    expect(
       resolveFieldUpdate(dropdown, { defaultValue: "", required: true }),
-    ).toThrow("Required fields must have a default value");
+    ).toMatchObject({ required: true, defaultValue: null });
+  });
+
+  // Pegasus fork (PEGA-123)
+  it("sets the section and stores a blank one as null", () => {
+    const grouped = resolveFieldUpdate(dropdown, { section: "Stammdaten" });
+    expect(grouped.section).toBe("Stammdaten");
+    expect(resolveFieldUpdate(grouped, { name: "Größe" }).section).toBe(
+      "Stammdaten",
+    );
+    expect(resolveFieldUpdate(grouped, { section: "" }).section).toBeNull();
   });
 
   it("rejects options on fields without options", () => {

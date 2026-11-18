@@ -7275,14 +7275,17 @@
 						"onCard": {
 							"type": "string"
 						},
+						"hubDefined": {
+							"type": "string"
+						},
+						"hubDefinedHint": {
+							"type": "string"
+						},
 						"errors": {
 							"type": "object",
 							"additionalProperties": false,
 							"properties": {
 								"nameRequired": {
-									"type": "string"
-								},
-								"defaultRequired": {
 									"type": "string"
 								},
 								"invalidDefault": {
@@ -7308,11 +7311,22 @@
 								},
 								"tasksHaveInvalidValues": {
 									"type": "string"
+								},
+								"requiredMissingValues": {
+									"type": "string"
+								},
+								"valueRequired": {
+									"type": "string"
+								},
+								"hubDefined": {
+									"type": "string"
+								},
+								"hubManaged": {
+									"type": "string"
 								}
 							},
 							"required": [
 								"nameRequired",
-								"defaultRequired",
 								"invalidDefault",
 								"tooFewOptions",
 								"typeLocked",
@@ -7320,7 +7334,11 @@
 								"optionInUse",
 								"tasksHaveMultipleOptions",
 								"notFound",
-								"tasksHaveInvalidValues"
+								"tasksHaveInvalidValues",
+								"requiredMissingValues",
+								"valueRequired",
+								"hubDefined",
+								"hubManaged"
 							]
 						}
 					},
@@ -7352,6 +7370,8 @@
 						"showOnCard",
 						"showOnCardDescription",
 						"onCard",
+						"hubDefined",
+						"hubDefinedHint",
 						"errors"
 					]
 				},
@@ -8836,6 +8856,9 @@
 								},
 								"dueDateReminder": {
 									"type": "string"
+								},
+								"taskCustomFieldChanged": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -8850,7 +8873,8 @@
 								"taskDueDateChanged",
 								"taskAssigneeChanged",
 								"taskUnassigned",
-								"dueDateReminder"
+								"dueDateReminder",
+								"taskCustomFieldChanged"
 							]
 						},
 						"reminderLeadTimeLabel": {
@@ -13488,6 +13512,15 @@
 						},
 						"callNumber": {
 							"type": "string"
+						},
+						"hubManaged": {
+							"type": "string"
+						},
+						"time": {
+							"type": "string"
+						},
+						"modEnterKey": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -13497,7 +13530,10 @@
 						"invalidEmail",
 						"invalidPhone",
 						"sendEmail",
-						"callNumber"
+						"callNumber",
+						"hubManaged",
+						"time",
+						"modEnterKey"
 					]
 				},
 				"descriptionSearchLoading": {

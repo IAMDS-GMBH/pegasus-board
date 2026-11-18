@@ -8,6 +8,7 @@ import {
 } from "./choice-options";
 import { toStoredCustomFieldValue } from "./stored-value";
 import { isTextType } from "./text-types";
+import type { HubFieldProperties } from "./hub-field-properties";
 
 export type CurrentCustomField = {
   name: string;
@@ -16,9 +17,12 @@ export type CurrentCustomField = {
   defaultValue: string | null;
   options: unknown;
   showOnCard: boolean;
+  section: string | null;
+  hubDefined: boolean;
+  hubManaged: boolean;
 };
 
-export type CustomFieldUpdateInput = {
+export type CustomFieldUpdateInput = HubFieldProperties & {
   name?: string;
   type?: string;
   required?: boolean;
@@ -34,6 +38,9 @@ export type ResolvedFieldUpdate = {
   defaultValue: string | null;
   options: unknown;
   showOnCard: boolean;
+  section: string | null;
+  hubDefined: boolean;
+  hubManaged: boolean;
   removedOptions: string[];
 };
 
@@ -105,7 +112,7 @@ export function resolveFieldUpdate(
   const required = input.required ?? field.required;
   const defaultValue = resolveDefault(field, type, input.defaultValue);
 
-  assertValidDefinition({ name, type, required, defaultValue, options });
+  assertValidDefinition({ name, type, defaultValue, options });
 
   return {
     name,
@@ -114,6 +121,11 @@ export function resolveFieldUpdate(
     defaultValue,
     options: options ?? field.options,
     showOnCard: input.showOnCard ?? field.showOnCard,
+    // Pegasus fork (PEGA-123)
+    section:
+      input.section === undefined ? field.section : input.section || null,
+    hubDefined: input.hubDefined ?? field.hubDefined,
+    hubManaged: input.hubManaged ?? field.hubManaged,
     removedOptions: options
       ? previousOptions.filter((option) => !options.includes(option))
       : [],

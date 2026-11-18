@@ -86,6 +86,7 @@ Generic webhooks also support these events. They are off by default:
 | Assignee changed | `task.assignee_changed` |
 | Task unassigned | `task.unassigned` |
 | Due-date reminder | `task.due_date_reminder` |
+| Custom field value changed | `task.custom_field_changed` |
 
 When enabling due-date reminders, set how far ahead to send them. The default is 24 hours. These extra subscriptions are specific to the generic webhook integration; the chat integrations use the six-event table above.
 
@@ -109,6 +110,8 @@ Each POST has `Content-Type: application/json` and an `X-Kaneo-Event-Id` header.
 - `data`: event-specific fields (for example `oldStatus` / `newStatus` for status changes, `comment` text for comments)
 
 For `task.deleted`, the `task` object contains only `id` and `title`, and `data` is empty. Do not require the usual task URL or status fields when handling deletion. Move events include source and destination project IDs; reminders include `dueDate` and `leadTimeMinutes`.
+
+`task.custom_field_changed` is sent once per changed value, whoever changes it, but not when a task is created (`task.created` covers that) and not when the value stays the same. Its `data` holds `fieldId`, `fieldName`, `fieldType`, `oldValue` and `newValue`, as stored; `null` means empty. Date values are `YYYY-MM-DD` or, with a time, ISO 8601 in UTC.
 
 ### Event IDs and deduplication
 

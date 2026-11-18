@@ -139,10 +139,12 @@ describe("getFormIssue", () => {
     ).toBe("moreOptionsRequired");
   });
 
-  it("needs a default for required fields", () => {
+  // Pegasus fork (PEGA-123): the API takes required fields without a default
+  // while every task has a value, and says so when one hasn't.
+  it("allows required fields without a default", () => {
     expect(
       getFormIssue({ ...EMPTY_FIELD_FORM, name: "Customer", required: true }),
-    ).toBe("defaultRequired");
+    ).toBeNull();
     expect(
       getFormIssue({
         ...dropdown,
@@ -151,7 +153,7 @@ describe("getFormIssue", () => {
         defaultValue: "",
         defaultValues: [],
       }),
-    ).toBe("defaultRequired");
+    ).toBeNull();
     expect(getFormIssue({ ...dropdown, required: true })).toBeNull();
   });
 

@@ -1389,7 +1389,8 @@
 				"taskDueDateChanged": "नियत तारीख बदली",
 				"taskAssigneeChanged": "सौंपा गया बदला",
 				"taskUnassigned": "कार्य असाइन हटाया",
-				"dueDateReminder": "नियत तारीख अनुस्मारक"
+				"dueDateReminder": "नियत तारीख अनुस्मारक",
+				"taskCustomFieldChanged": "Field value changed"
 			},
 			"reminderLeadTimeLabel": "कार्य की नियत तारीख से पहले के घंटे",
 			"connect": "वेबहुक कनेक्ट करें",
@@ -1563,7 +1564,6 @@
 			"emptyDescription": "हर कार्य पर आकार, ग्राहक या लॉन्च तारीख जैसी चीज़ें ट्रैक करें।",
 			"emptyTitle": "अभी कोई कस्टम फ़ील्ड नहीं",
 			"issues": {
-				"defaultRequired": "आवश्यक फ़ील्ड के लिए डिफ़ॉल्ट ज़रूरी है।",
 				"moreOptionsRequired": "कई की अनुमति देने के लिए कम से कम दो विकल्प जोड़ें।",
 				"optionsRequired": "कम से कम एक विकल्प जोड़ें।",
 				"invalidUrl": "Enter a link, like example.org or https://example.org.",
@@ -1593,7 +1593,6 @@
 			"showOnCard": "Show on card",
 			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
 			"errors": {
-				"defaultRequired": "Required fields need a default.",
 				"invalidDefault": "The default doesn't fit this field type.",
 				"nameRequired": "Give the field a name.",
 				"notFound": "This field no longer exists. Someone may have deleted it.",
@@ -1602,9 +1601,15 @@
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
 				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
-				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first.",
+				"hubDefined": "The Pegasus Hub manages this field. Only the Hub can change or delete it.",
+				"hubManaged": "Only the Pegasus Hub sets this value.",
+				"requiredMissingValues": "Some tasks have no value for this field. Set a default or fill in those tasks first.",
+				"valueRequired": "This field is required and can't be emptied."
 			},
-			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
+			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch.",
+			"hubDefined": "Pegasus Hub",
+			"hubDefinedHint": "Managed by the Pegasus Hub. Only the Hub can change or delete this field."
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3266,7 +3271,10 @@
 			"callNumber": "Call {{field}}",
 			"invalidEmail": "Enter a valid email address, like name@example.org.",
 			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
-			"sendEmail": "Email {{field}}"
+			"sendEmail": "Email {{field}}",
+			"hubManaged": "Set by the Pegasus Hub",
+			"modEnterKey": "Ctrl/⌘ + Enter",
+			"time": "Time (optional)"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",

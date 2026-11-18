@@ -34,5 +34,14 @@ export const apiErrorSchema = z
           "Permissions the caller lacks for this route, as resource:action, for MISSING_PERMISSION and API_KEY_SCOPE.",
         example: ["task:update"],
       }),
+    // Pegasus fork (PEGA-123)
+    fields: z
+      .array(z.string())
+      .optional()
+      .openapi({
+        description:
+          "Names of the custom fields the caller may not change, for HUB_DEFINED_FIELD and HUB_MANAGED_FIELD.",
+        example: ["Lead-ID"],
+      }),
   })
   .openapi("ApiError");

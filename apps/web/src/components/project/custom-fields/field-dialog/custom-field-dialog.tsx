@@ -1,4 +1,4 @@
-import { ListPlusIcon } from "lucide-react";
+import { ListPlusIcon, Lock } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -74,13 +74,15 @@ export function CustomFieldDialog({
   const nameId = useId();
   const optionsLabelId = useId();
   const editing = field !== null;
+  // Pegasus fork (PEGA-123): the Pegasus Hub owns this definition.
+  const locked = !!field?.hubDefined;
   const allowedKinds = switchableKinds(toFieldKind(field?.type ?? "text"));
   const pending = creating || updating;
   const issue = getFormIssue(form);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (issue || pending) return;
+    if (issue || pending || locked) return;
 
     try {
       if (field) {
@@ -130,86 +132,99 @@ export function CustomFieldDialog({
                 : t("settings:customFields.dialogDescriptionFallback")}
             </DialogDescription>
           </DialogHeader>
-          <DialogPanel className="space-y-5">
-            <div className="space-y-2">
-              <p id={typeLabelId} className="text-sm font-medium">
-                {t("settings:customFields.typeLabel")}
-              </p>
-              <FieldTypePicker
-                value={form.kind}
-                labelledBy={typeLabelId}
-                disabled={editing && allowedKinds.length === 1}
-                allowedKinds={editing ? allowedKinds : undefined}
-                onChange={(kind) =>
-                  setForm((current) => setKind(current, kind))
-                }
-              />
-              {editing ? (
-                <p className="text-xs text-muted-foreground">
-                  {allowedKinds.length > 1
-                    ? t("settings:customFields.typeSwitchText")
-                    : t("settings:customFields.typeLocked")}
+          <DialogPanel>
+            <fieldset
+              disabled={locked}
+              inert={locked}
+              className="min-w-0 space-y-5"
+            >
+              {locked ? (
+                <p className="flex items-center gap-2 text-muted-foreground text-xs">
+                  <Lock aria-hidden="true" className="size-3.5 shrink-0" />
+                  {t("settings:customFields.hubDefinedHint")}
                 </p>
               ) : null}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor={nameId}>
-                {t("settings:customFields.nameLabel")}
-              </Label>
-              <Input
-                id={nameId}
-                value={form.name}
-                autoComplete="off"
-                placeholder={t("settings:customFields.namePlaceholder")}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    name: event.target.value,
-                  }))
-                }
-              />
-            </div>
-            {form.kind === "dropdown" ? (
               <div className="space-y-2">
-                <p id={optionsLabelId} className="text-sm font-medium">
-                  {t("settings:customFields.optionsLabel")}
+                <p id={typeLabelId} className="text-sm font-medium">
+                  {t("settings:customFields.typeLabel")}
                 </p>
-                <FieldOptionsEditor
-                  options={form.options}
-                  labelledBy={optionsLabelId}
-                  onAdd={(option) =>
-                    setForm((current) => addOption(current, option))
+                <FieldTypePicker
+                  value={form.kind}
+                  labelledBy={typeLabelId}
+                  disabled={locked || (editing && allowedKinds.length === 1)}
+                  allowedKinds={editing ? allowedKinds : undefined}
+                  onChange={(kind) =>
+                    setForm((current) => setKind(current, kind))
                   }
-                  onRename={rename}
-                  onRemove={(option) =>
-                    setForm((current) => removeOption(current, option))
-                  }
-                  onMove={(from, to) =>
-                    setForm((current) => moveOption(current, from, to))
+                />
+                {editing ? (
+                  <p className="text-xs text-muted-foreground">
+                    {allowedKinds.length > 1
+                      ? t("settings:customFields.typeSwitchText")
+                      : t("settings:customFields.typeLocked")}
+                  </p>
+                ) : null}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={nameId}>
+                  {t("settings:customFields.nameLabel")}
+                </Label>
+                <Input
+                  id={nameId}
+                  value={form.name}
+                  autoComplete="off"
+                  placeholder={t("settings:customFields.namePlaceholder")}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
                   }
                 />
               </div>
-            ) : null}
-            <FieldSettingsBox
-              form={form}
-              onMultipleChange={(multiple) =>
-                setForm((current) => setMultiple(current, multiple))
-              }
-              onRequiredChange={(required) =>
-                setForm((current) => ({ ...current, required }))
-              }
-              onShowOnCardChange={(showOnCard) =>
-                setForm((current) => ({ ...current, showOnCard }))
-              }
-              onDefaultChange={(defaults) =>
-                setForm((current) => ({ ...current, ...defaults }))
-              }
-            />
-            {issue && issue !== "nameRequired" ? (
-              <p className="text-xs text-muted-foreground">
-                {t(`settings:customFields.issues.${issue}`)}
-              </p>
-            ) : null}
+              {form.kind === "dropdown" ? (
+                <div className="space-y-2">
+                  <p id={optionsLabelId} className="text-sm font-medium">
+                    {t("settings:customFields.optionsLabel")}
+                  </p>
+                  <FieldOptionsEditor
+                    options={form.options}
+                    labelledBy={optionsLabelId}
+                    onAdd={(option) =>
+                      setForm((current) => addOption(current, option))
+                    }
+                    onRename={rename}
+                    onRemove={(option) =>
+                      setForm((current) => removeOption(current, option))
+                    }
+                    onMove={(from, to) =>
+                      setForm((current) => moveOption(current, from, to))
+                    }
+                  />
+                </div>
+              ) : null}
+              <FieldSettingsBox
+                form={form}
+                onMultipleChange={(multiple) =>
+                  setForm((current) => setMultiple(current, multiple))
+                }
+                onRequiredChange={(required) =>
+                  setForm((current) => ({ ...current, required }))
+                }
+                onShowOnCardChange={(showOnCard) =>
+                  setForm((current) => ({ ...current, showOnCard }))
+                }
+                onDefaultChange={(defaults) =>
+                  setForm((current) => ({ ...current, ...defaults }))
+                }
+                disabled={locked}
+              />
+              {issue && issue !== "nameRequired" ? (
+                <p className="text-xs text-muted-foreground">
+                  {t(`settings:customFields.issues.${issue}`)}
+                </p>
+              ) : null}
+            </fieldset>
           </DialogPanel>
           <DialogFooter>
             <Button
@@ -217,11 +232,13 @@ export function CustomFieldDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t("common:actions.cancel")}
+              {t(locked ? "common:actions.close" : "common:actions.cancel")}
             </Button>
-            <Button type="submit" disabled={issue !== null || pending}>
-              {t(submitLabelKey(editing, pending))}
-            </Button>
+            {locked ? null : (
+              <Button type="submit" disabled={issue !== null || pending}>
+                {t(submitLabelKey(editing, pending))}
+              </Button>
+            )}
           </DialogFooter>
         </form>
       </DialogPopup>

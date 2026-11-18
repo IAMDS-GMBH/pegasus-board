@@ -12,6 +12,8 @@ type FieldSettingsBoxProps = {
   onDefaultChange: (
     defaults: Pick<FieldFormState, "defaultValue" | "defaultValues">,
   ) => void;
+  // Pegasus fork (PEGA-123): a field the Pegasus Hub owns.
+  disabled?: boolean;
 };
 
 export function FieldSettingsBox({
@@ -20,6 +22,7 @@ export function FieldSettingsBox({
   onRequiredChange,
   onShowOnCardChange,
   onDefaultChange,
+  disabled = false,
 }: FieldSettingsBoxProps) {
   const { t } = useTranslation();
 
@@ -36,6 +39,7 @@ export function FieldSettingsBox({
               onCheckedChange={onMultipleChange}
               aria-labelledby={labelId}
               aria-describedby={descriptionId}
+              disabled={disabled}
             />
           )}
         </FieldSettingRow>
@@ -50,6 +54,7 @@ export function FieldSettingsBox({
             onCheckedChange={onRequiredChange}
             aria-labelledby={labelId}
             aria-describedby={descriptionId}
+            disabled={disabled}
           />
         )}
       </FieldSettingRow>
@@ -63,6 +68,7 @@ export function FieldSettingsBox({
             onCheckedChange={onShowOnCardChange}
             aria-labelledby={labelId}
             aria-describedby={descriptionId}
+            disabled={disabled}
           />
         )}
       </FieldSettingRow>

@@ -137,16 +137,35 @@ describe("PUT /custom-field/{id}", () => {
     expect(values.get(tasks[2].id)).toBe("Internal");
   });
 
-  it("rejects making a field required without a default", async () => {
-    const { field, update } = await fixture({ field: { type: "text" } });
+  // Pegasus fork (PEGA-123): no default needed once every task has a value.
+  it("rejects making a field required without a default while a task has no value", async () => {
+    const { field, update } = await fixture({
+      field: { type: "text" },
+      values: ["80331", null],
+    });
 
     const response = await update({ required: true });
 
     expect(response.status).toBe(400);
-    expect((await response.json()).message).toContain(
-      "Required fields must have a default value",
-    );
+    expect(await response.json()).toMatchObject({
+      code: "CUSTOM_FIELD_REQUIRED_MISSING_VALUES",
+    });
     expect((await readField(field.id)).required).toBe(false);
+  });
+
+  it("makes a field required without a default when every task has a value", async () => {
+    const { field, update } = await fixture({
+      field: { type: "text" },
+      values: ["80331", "10115"],
+    });
+
+    const response = await update({ required: true });
+
+    expect(response.status).toBe(200);
+    expect(await readField(field.id)).toMatchObject({
+      required: true,
+      defaultValue: null,
+    });
   });
 
   it("denies members without project:update", async () => {

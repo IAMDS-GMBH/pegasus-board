@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { cn } from "@/lib/cn";
@@ -28,6 +29,10 @@ export function CustomFieldChip({
   className,
 }: CustomFieldChipProps) {
   const { t } = useTranslation();
+  // Pegasus fork (PEGA-123): only the Pegasus Hub sets these values.
+  const locked = !!field.hubManaged;
+  const readOnly = disabled || locked;
+  const lockHint = locked ? t("tasks:customFields.hubManaged") : undefined;
 
   if (field.type === "boolean") {
     const checked = value === "true";
@@ -36,7 +41,8 @@ export function CustomFieldChip({
         type="button"
         role="checkbox"
         aria-checked={checked}
-        disabled={disabled}
+        title={lockHint}
+        disabled={readOnly}
         onClick={() => onChange(checked ? "false" : "true")}
         className={cn(
           propertyChipClass,
@@ -56,7 +62,8 @@ export function CustomFieldChip({
   const chip = (
     <button
       type="button"
-      disabled={disabled}
+      disabled={readOnly}
+      title={lockHint}
       data-custom-field={field.id}
       className={cn(
         propertyChipClass,
@@ -77,6 +84,13 @@ export function CustomFieldChip({
         </span>
       )}
       {!!display?.more && <span className="shrink-0">+{display.more}</span>}
+      {locked && (
+        <Lock
+          data-hub-lock
+          aria-hidden="true"
+          className="size-3 shrink-0 text-muted-foreground/70"
+        />
+      )}
       {missing && (
         <>
           {!invalid && (
@@ -91,7 +105,7 @@ export function CustomFieldChip({
     </button>
   );
 
-  const editable = disabled ? (
+  const editable = readOnly ? (
     chip
   ) : (
     <CustomFieldPopover field={field} value={value} onChange={onChange}>

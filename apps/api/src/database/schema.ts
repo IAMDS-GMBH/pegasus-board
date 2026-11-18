@@ -1440,6 +1440,11 @@ export const customFieldDefinitionTable = pgTable(
     position: integer("position").default(0).notNull(),
     // Pegasus fork (PEGA-88): the field's value shows on the board card preview.
     showOnCard: boolean("show_on_card").default(false).notNull(),
+    // Pegasus fork (PEGA-123): group in the detail view; the Pegasus Hub owns
+    // the definition (`hubDefined`) and also the value (`hubManaged`).
+    section: text("section"),
+    hubDefined: boolean("hub_defined").default(false).notNull(),
+    hubManaged: boolean("hub_managed").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" })
       .default(utcNow)
       .notNull(),

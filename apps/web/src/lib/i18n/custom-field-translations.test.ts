@@ -66,16 +66,20 @@ describe("custom field translations", () => {
   it("has a text for every field error the API reports", () => {
     expect(Object.keys(deDE.settings.customFields.errors ?? {}).sort()).toEqual(
       [
-        "defaultRequired",
+        // Pegasus fork (PEGA-123): hub fields, required without a default.
+        "hubDefined",
+        "hubManaged",
         "invalidDefault",
         "nameRequired",
         "notFound",
         "optionInUse",
         "optionsNotAllowed",
+        "requiredMissingValues",
         "tasksHaveInvalidValues",
         "tasksHaveMultipleOptions",
         "tooFewOptions",
         "typeLocked",
+        "valueRequired",
       ],
     );
   });

@@ -16,6 +16,7 @@ import type {
   TaskCreatedEvent,
   TaskDeletedEvent,
   TaskDescriptionChangedEvent,
+  TaskCustomFieldChangedEvent,
   TaskDueDateChangedEvent,
   TaskMovedEvent,
   TaskPriorityChangedEvent,
@@ -558,6 +559,33 @@ export async function handleTaskUnassigned(
     event.userId,
     {
       title: event.title,
+    },
+  );
+}
+
+// Pegasus fork (PEGA-123)
+export async function handleTaskCustomFieldChanged(
+  event: TaskCustomFieldChangedEvent,
+  context: PluginContext,
+): Promise<void> {
+  const config = normalizeGenericWebhookConfig(
+    context.config as GenericWebhookConfig,
+  );
+  if (!isEnabled(config, "taskCustomFieldChanged")) return;
+
+  await sendEvent(
+    config,
+    event.eventId,
+    "task.custom_field_changed",
+    event.taskId,
+    event.projectId,
+    event.userId,
+    {
+      fieldId: event.fieldId,
+      fieldName: event.fieldName,
+      fieldType: event.fieldType,
+      oldValue: event.oldValue,
+      newValue: event.newValue,
     },
   );
 }

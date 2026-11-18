@@ -16,12 +16,21 @@ export function matchField(spec, fields) {
   return fields.find((f) => f.name === spec.name);
 }
 
-export function planFields(specFields, fields) {
+// Pegasus fork (PEGA-123): fields the Pegasus Hub created belong to it; only
+// its system account may change them (403 HUB_DEFINED_FIELD otherwise), and
+// their order makes the groups of the detail view. The script leaves them be.
+function boardFields(fields) {
+  return fields.filter((f) => !f.hubDefined);
+}
+
+export function planFields(specFields, allFields) {
+  const fields = boardFields(allFields);
   const actions = [];
   const warnings = [];
   const errors = [];
 
   for (const spec of specFields) {
+    if (matchField(spec, allFields)?.hubDefined) continue;
     const field = matchField(spec, fields);
     if (!field) {
       actions.push({ type: "create-field", field: spec });
@@ -78,5 +87,7 @@ export function planFields(specFields, fields) {
 }
 
 export function wantedFieldIds(specFields, fields) {
-  return specFields.map((spec) => matchField(spec, fields)?.id).filter(Boolean);
+  return specFields
+    .map((spec) => matchField(spec, boardFields(fields))?.id)
+    .filter(Boolean);
 }

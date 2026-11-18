@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { SlidersHorizontal } from "lucide-react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomFieldRow } from "@/components/custom-fields/custom-field-row";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
+import { groupFieldsBySection } from "./group-fields-by-section";
 import { useTaskCustomFields } from "./use-task-custom-fields";
 
 type TaskCustomFieldRowsProps = {
@@ -44,15 +46,32 @@ export function TaskCustomFieldRows({
           </Link>
         )}
       </div>
-      {fields.map((field) => (
-        <CustomFieldRow
-          key={field.id}
-          field={field}
-          value={values[field.id] ?? ""}
-          onChange={(value) => void save(field, value)}
-          disabled={!canEdit}
-        />
-      ))}
+      {groupFieldsBySection(fields).map(({ section, fields: groupFields }) => {
+        const rows = groupFields.map((field) => (
+          <CustomFieldRow
+            key={field.id}
+            field={field}
+            value={values[field.id] ?? ""}
+            onChange={(value) => void save(field, value)}
+            disabled={!canEdit}
+          />
+        ));
+        if (section === null) return <Fragment key="">{rows}</Fragment>;
+        // Pegasus fork (PEGA-123): one heading per section.
+        return (
+          <div
+            key={section}
+            role="group"
+            aria-label={section}
+            className="flex flex-col gap-0.5 pt-2 first:pt-0"
+          >
+            <h4 className="truncate px-2 pb-0.5 font-medium text-[11px] text-muted-foreground/80 uppercase tracking-wide">
+              {section}
+            </h4>
+            {rows}
+          </div>
+        );
+      })}
     </section>
   );
 }

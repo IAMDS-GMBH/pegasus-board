@@ -87,6 +87,14 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 | Kampagne | Text (Name aus dem Hub) | | ja |
 | Paket | Auswahl | Paket 1, Paket 2, Paket 3 | ja |
 
+**Felder des Pegasus-Hubs (PEGA-123):** Die Felder des qualifizierten Termins (Stammdaten, versicherungstechnische Daten, Termin, Herkunft; Vorlage `bewerber-pool.template.ts` im Hub) legt der Hub selbst über die API an und ergänzt fehlende. Im Board ist dafür nichts einzurichten, weder in `board.json` noch per Skript.
+- Die Detailansicht der Karte gruppiert die Felder nach ihrer Gruppe (`section`), in der Reihenfolge des ersten Felds je Gruppe; Felder ohne Gruppe stehen am Ende ohne Überschrift. Die Kartenvorschau zeigt die Felder „Auf Karte“ wie bisher ohne Gruppen.
+- Felder des Hubs (`hubDefined`) sind in den Projekteinstellungen nur lesbar („Wird vom Pegasus-Hub verwaltet“) und lassen sich nicht löschen; die API antwortet allen außer dem Systemkonto mit 403 `HUB_DEFINED_FIELD`, auch Owner und Instanz-Admins. Umsortieren bleibt erlaubt.
+- `Lead-ID`, `Pegasus-ID` und `Quelle` setzt nur der Hub (`hubManaged`): An der Karte stehen sie mit Schloss („Wird vom Pegasus-Hub gesetzt“), im Formular „Neue Karte“ fehlen sie, ein Duplikat übernimmt sie nicht; die API antwortet sonst mit 403 `HUB_MANAGED_FIELD`.
+- `Vorname` und `Nachname` sind Pflicht und lassen sich nicht leeren (400 `CUSTOM_FIELD_VALUE_REQUIRED`). Ein Pflichtfeld ohne Standardwert nimmt die API nur an, solange keine Karte ohne Wert ist.
+- Das Skript lässt Felder des Hubs aus: Es ändert sie nicht und nimmt sie nicht in seine Reihenfolge auf. Gleichnamige Standardfelder aus `board.json` (etwa Telefon, Ort, Quelle, Paket) übernimmt damit der Hub, sobald er sie als seine markiert hat.
+- Änderungen an Feldwerten meldet das Board dem Hub sofort über den Webhook `task.custom_field_changed` (Schalter „Feldwert geändert“ in den Webhook-Einstellungen des Projekts; der Hub richtet seinen Webhook selbst ein).
+
 **Vertriebsweg:** Es gibt dafür weder ein Feld noch ein Label. Der Vertriebsweg ist der Workspace des Key Accounts; die Einheit einer Karte kommt vom Hub (`lead.unit_id`, übertragen über `/pegasus-visibility`). Seit PEGA-142 legt das Skript beides nicht mehr an, und der Hub schreibt es nicht.
 
 ## 4. Regeln des Abgleichs

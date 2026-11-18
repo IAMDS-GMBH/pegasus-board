@@ -6,6 +6,9 @@ import {
   projectTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertMayChangeDefinition } from "../hub-field-guard";
+import type { HubFieldProperties } from "../hub-field-properties";
+import { assertEveryTaskHasValue } from "../assert-every-task-has-value";
 import { assertValidDefinition } from "../assert-valid-definition";
 import { fieldError } from "../field-error";
 import { insertMissingValues } from "../fill-default-values";
@@ -19,9 +22,22 @@ async function createCustomField(
   defaultValue?: string,
   options?: string[],
   showOnCard = false,
+  // Pegasus fork (PEGA-123): group and Hub ownership.
+  {
+    section,
+    hubDefined = false,
+    hubManaged = false,
+    userId,
+  }: HubFieldProperties & { userId?: string } = {},
 ) {
   if (!name.trim())
     fieldError("CUSTOM_FIELD_NAME_REQUIRED", "Name cannot be empty");
+
+  assertMayChangeDefinition(
+    userId,
+    { name: name.trim(), hubDefined: false },
+    { hubDefined, hubManaged },
+  );
 
   const [project] = await db
     .select({ id: projectTable.id })
@@ -33,7 +49,7 @@ async function createCustomField(
     throw new HTTPException(404, { message: "Project not found" });
   }
 
-  assertValidDefinition({ name, type, required, defaultValue, options });
+  assertValidDefinition({ name, type, defaultValue, options });
 
   const storedDefaultValue =
     type === "date"
@@ -46,6 +62,12 @@ async function createCustomField(
     .where(eq(customFieldDefinitionTable.projectId, projectId));
 
   const field = await db.transaction(async (tx) => {
+    const hasDefault =
+      storedDefaultValue != null && storedDefaultValue.trim() !== "";
+    if (required && !hasDefault) {
+      await assertEveryTaskHasValue(tx, { projectId });
+    }
+
     const [created] = await tx
       .insert(customFieldDefinitionTable)
       .values({
@@ -57,6 +79,9 @@ async function createCustomField(
         options: options ?? null,
         position: (maxPositionResult?.maxPosition ?? 0) + 1,
         showOnCard,
+        section: section || null,
+        hubDefined,
+        hubManaged,
       })
       .returning();
 
@@ -66,7 +91,7 @@ async function createCustomField(
       });
     }
 
-    if (storedDefaultValue != null && storedDefaultValue.trim() !== "") {
+    if (hasDefault) {
       await insertMissingValues(tx, {
         projectId,
         fieldId: created.id,

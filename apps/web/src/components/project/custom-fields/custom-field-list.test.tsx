@@ -140,6 +140,27 @@ describe("CustomFieldList", () => {
     );
   });
 
+  // Pegasus fork (PEGA-123): only the Pegasus Hub deletes its fields.
+  it("marks a Hub field and offers no delete for it", async () => {
+    m.fields = [{ ...size, hubDefined: true }];
+    renderList();
+
+    expect(
+      screen.getByText("settings:customFields.hubDefined"),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "settings:customFields.actionsAria" }),
+    );
+    expect(
+      await screen.findByRole("menuitem", {
+        name: "settings:customFields.edit",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("menuitem", { name: "common:actions.delete" }),
+    ).toBeNull();
+  });
+
   it("offers a new field from the empty state", () => {
     m.fields = [];
     const { onCreate } = renderList();

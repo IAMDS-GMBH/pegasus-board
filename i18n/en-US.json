@@ -1791,6 +1791,8 @@
 			"showOnCard": "Show on card",
 			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
 			"onCard": "On card",
+			"hubDefined": "Pegasus Hub",
+			"hubDefinedHint": "Managed by the Pegasus Hub. Only the Hub can change or delete this field.",
 			"defaultDescription": "New tasks start with this.",
 			"noDefault": "No default",
 			"checked": "Checked",
@@ -1798,7 +1800,6 @@
 			"issues": {
 				"optionsRequired": "Add at least one option.",
 				"moreOptionsRequired": "Add at least two options to allow several.",
-				"defaultRequired": "Required fields need a default.",
 				"invalidUrl": "Enter a link, like example.org or https://example.org.",
 				"invalidEmail": "Enter an email address, like name@example.org.",
 				"invalidPhone": "Enter a phone number, like 0170 1234567 or +49 170 1234567."
@@ -1810,7 +1811,6 @@
 			"updateError": "Failed to save custom field.",
 			"errors": {
 				"nameRequired": "Give the field a name.",
-				"defaultRequired": "Required fields need a default.",
 				"invalidDefault": "The default doesn't fit this field type.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
 				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks, and text, email and phone fields between each other.",
@@ -1818,7 +1818,11 @@
 				"optionInUse": "Tasks still use an option you removed. Pick a different option on those tasks first.",
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"notFound": "This field no longer exists. Someone may have deleted it.",
-				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first.",
+				"requiredMissingValues": "Some tasks have no value for this field. Set a default or fill in those tasks first.",
+				"valueRequired": "This field is required and can't be emptied.",
+				"hubDefined": "The Pegasus Hub manages this field. Only the Hub can change or delete it.",
+				"hubManaged": "Only the Pegasus Hub sets this value."
 			},
 			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
 		},
@@ -2024,7 +2028,8 @@
 				"taskDueDateChanged": "Due date changed",
 				"taskAssigneeChanged": "Assignee changed",
 				"taskUnassigned": "Task unassigned",
-				"dueDateReminder": "Due date reminder"
+				"dueDateReminder": "Due date reminder",
+				"taskCustomFieldChanged": "Field value changed"
 			},
 			"reminderLeadTimeLabel": "Hours before a task is due",
 			"connect": "Connect webhook",
@@ -3266,7 +3271,10 @@
 			"invalidEmail": "Enter a valid email address, like name@example.org.",
 			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
 			"sendEmail": "Email {{field}}",
-			"callNumber": "Call {{field}}"
+			"callNumber": "Call {{field}}",
+			"hubManaged": "Set by the Pegasus Hub",
+			"time": "Time (optional)",
+			"modEnterKey": "Ctrl/⌘ + Enter"
 		},
 		"descriptionSearchLoading": "Searching full descriptions…",
 		"descriptionSearchError": "Description search failed. Results may be incomplete.",

@@ -25,6 +25,9 @@ async function getCustomFieldValuesByProject(
       fieldType: customFieldDefinitionTable.type,
       fieldOptions: customFieldDefinitionTable.options,
       fieldShowOnCard: customFieldDefinitionTable.showOnCard,
+      fieldSection: customFieldDefinitionTable.section,
+      fieldHubDefined: customFieldDefinitionTable.hubDefined,
+      fieldHubManaged: customFieldDefinitionTable.hubManaged,
     })
     .from(customFieldValueTable)
     .innerJoin(taskTable, eq(customFieldValueTable.taskId, taskTable.id))

@@ -81,12 +81,6 @@ describe("custom field error codes", () => {
       run: (api: Api) => api.update({ name: "" }),
     },
     {
-      name: "a required field without a default",
-      code: "CUSTOM_FIELD_DEFAULT_REQUIRED",
-      run: (api: Api) =>
-        api.create({ name: "PLZ", type: "text", required: true }),
-    },
-    {
       name: "a number default that is not a number",
       code: "CUSTOM_FIELD_INVALID_DEFAULT",
       run: (api: Api) =>
@@ -135,6 +129,18 @@ describe("custom field error codes", () => {
 
     expect(res.status).toBe(400);
     expect(await res.json()).toMatchObject({ code });
+  });
+
+  // Pegasus fork (PEGA-123): required no longer needs a default, but every
+  // task must already have a value.
+  it("returns CUSTOM_FIELD_REQUIRED_MISSING_VALUES for a required field a task has no value for", async () => {
+    const api = await setup(dropdown, "Plus");
+    const res = await api.create({ name: "PLZ", type: "text", required: true });
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({
+      code: "CUSTOM_FIELD_REQUIRED_MISSING_VALUES",
+    });
   });
 
   it("returns CUSTOM_FIELD_OPTION_IN_USE when a used option is removed", async () => {

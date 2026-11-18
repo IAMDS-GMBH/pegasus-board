@@ -115,6 +115,20 @@ export type TaskUnassignedEvent = {
   title: string;
 };
 
+// Pegasus fork (PEGA-123): a custom field value changed (not on task create).
+// Values are as stored; `null` means empty.
+export type TaskCustomFieldChangedEvent = {
+  eventId: string;
+  taskId: string;
+  projectId: string;
+  userId: string | null;
+  fieldId: string;
+  fieldName: string;
+  fieldType: string;
+  oldValue: string | null;
+  newValue: string | null;
+};
+
 export type TaskEvent =
   | TaskCreatedEvent
   | TaskStatusChangedEvent
@@ -126,7 +140,8 @@ export type TaskEvent =
   | TaskMovedEvent
   | TaskDueDateChangedEvent
   | TaskAssigneeChangedEvent
-  | TaskUnassignedEvent;
+  | TaskUnassignedEvent
+  | TaskCustomFieldChangedEvent;
 
 export type ExternalMetadata = {
   type: "issue" | "pull_request" | "branch";
@@ -172,6 +187,7 @@ export type IntegrationPlugin = {
   onTaskDueDateChanged?: TaskEventHandler<TaskDueDateChangedEvent>;
   onTaskAssigneeChanged?: TaskEventHandler<TaskAssigneeChangedEvent>;
   onTaskUnassigned?: TaskEventHandler<TaskUnassignedEvent>;
+  onTaskCustomFieldChanged?: TaskEventHandler<TaskCustomFieldChangedEvent>;
 
   handleWebhook?: WebhookHandler;
   getTaskMetadata?: MetadataProvider;

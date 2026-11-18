@@ -20,6 +20,8 @@ export const genericWebhookEventKeys = [
   "taskAssigneeChanged",
   "taskUnassigned",
   "dueDateReminder",
+  // Pegasus fork (PEGA-123)
+  "taskCustomFieldChanged",
 ] as const;
 
 export type GenericWebhookEventKey = (typeof genericWebhookEventKeys)[number];
@@ -64,6 +66,7 @@ export const genericWebhookConfigSchema = v.object({
       taskAssigneeChanged: v.optional(v.boolean()),
       taskUnassigned: v.optional(v.boolean()),
       dueDateReminder: v.optional(v.boolean()),
+      taskCustomFieldChanged: v.optional(v.boolean()),
     }),
   ),
   dueDateReminderLeadTimeMinutes: v.optional(
@@ -91,6 +94,7 @@ export const defaultGenericWebhookEvents: Record<
   taskAssigneeChanged: false,
   taskUnassigned: false,
   dueDateReminder: false,
+  taskCustomFieldChanged: false,
 };
 
 export function normalizeGenericWebhookConfig(

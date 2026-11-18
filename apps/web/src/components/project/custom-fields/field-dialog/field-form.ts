@@ -27,7 +27,6 @@ export type FieldFormIssue =
   | "nameRequired"
   | "optionsRequired"
   | "moreOptionsRequired"
-  | "defaultRequired"
   | "invalidUrl"
   | "invalidEmail"
   | "invalidPhone";
@@ -183,7 +182,6 @@ export function getFormIssue(state: FieldFormState): FieldFormIssue | null {
   ) {
     return state.multiple ? "moreOptionsRequired" : "optionsRequired";
   }
-  if (state.required && toApiDefault(state) === null) return "defaultRequired";
   const defaultValue = state.defaultValue.trim();
   const checked = CHECKED_KINDS[state.kind];
   if (checked && defaultValue && !checked.normalize(defaultValue)) {

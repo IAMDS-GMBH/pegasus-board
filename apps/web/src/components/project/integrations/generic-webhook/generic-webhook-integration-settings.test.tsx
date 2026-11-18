@@ -100,7 +100,8 @@ describe("GenericWebhookIntegrationSettings", () => {
     mocks.deleteIntegration.mockReset().mockResolvedValue(undefined);
   });
 
-  it("lists all twelve events and shows reminder timing only when reminders are on", () => {
+  // Pegasus fork (PEGA-123): plus custom field changes.
+  it("lists all thirteen events and shows reminder timing only when reminders are on", () => {
     render(<GenericWebhookIntegrationSettings projectId="project-1" />);
 
     expect(
@@ -109,7 +110,7 @@ describe("GenericWebhookIntegrationSettings", () => {
           name: "settings:genericWebhookIntegration.eventsTitle",
         }),
       ).getAllByRole("checkbox"),
-    ).toHaveLength(12);
+    ).toHaveLength(13);
     expect(
       screen.queryByLabelText(
         "settings:genericWebhookIntegration.reminderLeadTimeLabel",

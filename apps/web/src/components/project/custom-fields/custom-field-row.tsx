@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Lock, Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { describeCustomField } from "@/components/project/custom-fields/describe-custom-field";
 import {
@@ -63,6 +63,16 @@ export function CustomFieldRow({
               {t("settings:customFields.onCard")}
             </Badge>
           ) : null}
+          {field.hubDefined ? (
+            <Badge
+              variant="outline"
+              className="text-muted-foreground"
+              title={t("settings:customFields.hubDefinedHint")}
+            >
+              <Lock aria-hidden="true" />
+              {t("settings:customFields.hubDefined")}
+            </Badge>
+          ) : null}
         </div>
         <p className="truncate text-xs text-muted-foreground">
           {describeCustomField(field, t, i18n?.language)}
@@ -78,13 +88,18 @@ export function CustomFieldRow({
               icon: Pencil,
               onSelect: onEdit,
             },
-            {
-              id: "delete",
-              label: t("common:actions.delete"),
-              icon: Trash2,
-              onSelect: onDelete,
-              destructive: true,
-            },
+            // Pegasus fork (PEGA-123): only the Pegasus Hub deletes its fields.
+            ...(field.hubDefined
+              ? []
+              : [
+                  {
+                    id: "delete",
+                    label: t("common:actions.delete"),
+                    icon: Trash2,
+                    onSelect: onDelete,
+                    destructive: true,
+                  },
+                ]),
           ]}
         />
       ) : null}

@@ -173,7 +173,8 @@ describe("CustomFieldDialog", () => {
     );
   });
 
-  it("needs a default before a field can be required", () => {
+  // Pegasus fork (PEGA-123): the API decides, by whether tasks lack a value.
+  it("lets a field be required without a default", () => {
     const { dialog } = renderDialog();
     fireEvent.change(
       within(dialog).getByRole("textbox", {
@@ -187,13 +188,10 @@ describe("CustomFieldDialog", () => {
       }),
     );
     expect(
-      within(dialog).getByText("settings:customFields.issues.defaultRequired"),
-    ).toBeInTheDocument();
-    expect(
       within(dialog).getByRole("button", {
         name: "settings:customFields.createField",
       }),
-    ).toBeDisabled();
+    ).toBeEnabled();
   });
 
   it("locks the type when editing and saves with the update endpoint", async () => {
@@ -304,5 +302,44 @@ describe("CustomFieldDialog", () => {
     );
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith(text));
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  // Pegasus fork (PEGA-123): the Pegasus Hub owns these definitions.
+  it("shows a Hub field read-only without saving", () => {
+    const { dialog } = renderDialog({ ...platforms, hubDefined: true });
+
+    expect(
+      within(dialog).getByText("settings:customFields.hubDefinedHint"),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("textbox", {
+        name: "settings:customFields.nameLabel",
+      }),
+    ).toBeDisabled();
+    expect(
+      within(dialog).queryByRole("button", {
+        name: "settings:customFields.save",
+      }),
+    ).toBeNull();
+    expect(
+      within(dialog).queryByRole("button", { name: "common:actions.cancel" }),
+    ).toBeNull();
+  });
+
+  it("does not toggle the switches of a Hub field", () => {
+    const { dialog } = renderDialog({ ...platforms, hubDefined: true });
+
+    for (const name of [
+      "settings:customFields.required",
+      "settings:customFields.showOnCard",
+    ]) {
+      const toggle = within(dialog).getByRole("switch", { name });
+      const before = toggle.getAttribute("aria-checked");
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute("aria-checked")).toBe(before);
+    }
+    for (const radio of within(dialog).getAllByRole("radio")) {
+      expect(radio).toHaveAttribute("aria-disabled", "true");
+    }
   });
 });

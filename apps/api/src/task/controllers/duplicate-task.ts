@@ -195,6 +195,9 @@ async function duplicateTask({
       and(
         eq(customFieldValueTable.taskId, sourceTask.id),
         eq(customFieldDefinitionTable.projectId, sourceTask.projectId),
+        // Pegasus fork (PEGA-123): a copied Lead-ID would tie two cards to one
+        // lead, so values only the Hub sets stay with the original.
+        eq(customFieldDefinitionTable.hubManaged, false),
       ),
     );
   const customFields = sourceCustomFields.map(({ fieldId, value }) => ({

@@ -19,5 +19,7 @@ export const genericWebhookEventsSchema = integrationEventsSchema
     taskAssigneeChanged: z.boolean(),
     taskUnassigned: z.boolean(),
     dueDateReminder: z.boolean(),
+    // Pegasus fork (PEGA-123)
+    taskCustomFieldChanged: z.boolean(),
   })
   .openapi("GenericWebhookEvents");

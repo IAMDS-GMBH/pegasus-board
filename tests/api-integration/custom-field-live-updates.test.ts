@@ -61,12 +61,30 @@ describe("custom field live updates", () => {
     await setCustomFieldValue(task.id, field.id, "80331");
     await setCustomFieldValue(task.id, field.id, "");
 
-    expect(publish.mock.calls).toEqual(
-      Array.from({ length: 2 }, () => [
-        "task.updated",
-        { taskId: task.id, projectId: project.id, customFieldsChanged: true },
-      ]),
-    );
+    const updated = [
+      "task.updated",
+      { taskId: task.id, projectId: project.id, customFieldsChanged: true },
+    ];
+    // Pegasus fork (PEGA-123): plus one webhook event per changed value.
+    const changed = (oldValue: string | null, newValue: string | null) => [
+      "task.custom_field_changed",
+      {
+        taskId: task.id,
+        projectId: project.id,
+        userId: null,
+        fieldId: field.id,
+        fieldName: "PLZ",
+        fieldType: "text",
+        oldValue,
+        newValue,
+      },
+    ];
+    expect(publish.mock.calls).toEqual([
+      updated,
+      changed(null, "80331"),
+      updated,
+      changed("80331", null),
+    ]);
   });
 
   it("publishes a project update when a field is created, updated, reordered or deleted", async () => {

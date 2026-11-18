@@ -17,6 +17,8 @@ describe("generic webhook reminder config", () => {
     expect(config.events?.taskDueDateChanged).toBe(false);
     expect(config.events?.taskAssigneeChanged).toBe(false);
     expect(config.events?.taskUnassigned).toBe(false);
+    // Pegasus fork (PEGA-123)
+    expect(config.events?.taskCustomFieldChanged).toBe(false);
     expect(config.dueDateReminderLeadTimeMinutes).toBe(1440);
   });
 

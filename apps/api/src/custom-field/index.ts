@@ -300,6 +300,9 @@ const customField = apiRouter()
       defaultValue,
       options,
       showOnCard,
+      section,
+      hubDefined,
+      hubManaged,
     } = c.req.valid("json");
 
     return c.json(
@@ -311,6 +314,7 @@ const customField = apiRouter()
         defaultValue,
         options,
         showOnCard,
+        { section, hubDefined, hubManaged, userId: c.get("userId") },
       ),
       200,
     );
@@ -324,14 +328,24 @@ const customField = apiRouter()
   .openapi(setCustomFieldValueRoute, async (c) => {
     const { taskId, fieldId, value } = c.req.valid("json");
 
-    return c.json(await setCustomFieldValue(taskId, fieldId, value), 200);
+    return c.json(
+      await setCustomFieldValue(taskId, fieldId, value, c.get("userId")),
+      200,
+    );
   })
   .openapi(deleteCustomFieldRoute, async (c) =>
-    c.json(await deleteCustomField(c.req.valid("param").id), 200),
+    c.json(
+      await deleteCustomField(c.req.valid("param").id, c.get("userId")),
+      200,
+    ),
   )
   .openapi(updateCustomFieldRoute, async (c) =>
     c.json(
-      await updateCustomField(c.req.valid("param").id, c.req.valid("json")),
+      await updateCustomField(
+        c.req.valid("param").id,
+        c.req.valid("json"),
+        c.get("userId"),
+      ),
       200,
     ),
   );

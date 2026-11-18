@@ -6,8 +6,10 @@ import {
   customFieldValueTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertEveryTaskHasValue } from "../assert-every-task-has-value";
 import { isChoiceType } from "../choice-options";
 import { fillEmptyValues } from "../fill-default-values";
+import { assertMayChangeDefinition } from "../hub-field-guard";
 import { planChoiceValueChanges } from "../plan-choice-value-changes";
 import { planTextValueChanges } from "../plan-text-value-changes";
 import {
@@ -15,7 +17,11 @@ import {
   resolveFieldUpdate,
 } from "../resolve-field-update";
 
-async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
+async function updateCustomField(
+  id: string,
+  input: CustomFieldUpdateInput,
+  userId?: string,
+) {
   const updated = await db.transaction(async (tx) => {
     const [field] = await tx
       .select()
@@ -27,6 +33,8 @@ async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
     if (!field) {
       throw new HTTPException(404, { message: "Custom field not found" });
     }
+
+    assertMayChangeDefinition(userId, field, input);
 
     const next = resolveFieldUpdate(field, input);
     const from = field.type;
@@ -84,6 +92,9 @@ async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
         defaultValue: next.defaultValue,
         options: next.options,
         showOnCard: next.showOnCard,
+        section: next.section,
+        hubDefined: next.hubDefined,
+        hubManaged: next.hubManaged,
       })
       .where(eq(customFieldDefinitionTable.id, id))
       .returning();
@@ -92,12 +103,19 @@ async function updateCustomField(id: string, input: CustomFieldUpdateInput) {
       throw new HTTPException(404, { message: "Custom field not found" });
     }
 
-    if (next.required && !field.required && next.defaultValue !== null) {
-      await fillEmptyValues(tx, {
-        projectId: field.projectId,
-        fieldId: id,
-        value: next.defaultValue,
-      });
+    if (next.required && !field.required) {
+      if (next.defaultValue === null) {
+        await assertEveryTaskHasValue(tx, {
+          projectId: field.projectId,
+          fieldId: id,
+        });
+      } else {
+        await fillEmptyValues(tx, {
+          projectId: field.projectId,
+          fieldId: id,
+          value: next.defaultValue,
+        });
+      }
     }
 
     return updated;

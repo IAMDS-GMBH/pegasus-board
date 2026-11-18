@@ -1397,7 +1397,8 @@
 				"taskDueDateChanged": "截止日期已變更",
 				"taskAssigneeChanged": "負責人已變更",
 				"taskUnassigned": "任務已取消指派",
-				"dueDateReminder": "截止日期提醒"
+				"dueDateReminder": "截止日期提醒",
+				"taskCustomFieldChanged": "Field value changed"
 			},
 			"reminderLeadTimeLabel": "任務截止前的小時數",
 			"connect": "連線 Webhook",
@@ -1553,7 +1554,6 @@
 			"emptyDescription": "在每個任務上記錄規模、客戶或上線日期等資訊。",
 			"emptyTitle": "尚無自訂欄位",
 			"issues": {
-				"defaultRequired": "必填欄位需要預設值。",
 				"moreOptionsRequired": "若要允許複選，請至少新增兩個選項。",
 				"optionsRequired": "請至少新增一個選項。",
 				"invalidUrl": "Enter a link, like example.org or https://example.org.",
@@ -1583,7 +1583,6 @@
 			"showOnCard": "Show on card",
 			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
 			"errors": {
-				"defaultRequired": "Required fields need a default.",
 				"invalidDefault": "The default doesn't fit this field type.",
 				"nameRequired": "Give the field a name.",
 				"notFound": "This field no longer exists. Someone may have deleted it.",
@@ -1592,9 +1591,15 @@
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
 				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
-				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first.",
+				"hubDefined": "The Pegasus Hub manages this field. Only the Hub can change or delete it.",
+				"hubManaged": "Only the Pegasus Hub sets this value.",
+				"requiredMissingValues": "Some tasks have no value for this field. Set a default or fill in those tasks first.",
+				"valueRequired": "This field is required and can't be emptied."
 			},
-			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
+			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch.",
+			"hubDefined": "Pegasus Hub",
+			"hubDefinedHint": "Managed by the Pegasus Hub. Only the Hub can change or delete this field."
 		},
 		"administration": "管理",
 		"adminUsers": {
@@ -3214,7 +3219,10 @@
 			"callNumber": "Call {{field}}",
 			"invalidEmail": "Enter a valid email address, like name@example.org.",
 			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
-			"sendEmail": "Email {{field}}"
+			"sendEmail": "Email {{field}}",
+			"hubManaged": "Set by the Pegasus Hub",
+			"modEnterKey": "Ctrl/⌘ + Enter",
+			"time": "Time (optional)"
 		},
 		"board": {
 			"reorderFailed": "無法移動任務，請再試一次。",

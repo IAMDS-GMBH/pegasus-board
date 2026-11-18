@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { planFields } from "./plan-fields.mjs";
+import { planFields, wantedFieldIds } from "./plan-fields.mjs";
 
 const paket = {
   name: "Paket",
@@ -144,4 +144,39 @@ test("a field outside the spec stays and is reported", () => {
 
   assert.deepEqual(actions, []);
   assert.match(warnings[0], /Notiz/);
+});
+
+// Pegasus fork (PEGA-123): the Hub creates and owns the lead fields
+// (`hubDefined`); only its system account may change them, so the script
+// leaves them alone, also in the field order.
+test("a field the Hub owns is left alone", () => {
+  const { actions, warnings, errors } = planFields(
+    [paket],
+    [
+      field({
+        hubDefined: true,
+        required: true,
+        showOnCard: false,
+        options: ["Paket 1"],
+      }),
+      field({ id: "g", name: "Vorname", type: "text", hubDefined: true }),
+    ],
+  );
+
+  assert.deepEqual(actions, []);
+  assert.deepEqual(warnings, []);
+  assert.deepEqual(errors, []);
+});
+
+test("the order leaves out fields the Hub owns", () => {
+  assert.deepEqual(
+    wantedFieldIds(
+      [paket, { name: "PLZ", type: "text" }],
+      [
+        field({ id: "p", hubDefined: true }),
+        field({ id: "z", name: "PLZ", type: "text" }),
+      ],
+    ),
+    ["z"],
+  );
 });

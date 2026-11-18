@@ -275,7 +275,9 @@ describe("custom fields API", () => {
     expect(body).toContain("at least one option");
   });
 
-  it("rejects a required field without a default value", async () => {
+  // Pegasus fork (PEGA-123): required no longer needs a default while no task
+  // lacks a value; see custom-field-required.test.ts.
+  it("creates a required field without a default value", async () => {
     const { app, project } = await createFixture();
 
     const response = await app.request("/api/custom-field", {
@@ -291,12 +293,11 @@ describe("custom fields API", () => {
       }),
     });
 
-    const body = await response.text();
-    expect(
-      response.status,
-      `Expected 400, got ${response.status}: ${body}`,
-    ).toBe(400);
-    expect(body).toContain("default value");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      required: true,
+      defaultValue: null,
+    });
   });
 
   it("sets and retrieves a custom field value for a task", async () => {
@@ -577,7 +578,8 @@ describe("custom fields API", () => {
         "[1]",
         "[{}]",
       ];
-      if (required) invalidDefaults.push("[]");
+      // Pegasus fork (PEGA-123): "[]" is no default, which required fields
+      // may now have, so it no longer fails for them.
 
       for (const defaultValue of invalidDefaults) {
         const response = await app.request("/api/custom-field", {

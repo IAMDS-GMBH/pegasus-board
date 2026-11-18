@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { CustomFieldDefinition } from "@/components/project/custom-fields/types";
 import { PropertyRow } from "@/components/task/properties/property-row";
@@ -21,6 +22,10 @@ export function CustomFieldRow({
   disabled = false,
 }: CustomFieldRowProps) {
   const { t } = useTranslation();
+  // Pegasus fork (PEGA-123): only the Pegasus Hub sets these values.
+  const locked = !!field.hubManaged;
+  const readOnly = disabled || locked;
+  const lockHint = locked ? t("tasks:customFields.hubManaged") : undefined;
 
   if (field.type === "boolean") {
     const checked = value === "true";
@@ -30,7 +35,8 @@ export function CustomFieldRow({
           role="checkbox"
           aria-checked={checked}
           aria-label={field.name}
-          disabled={disabled}
+          title={lockHint}
+          disabled={readOnly}
           onClick={() => onChange(checked ? "false" : "true")}
         >
           <CheckboxMark checked={checked} />
@@ -40,11 +46,21 @@ export function CustomFieldRow({
   }
 
   const display = formatCustomFieldValue(field.type, value, "medium");
+  // Pegasus fork (PEGA-123): notes keep their line breaks.
+  const multiline = field.type === "text" && value.includes("\n");
   const button = (
-    <PropertyValue disabled={disabled} aria-label={field.name}>
+    <PropertyValue
+      disabled={readOnly}
+      aria-label={field.name}
+      title={lockHint}
+      className={multiline ? "h-auto min-h-7.5 items-start py-1.5" : undefined}
+    >
       {display ? (
         <>
-          <span className="truncate" title={display.text}>
+          <span
+            className={multiline ? "whitespace-pre-line" : "truncate"}
+            title={display.text}
+          >
             {display.text}
           </span>
           {!!display.more && (
@@ -58,12 +74,19 @@ export function CustomFieldRow({
           {t("tasks:customFields.empty")}
         </span>
       )}
+      {locked && (
+        <Lock
+          data-hub-lock
+          aria-hidden="true"
+          className="ml-auto size-3 shrink-0 text-muted-foreground/70"
+        />
+      )}
     </PropertyValue>
   );
 
   return (
-    <PropertyRow label={field.name}>
-      {disabled ? (
+    <PropertyRow label={field.name} align={multiline ? "start" : "center"}>
+      {readOnly ? (
         button
       ) : (
         <CustomFieldPopover

@@ -11,6 +11,10 @@ export const customFieldDefinitionSchema = z
     options: z.unknown().nullable(),
     position: z.number(),
     showOnCard: z.boolean(),
+    // Pegasus fork (PEGA-123)
+    section: z.string().nullable(),
+    hubDefined: z.boolean(),
+    hubManaged: z.boolean(),
     createdAt: responseTimestamp,
     updatedAt: responseTimestamp,
   })
@@ -31,6 +35,10 @@ export const customFieldValueSchema = z
     fieldType: z.string(),
     fieldOptions: z.unknown().nullable(),
     fieldShowOnCard: z.boolean(),
+    // Pegasus fork (PEGA-123)
+    fieldSection: z.string().nullable(),
+    fieldHubDefined: z.boolean(),
+    fieldHubManaged: z.boolean(),
   })
   .openapi("CustomFieldValue");
 

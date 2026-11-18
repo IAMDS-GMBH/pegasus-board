@@ -1,6 +1,7 @@
 import { isValid, parseISO } from "date-fns";
 import type { CustomFieldType } from "@/components/project/custom-fields/types";
-import { formatDateMedium, formatDateShort } from "@/lib/format";
+import { formatDate, formatDateMedium, formatDateShort } from "@/lib/format";
+import { BERLIN, hasTime } from "./custom-field-date";
 import { customFieldUrlLabel } from "./custom-field-url";
 import { parseMultiselect } from "./parse-multiselect";
 
@@ -30,6 +31,21 @@ export function formatCustomFieldValue(
   if (type === "date") {
     const date = parseISO(value);
     if (!isValid(date)) return { text: value, more: 0 };
+    // Pegasus fork (PEGA-123): a value with a time is an appointment, shown
+    // in German time.
+    if (hasTime(value)) {
+      return {
+        text: formatDate(date, {
+          month: "short",
+          day: "numeric",
+          ...(dateStyle === "medium" ? { year: "numeric" } : {}),
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone: BERLIN,
+        }),
+        more: 0,
+      };
+    }
     return {
       text:
         dateStyle === "short" ? formatDateShort(date) : formatDateMedium(date),

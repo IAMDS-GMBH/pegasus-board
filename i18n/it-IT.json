@@ -1398,7 +1398,8 @@
 				"taskDueDateChanged": "Data scadenza cambiata",
 				"taskAssigneeChanged": "Assegnatario cambiato",
 				"taskUnassigned": "Attività non assegnata",
-				"dueDateReminder": "Promemoria scadenza"
+				"dueDateReminder": "Promemoria scadenza",
+				"taskCustomFieldChanged": "Field value changed"
 			},
 			"reminderLeadTimeLabel": "Ore prima della scadenza di un'attività",
 			"connect": "Connetti webhook",
@@ -1572,7 +1573,6 @@
 			"emptyDescription": "Tieni traccia di informazioni come dimensione, cliente o data di lancio su ogni attività.",
 			"emptyTitle": "Ancora nessun campo personalizzato",
 			"issues": {
-				"defaultRequired": "I campi obbligatori richiedono un valore predefinito.",
 				"moreOptionsRequired": "Aggiungi almeno due opzioni per consentire più valori.",
 				"optionsRequired": "Aggiungi almeno un'opzione.",
 				"invalidUrl": "Enter a link, like example.org or https://example.org.",
@@ -1602,7 +1602,6 @@
 			"showOnCard": "Show on card",
 			"showOnCardDescription": "The value appears on the card in the board and on list rows.",
 			"errors": {
-				"defaultRequired": "Required fields need a default.",
 				"invalidDefault": "The default doesn't fit this field type.",
 				"nameRequired": "Give the field a name.",
 				"notFound": "This field no longer exists. Someone may have deleted it.",
@@ -1611,9 +1610,15 @@
 				"tasksHaveMultipleOptions": "Some tasks have more than one option picked. Leave one option on those tasks first.",
 				"tooFewOptions": "Add more options: a dropdown needs at least one, a field with several picks at least two.",
 				"typeLocked": "The type can't change once a field is created. Only dropdowns can switch between one and several picks.",
-				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first."
+				"tasksHaveInvalidValues": "Some tasks have a value that doesn't fit the new type. Correct or clear those values first.",
+				"hubDefined": "The Pegasus Hub manages this field. Only the Hub can change or delete it.",
+				"hubManaged": "Only the Pegasus Hub sets this value.",
+				"requiredMissingValues": "Some tasks have no value for this field. Set a default or fill in those tasks first.",
+				"valueRequired": "This field is required and can't be emptied."
 			},
-			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch."
+			"typeSwitchText": "Text, email and phone fields can switch between each other. Values that don't fit block the switch.",
+			"hubDefined": "Pegasus Hub",
+			"hubDefinedHint": "Managed by the Pegasus Hub. Only the Hub can change or delete this field."
 		},
 		"administration": "Administration",
 		"adminUsers": {
@@ -3318,7 +3323,10 @@
 			"callNumber": "Call {{field}}",
 			"invalidEmail": "Enter a valid email address, like name@example.org.",
 			"invalidPhone": "Enter a valid phone number, like 0170 1234567.",
-			"sendEmail": "Email {{field}}"
+			"sendEmail": "Email {{field}}",
+			"hubManaged": "Set by the Pegasus Hub",
+			"modEnterKey": "Ctrl/⌘ + Enter",
+			"time": "Time (optional)"
 		},
 		"board": {
 			"reorderFailed": "Could not move task. Please try again.",

@@ -190,4 +190,20 @@ describe("CustomFieldChip", () => {
       "tasks:customFields.required",
     );
   });
+
+  // Pegasus fork (PEGA-123): only the Pegasus Hub sets these values.
+  it("shows a hubManaged value read-only with a lock", () => {
+    render(
+      <CustomFieldChip
+        field={field({ name: "Lead-ID", hubManaged: true })}
+        value="lead-1"
+        onChange={vi.fn()}
+      />,
+    );
+
+    const chip = screen.getByRole("button", { name: /Lead-ID/ });
+    expect(chip).toBeDisabled();
+    expect(chip).toHaveAttribute("title", "tasks:customFields.hubManaged");
+    expect(chip.querySelector("[data-hub-lock]")).not.toBeNull();
+  });
 });

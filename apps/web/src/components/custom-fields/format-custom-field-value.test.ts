@@ -36,4 +36,24 @@ describe("formatCustomFieldValue", () => {
       more: 0,
     });
   });
+
+  // Pegasus fork (PEGA-123): the Hub's appointment, in German time.
+  it("adds the time in Europe/Berlin when a date value has one", () => {
+    const medium = formatCustomFieldValue(
+      "date",
+      "2026-10-28T12:00:00.000Z",
+      "medium",
+    )?.text;
+    expect(medium).toMatch(/2026/);
+    expect(medium).toMatch(/13:00|1:00\sPM/);
+    expect(
+      formatCustomFieldValue("date", "2026-07-01T10:00:00.000Z", "short")?.text,
+    ).toMatch(/12:00|12:00\sPM/);
+  });
+
+  it("shows only the day for a date without a time", () => {
+    expect(
+      formatCustomFieldValue("date", "2026-10-28", "medium")?.text,
+    ).not.toMatch(/:/);
+  });
 });

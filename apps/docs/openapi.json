@@ -107,6 +107,16 @@
             "example": [
               "task:update"
             ]
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of the custom fields the caller may not change, for HUB_DEFINED_FIELD and HUB_MANAGED_FIELD.",
+            "example": [
+              "Lead-ID"
+            ]
           }
         },
         "required": [
@@ -3646,6 +3656,9 @@
               },
               "dueDateReminder": {
                 "type": "boolean"
+              },
+              "taskCustomFieldChanged": {
+                "type": "boolean"
               }
             },
             "required": [
@@ -3654,7 +3667,8 @@
               "taskDueDateChanged",
               "taskAssigneeChanged",
               "taskUnassigned",
-              "dueDateReminder"
+              "dueDateReminder",
+              "taskCustomFieldChanged"
             ]
           }
         ]
@@ -4602,6 +4616,18 @@
           "showOnCard": {
             "type": "boolean"
           },
+          "section": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hubDefined": {
+            "type": "boolean"
+          },
+          "hubManaged": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -4620,6 +4646,9 @@
           "defaultValue",
           "position",
           "showOnCard",
+          "section",
+          "hubDefined",
+          "hubManaged",
           "createdAt",
           "updatedAt"
         ]
@@ -4654,6 +4683,18 @@
           "fieldOptions": {},
           "fieldShowOnCard": {
             "type": "boolean"
+          },
+          "fieldSection": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fieldHubDefined": {
+            "type": "boolean"
+          },
+          "fieldHubManaged": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -4664,7 +4705,10 @@
           "fieldName",
           "fieldPosition",
           "fieldType",
-          "fieldShowOnCard"
+          "fieldShowOnCard",
+          "fieldSection",
+          "fieldHubDefined",
+          "fieldHubManaged"
         ]
       },
       "CustomFieldFilterValues": {
@@ -19272,6 +19316,10 @@
                       },
                       "dueDateReminder": {
                         "type": "boolean"
+                      },
+                      "taskCustomFieldChanged": {
+                        "type": "boolean",
+                        "description": "Send `task.custom_field_changed` when a custom field value on a task changes, with `data: { fieldId, fieldName, fieldType, oldValue, newValue }` (`null` = empty). Not sent when a task is created."
                       }
                     }
                   },
@@ -19420,6 +19468,10 @@
                       },
                       "dueDateReminder": {
                         "type": "boolean"
+                      },
+                      "taskCustomFieldChanged": {
+                        "type": "boolean",
+                        "description": "Send `task.custom_field_changed` when a custom field value on a task changes, with `data: { fieldId, fieldName, fieldType, oldValue, newValue }` (`null` = empty). Not sent when a task is created."
                       }
                     }
                   },
@@ -22680,7 +22732,8 @@
                   },
                   "required": {
                     "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "description": "Whether every task must have a value. Without a default this is only allowed while the project has no tasks (400 `CUSTOM_FIELD_REQUIRED_MISSING_VALUES`)."
                   },
                   "defaultValue": {
                     "type": "string"
@@ -22695,6 +22748,22 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Whether the field's value appears on the task card in the board and on list rows."
+                  },
+                  "section": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 100,
+                    "description": "Group of the field in the task detail view, e.g. `Stammdaten`. Any text; `null` or an empty string means no group. Fields without a group come last."
+                  },
+                  "hubDefined": {
+                    "type": "boolean",
+                    "description": "The definition belongs to the Pegasus Hub: only its system account (`PEGASUS_HUB_USER_ID`) may set this, or change or delete such a field. Others get 403 `HUB_DEFINED_FIELD`."
+                  },
+                  "hubManaged": {
+                    "type": "boolean",
+                    "description": "Only the Pegasus Hub's system account may set, change or clear the field's value; others get 403 `HUB_MANAGED_FIELD`. Setting this flag is limited to the system account, too."
                   }
                 },
                 "required": [
@@ -23071,7 +23140,7 @@
                   },
                   "required": {
                     "type": "boolean",
-                    "description": "Whether every task must have a value. Turning it on needs a default, which fills tasks that have no value yet."
+                    "description": "Whether every task must have a value; it can't be emptied then (400 `CUSTOM_FIELD_VALUE_REQUIRED`). With a default, turning it on fills tasks that have no value yet; without one, it is rejected while a task has no value (400 `CUSTOM_FIELD_REQUIRED_MISSING_VALUES`)."
                   },
                   "defaultValue": {
                     "type": [
@@ -23090,6 +23159,22 @@
                   "showOnCard": {
                     "type": "boolean",
                     "description": "Whether the field's value appears on the task card in the board and on list rows."
+                  },
+                  "section": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 100,
+                    "description": "Group of the field in the task detail view, e.g. `Stammdaten`. Any text; `null` or an empty string means no group. Fields without a group come last."
+                  },
+                  "hubDefined": {
+                    "type": "boolean",
+                    "description": "The definition belongs to the Pegasus Hub: only its system account (`PEGASUS_HUB_USER_ID`) may set this, or change or delete such a field. Others get 403 `HUB_DEFINED_FIELD`."
+                  },
+                  "hubManaged": {
+                    "type": "boolean",
+                    "description": "Only the Pegasus Hub's system account may set, change or clear the field's value; others get 403 `HUB_MANAGED_FIELD`. Setting this flag is limited to the system account, too."
                   }
                 }
               }

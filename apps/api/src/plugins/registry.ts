@@ -17,6 +17,7 @@ import type {
   TaskStatusChangedEvent,
   TaskTitleChangedEvent,
   TaskUnassignedEvent,
+  TaskCustomFieldChangedEvent,
 } from "./types";
 
 const plugins = new Map<string, IntegrationPlugin>();
@@ -236,6 +237,24 @@ export function initializeEventSubscriptions(): void {
       title: data.title,
     });
   });
+
+  // Pegasus fork (PEGA-123)
+  subscribeToEvent<Omit<TaskCustomFieldChangedEvent, "eventId">>(
+    "task.custom_field_changed",
+    async (data, { eventId }) => {
+      await broadcastTaskCustomFieldChanged({
+        eventId,
+        taskId: data.taskId,
+        projectId: data.projectId,
+        userId: data.userId,
+        fieldId: data.fieldId,
+        fieldName: data.fieldName,
+        fieldType: data.fieldType,
+        oldValue: data.oldValue,
+        newValue: data.newValue,
+      });
+    },
+  );
 
   for (const event of [
     "task.label_created",
@@ -531,6 +550,29 @@ export async function broadcastTaskUnassigned(
       await plugin.onTaskUnassigned(event, context);
     } catch (error) {
       console.error(`Plugin ${plugin.type} error on task.unassigned:`, error);
+    }
+  }
+}
+
+// Pegasus fork (PEGA-123)
+export async function broadcastTaskCustomFieldChanged(
+  event: TaskCustomFieldChangedEvent,
+): Promise<void> {
+  const integrations = await getActiveIntegrations(event.projectId);
+
+  for (const integration of integrations) {
+    const plugin = getPlugin(integration.type);
+    if (!plugin?.onTaskCustomFieldChanged) continue;
+
+    const context = createContext(integration);
+
+    try {
+      await plugin.onTaskCustomFieldChanged(event, context);
+    } catch (error) {
+      console.error(
+        `Plugin ${plugin.type} error on task.custom_field_changed:`,
+        error,
+      );
     }
   }
 }

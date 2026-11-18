@@ -18,6 +18,11 @@ export const genericWebhookEventToggles = integrationEventToggles.extend({
   taskAssigneeChanged: z.boolean().optional(),
   taskUnassigned: z.boolean().optional(),
   dueDateReminder: z.boolean().optional(),
+  // Pegasus fork (PEGA-123)
+  taskCustomFieldChanged: z.boolean().optional().openapi({
+    description:
+      "Send `task.custom_field_changed` when a custom field value on a task changes, with `data: { fieldId, fieldName, fieldType, oldValue, newValue }` (`null` = empty). Not sent when a task is created.",
+  }),
 });
 
 export const deletedSchema = z.object({ success: z.boolean() });

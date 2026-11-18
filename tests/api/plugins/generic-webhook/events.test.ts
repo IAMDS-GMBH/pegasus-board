@@ -8,6 +8,7 @@ import {
 } from "vite-plus/test";
 import { postToGenericWebhook } from "../../../../apps/api/src/plugins/generic-webhook/client";
 import {
+  handleTaskCustomFieldChanged,
   handleTaskDeleted,
   handleTaskUnassigned,
 } from "../../../../apps/api/src/plugins/generic-webhook/events";
@@ -208,5 +209,70 @@ describe("generic webhook event handlers", () => {
     await handleTaskDeleted(deletedEvent, enabledContext);
 
     expect(postToGenericWebhook).not.toHaveBeenCalled();
+  });
+
+  // Pegasus fork (PEGA-123): the Hub copies card edits into the lead at once.
+  describe("task.custom_field_changed", () => {
+    const fieldEvent = {
+      eventId: "event-field-1",
+      taskId: "task-1",
+      projectId: "project-1",
+      userId: "user-1",
+      fieldId: "field-1",
+      fieldName: "Ort",
+      fieldType: "text",
+      oldValue: null,
+      newValue: "Bonn",
+    };
+
+    it("does not post when taskCustomFieldChanged is disabled", async () => {
+      await handleTaskCustomFieldChanged(fieldEvent, context);
+
+      expect(postToGenericWebhook).not.toHaveBeenCalled();
+    });
+
+    it("posts the field with its old and new value", async () => {
+      selectMock
+        .mockImplementationOnce(() =>
+          taskSelectChain([
+            {
+              id: "task-1",
+              title: "Max Muster",
+              number: 7,
+              status: "to-do",
+              priority: "high",
+              columnName: "Neu",
+              projectId: "project-1",
+              projectName: "Bewerber-Pool",
+              workspaceId: "workspace-1",
+            },
+          ]),
+        )
+        .mockImplementationOnce(() =>
+          selectChain([{ id: "user-1", name: "Agentin" }]),
+        );
+
+      await handleTaskCustomFieldChanged(fieldEvent, {
+        ...context,
+        config: { ...context.config, events: { taskCustomFieldChanged: true } },
+      });
+
+      expect(postToGenericWebhook).toHaveBeenCalledTimes(1);
+      const [, payload] = vi.mocked(postToGenericWebhook).mock.calls[0] ?? [];
+      expect(payload).toMatchObject({
+        id: "event-field-1",
+        event: "task.custom_field_changed",
+        project: { id: "project-1", name: "Bewerber-Pool" },
+        task: { id: "task-1", title: "Max Muster" },
+        actor: { id: "user-1", name: "Agentin" },
+        data: {
+          fieldId: "field-1",
+          fieldName: "Ort",
+          fieldType: "text",
+          oldValue: null,
+          newValue: "Bonn",
+        },
+      });
+    });
   });
 });

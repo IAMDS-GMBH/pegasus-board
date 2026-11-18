@@ -307,7 +307,11 @@ function CreateTaskModalContent({
     resolvedProjectId,
   ) as { data: CustomFieldDefinition[] | undefined };
 
-  const customFields = useMemo(() => rawCustomFields ?? [], [rawCustomFields]);
+  // Pegasus fork (PEGA-123): values only the Pegasus Hub sets are not offered.
+  const customFields = useMemo(
+    () => (rawCustomFields ?? []).filter((field) => !field.hubManaged),
+    [rawCustomFields],
+  );
 
   const [customFieldValues, setCustomFieldValues] = useState<
     Record<string, string>

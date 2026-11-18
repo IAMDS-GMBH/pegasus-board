@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import db from "../../database";
@@ -8,10 +8,23 @@ import {
   customFieldValueTable,
   taskTable,
 } from "../../database/schema";
+import { fieldError } from "../field-error";
+import { assertMaySetValues } from "../hub-field-guard";
 import { toStoredCustomFieldValue } from "../stored-value";
+import {
+  type CustomFieldValueType,
+  isCustomFieldValueEmpty,
+} from "../../task/validate-task-fields";
 import { normalizeEmailValue } from "../email-value";
 import { normalizePhoneValue } from "../phone-value";
 import { normalizeUrlValue } from "../url-value";
+
+function valueOrNull(value: string | null, type: string) {
+  if (value === null) return null;
+  return isCustomFieldValueEmpty(value, type as CustomFieldValueType)
+    ? null
+    : value;
+}
 
 function isMultiselectEmpty(value: string): boolean {
   if (!value || value.trim().length === 0) return true;
@@ -28,6 +41,7 @@ async function setCustomFieldValue(
   taskId: string,
   fieldId: string,
   value: string,
+  userId?: string,
 ) {
   const [task] = await db
     .select({
@@ -55,20 +69,18 @@ async function setCustomFieldValue(
     });
   }
 
+  assertMaySetValues(userId, [field]);
+
   const normalizedValue = value.trim();
 
-  if (field.required) {
-    if (field.type === "multiselect") {
-      if (isMultiselectEmpty(normalizedValue)) {
-        throw new HTTPException(400, {
-          message: "This custom field is required",
-        });
-      }
-    } else if (normalizedValue.length === 0) {
-      throw new HTTPException(400, {
-        message: "This custom field is required",
-      });
-    }
+  // Pegasus fork (PEGA-123): a stable code for the web.
+  if (
+    field.required &&
+    (field.type === "multiselect"
+      ? isMultiselectEmpty(normalizedValue)
+      : normalizedValue.length === 0)
+  ) {
+    fieldError("CUSTOM_FIELD_VALUE_REQUIRED", "This custom field is required");
   }
 
   if (field.type === "dropdown" && normalizedValue.length > 0) {
@@ -152,26 +164,57 @@ async function setCustomFieldValue(
     }
   }
 
-  const [result] = await db
-    .insert(customFieldValueTable)
-    .values({
-      taskId,
-      fieldId,
-      value: toStoredCustomFieldValue(field.type, normalizedValue),
-    })
-    .onConflictDoUpdate({
-      target: [customFieldValueTable.taskId, customFieldValueTable.fieldId],
-      set: {
-        value: sql`excluded.value`,
-      },
-    })
-    .returning();
+  const { result, oldValue } = await db.transaction(async (tx) => {
+    const [previous] = await tx
+      .select({ value: customFieldValueTable.value })
+      .from(customFieldValueTable)
+      .where(
+        and(
+          eq(customFieldValueTable.taskId, taskId),
+          eq(customFieldValueTable.fieldId, fieldId),
+        ),
+      )
+      .for("update");
+
+    const [result] = await tx
+      .insert(customFieldValueTable)
+      .values({
+        taskId,
+        fieldId,
+        value: toStoredCustomFieldValue(field.type, normalizedValue),
+      })
+      .onConflictDoUpdate({
+        target: [customFieldValueTable.taskId, customFieldValueTable.fieldId],
+        set: {
+          value: sql`excluded.value`,
+        },
+      })
+      .returning();
+
+    return { result, oldValue: previous?.value ?? null };
+  });
 
   await publishEvent("task.updated", {
     taskId,
     projectId: task.projectId,
     customFieldsChanged: true,
   });
+
+  // Pegasus fork (PEGA-123): one event per changed value for webhooks.
+  const before = valueOrNull(oldValue, field.type);
+  const after = valueOrNull(result?.value ?? null, field.type);
+  if (before !== after) {
+    await publishEvent("task.custom_field_changed", {
+      taskId,
+      projectId: task.projectId,
+      userId: userId ?? null,
+      fieldId,
+      fieldName: field.name,
+      fieldType: field.type,
+      oldValue: before,
+      newValue: after,
+    });
+  }
 
   return result;
 }

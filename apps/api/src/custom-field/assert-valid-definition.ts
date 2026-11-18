@@ -9,7 +9,6 @@ const NUMBER_PATTERN = /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i;
 type CustomFieldDefinitionInput = {
   name: string;
   type: string;
-  required: boolean;
   defaultValue?: string | null;
   options?: string[] | null;
 };
@@ -66,14 +65,9 @@ function assertValidDefaultForType(
 }
 
 export function assertValidDefinition(input: CustomFieldDefinitionInput) {
-  const { name, type, required, defaultValue, options } = input;
-
-  if (required && (defaultValue == null || defaultValue.trim() === "")) {
-    fieldError(
-      "CUSTOM_FIELD_DEFAULT_REQUIRED",
-      "Required fields must have a default value",
-    );
-  }
+  // Pegasus fork (PEGA-123): `required` no longer needs a default; see
+  // assertEveryTaskHasValue.
+  const { name, type, defaultValue, options } = input;
 
   const trimmedValue = defaultValue?.trim();
   if (trimmedValue) {
@@ -100,14 +94,7 @@ export function assertValidDefinition(input: CustomFieldDefinitionInput) {
   }
 
   if (type === "multiselect" && defaultValue != null) {
-    const empty = isCustomFieldValueEmpty(defaultValue, "multiselect");
-    if (required && empty) {
-      fieldError(
-        "CUSTOM_FIELD_DEFAULT_REQUIRED",
-        "Required fields must have a default value",
-      );
-    }
-    if (!empty) {
+    if (!isCustomFieldValueEmpty(defaultValue, "multiselect")) {
       const error = validateCustomFieldValue(
         defaultValue,
         "multiselect",

@@ -1,6 +1,7 @@
 import { extractAssetIds } from "../../storage/cleanup-assets";
 import { and, eq, inArray, isNull } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
+import { assertMaySetValues } from "../../custom-field/hub-field-guard";
 import db from "../../database";
 import {
   assetTable,
@@ -84,6 +85,21 @@ async function createTask({
     .select()
     .from(customFieldDefinitionTable)
     .where(eq(customFieldDefinitionTable.projectId, projectId));
+
+  // Pegasus fork (PEGA-123): values of hubManaged fields come only from the Hub.
+  assertMaySetValues(
+    currentUserId,
+    allFields.filter((field) =>
+      normalizedCustomFields?.some(
+        (input) =>
+          input.fieldId === field.id &&
+          !isCustomFieldValueEmpty(
+            input.value,
+            field.type as CustomFieldValueType,
+          ),
+      ),
+    ),
+  );
 
   const mergedCustomFields: CustomFieldInput[] = normalizedCustomFields ?? [];
   const providedFieldIds = new Set(mergedCustomFields.map((f) => f.fieldId));

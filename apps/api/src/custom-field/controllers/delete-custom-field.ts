@@ -6,10 +6,13 @@ import {
   projectTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertMayChangeDefinition } from "../hub-field-guard";
 
-async function deleteCustomField(id: string) {
+async function deleteCustomField(id: string, userId?: string) {
   const [field] = await db
     .select({
+      name: customFieldDefinitionTable.name,
+      hubDefined: customFieldDefinitionTable.hubDefined,
       projectId: customFieldDefinitionTable.projectId,
       workspaceId: projectTable.workspaceId,
     })
@@ -26,6 +29,8 @@ async function deleteCustomField(id: string) {
       message: "Custom field or project not found",
     });
   }
+
+  assertMayChangeDefinition(userId, field);
 
   if (!field.workspaceId) {
     throw new HTTPException(400, {

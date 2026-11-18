@@ -13,6 +13,8 @@ export type GenericWebhookEvents = {
   taskAssigneeChanged: boolean;
   taskUnassigned: boolean;
   dueDateReminder: boolean;
+  // Pegasus fork (PEGA-123)
+  taskCustomFieldChanged: boolean;
 };
 
 export const GENERIC_WEBHOOK_EVENT_ITEMS: EventChecklistItem<
@@ -60,6 +62,11 @@ export const GENERIC_WEBHOOK_EVENT_ITEMS: EventChecklistItem<
     labelKey: "settings:genericWebhookIntegration.events.taskDueDateChanged",
   },
   {
+    id: "taskCustomFieldChanged",
+    labelKey:
+      "settings:genericWebhookIntegration.events.taskCustomFieldChanged",
+  },
+  {
     id: "taskCommentCreated",
     labelKey: "settings:genericWebhookIntegration.events.taskCommentCreated",
   },
@@ -85,5 +92,6 @@ export function toGenericWebhookEvents(
     taskAssigneeChanged: events?.taskAssigneeChanged ?? false,
     taskUnassigned: events?.taskUnassigned ?? false,
     dueDateReminder: events?.dueDateReminder ?? false,
+    taskCustomFieldChanged: events?.taskCustomFieldChanged ?? false,
   };
 }

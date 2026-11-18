@@ -6,7 +6,6 @@ import { customFieldErrorKey } from "./custom-field-error-key";
 describe("customFieldErrorKey", () => {
   it.each([
     ["CUSTOM_FIELD_NAME_REQUIRED", "nameRequired"],
-    ["CUSTOM_FIELD_DEFAULT_REQUIRED", "defaultRequired"],
     ["CUSTOM_FIELD_INVALID_DEFAULT", "invalidDefault"],
     ["CUSTOM_FIELD_TOO_FEW_OPTIONS", "tooFewOptions"],
     ["CUSTOM_FIELD_TYPE_LOCKED", "typeLocked"],
@@ -15,6 +14,11 @@ describe("customFieldErrorKey", () => {
     ["CUSTOM_FIELD_TASKS_HAVE_MULTIPLE_OPTIONS", "tasksHaveMultipleOptions"],
     // Pegasus fork (PEGA-86)
     ["CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES", "tasksHaveInvalidValues"],
+    // Pegasus fork (PEGA-123)
+    ["CUSTOM_FIELD_REQUIRED_MISSING_VALUES", "requiredMissingValues"],
+    ["CUSTOM_FIELD_VALUE_REQUIRED", "valueRequired"],
+    ["HUB_DEFINED_FIELD", "hubDefined"],
+    ["HUB_MANAGED_FIELD", "hubManaged"],
     ["NOT_FOUND", "notFound"],
   ])("maps %s to a translated text", (code, key) => {
     expect(

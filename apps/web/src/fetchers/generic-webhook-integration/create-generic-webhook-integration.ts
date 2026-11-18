@@ -18,6 +18,7 @@ export type CreateGenericWebhookIntegrationRequest = {
     taskAssigneeChanged?: boolean;
     taskUnassigned?: boolean;
     dueDateReminder?: boolean;
+    taskCustomFieldChanged?: boolean;
   };
   dueDateReminderLeadTimeMinutes?: number;
 };

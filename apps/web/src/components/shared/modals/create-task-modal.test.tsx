@@ -749,7 +749,8 @@ describe("CreateTaskModal custom fields", () => {
     fireEvent.click(customerChip);
     const input = await screen.findByLabelText("customer");
     fireEvent.change(input, { target: { value: "Acme Corp" } });
-    fireEvent.keyDown(input, { key: "Enter" });
+    // Pegasus fork (PEGA-123): text fields are multi-line; Ctrl+Enter saves.
+    fireEvent.keyDown(input, { key: "Enter", ctrlKey: true });
 
     await vi.waitFor(() =>
       expect(
@@ -767,5 +768,21 @@ describe("CreateTaskModal custom fields", () => {
         }),
       ),
     );
+  });
+
+  // Pegasus fork (PEGA-123): only the Pegasus Hub sets these values.
+  it("does not offer fields whose value the Hub sets", async () => {
+    customFieldDefs = [
+      { ...customField("lead-id", "text", false), hubManaged: true },
+      customField("points", "number", false),
+    ];
+    render(<CreateTaskModal open onClose={vi.fn()} projectId="project-2" />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(
+      await screen.findByText("points", { selector: "span" }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('[data-custom-field="lead-id"]')).toBeNull();
   });
 });

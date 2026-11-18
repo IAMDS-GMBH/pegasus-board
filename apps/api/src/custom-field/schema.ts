@@ -26,6 +26,28 @@ const customFieldType = z.enum([
   "phone",
 ]);
 
+// Pegasus fork (PEGA-123): contract with the Pegasus Hub, do not rename.
+const sectionProperty = z
+  .string()
+  .trim()
+  .max(100)
+  .nullable()
+  .optional()
+  .openapi({
+    description:
+      "Group of the field in the task detail view, e.g. `Stammdaten`. Any text; `null` or an empty string means no group. Fields without a group come last.",
+  });
+
+const hubDefinedProperty = z.boolean().optional().openapi({
+  description:
+    "The definition belongs to the Pegasus Hub: only its system account (`PEGASUS_HUB_USER_ID`) may set this, or change or delete such a field. Others get 403 `HUB_DEFINED_FIELD`.",
+});
+
+const hubManagedProperty = z.boolean().optional().openapi({
+  description:
+    "Only the Pegasus Hub's system account may set, change or clear the field's value; others get 403 `HUB_MANAGED_FIELD`. Setting this flag is limited to the system account, too.",
+});
+
 export const createCustomFieldBody = z.object({
   projectId: z.string(),
   name: z.string(),
@@ -33,13 +55,19 @@ export const createCustomFieldBody = z.object({
     description:
       "`url` holds an http or https link. Values without a scheme get `https://`, and the normalized link is stored. `email` holds one email address, stored trimmed. `phone` holds a phone number with digits, spaces, a leading `+` and `( ) / . -`; it is stored as typed with spaces collapsed.",
   }),
-  required: z.boolean().optional().default(false),
+  required: z.boolean().optional().default(false).openapi({
+    description:
+      "Whether every task must have a value. Without a default this is only allowed while the project has no tasks (400 `CUSTOM_FIELD_REQUIRED_MISSING_VALUES`).",
+  }),
   defaultValue: z.string().optional(),
   options: z.array(z.string()).optional(),
   showOnCard: z.boolean().optional().default(false).openapi({
     description:
       "Whether the field's value appears on the task card in the board and on list rows.",
   }),
+  section: sectionProperty,
+  hubDefined: hubDefinedProperty,
+  hubManaged: hubManagedProperty,
 });
 
 export const updateCustomFieldBody = z.object({
@@ -52,7 +80,7 @@ export const updateCustomFieldBody = z.object({
   }),
   required: z.boolean().optional().openapi({
     description:
-      "Whether every task must have a value. Turning it on needs a default, which fills tasks that have no value yet.",
+      "Whether every task must have a value; it can't be emptied then (400 `CUSTOM_FIELD_VALUE_REQUIRED`). With a default, turning it on fills tasks that have no value yet; without one, it is rejected while a task has no value (400 `CUSTOM_FIELD_REQUIRED_MISSING_VALUES`).",
   }),
   defaultValue: z.string().nullable().optional().openapi({
     description:
@@ -66,6 +94,9 @@ export const updateCustomFieldBody = z.object({
     description:
       "Whether the field's value appears on the task card in the board and on list rows.",
   }),
+  section: sectionProperty,
+  hubDefined: hubDefinedProperty,
+  hubManaged: hubManagedProperty,
 });
 
 export const reorderCustomFieldsBody = z.object({
