@@ -1,4 +1,5 @@
 import type { apikeyTable } from "../database/schema";
+import { DEFAULT_API_KEY_RATE_LIMIT_MAX } from "./api-key-rate-limit";
 import type { ApiKeyDenial, ApiKeyRateLimit } from "./rate-limit-headers";
 
 export type ApiKeyUsageRow = Pick<
@@ -31,7 +32,7 @@ type RateWindow = {
 };
 
 function currentWindow(apiKey: ApiKeyUsageRow, now: Date): RateWindow {
-  const limit = apiKey.rateLimitMax ?? 100;
+  const limit = apiKey.rateLimitMax ?? DEFAULT_API_KEY_RATE_LIMIT_MAX;
   const length = apiKey.rateLimitTimeWindow ?? 60_000;
   const anchor = apiKey.lastRequest;
   if (!anchor || now.getTime() - anchor.getTime() >= length)
