@@ -58,7 +58,7 @@ Entfallen sind Telefonqualifizierung, Zugeordnet, Kontaktiert, Termin vereinbart
 | Felder | `phase: string \| null` (bis 100 Zeichen, getrimmt; leerer Text = `null`), `isLocked: boolean` (Standard `false`) |
 | Schreiben | `POST /column/{projectId}` und `PUT /column/{id}` nehmen beide optional an. Ein `PUT` ohne die Felder lässt sie unverändert. |
 | Lesen | `GET /column/{projectId}`, jede Spaltenantwort und die Board-Spalten von `GET /task/tasks/{projectId}` geben beide zurück. |
-| Speicherung | `column.phase text null`, `column.is_locked boolean not null default false`, Migration `0068_column_phase_lock.sql` (idempotent). Bestehende Spalten bleiben ohne Phase und ungesperrt. |
+| Speicherung | `column.phase text null`, `column.is_locked boolean not null default false`, Migration `0069_column_phase_lock.sql` (idempotent). Bestehende Spalten bleiben ohne Phase und ungesperrt. |
 | Sperre | 403 `{ code: "COLUMN_LOCKED", message: "Column „Eingang“ is locked: …" }` auf `PUT /task/status/{id}`, `PUT /task/{id}` (Statuswechsel), `POST /task/reorder` (nur Spaltenwechsel), `PATCH /task/bulk` (`updateStatus`), `PUT /task/move/{id}` (Quelle oder Ziel gesperrt), `POST /task/{projectId}`, `POST /task/import/{projectId}`, `POST /task/duplicate/{id}`. Geprüft nach der bestehenden Rechteprüfung, also erst `MISSING_PERMISSION`, dann `COLUMN_LOCKED`. |
 | Erlaubt | Umsortieren innerhalb einer gesperrten Spalte; Titel, Beschreibung, Felder, Kommentare, Labels, Zuweisung, Anhänge; Archivieren, „Geplant“ und Löschen nach ihren eigenen Rechten. |
 | Ausgenommen | Workspace-Owner, Instanz-Admins, das Konto mit der Nutzer-ID aus `PEGASUS_HUB_USER_ID`. |
@@ -79,7 +79,7 @@ Entfallen sind Telefonqualifizierung, Zugeordnet, Kontaktiert, Termin vereinbart
 
 ## 2. Umsetzung
 
-- **Datenmodell:** `apps/api/src/database/schema.ts` (`columnTable.phase`, `isLocked`), Migration `apps/api/drizzle/0068_column_phase_lock.sql` mit Snapshot und Journal-Eintrag.
+- **Datenmodell:** `apps/api/src/database/schema.ts` (`columnTable.phase`, `isLocked`), Migration `apps/api/drizzle/0069_column_phase_lock.sql` mit Snapshot und Journal-Eintrag.
 - **Spalten-API:** `column/schema.ts` (Zod, Normalisierung leerer Phase), `column/response.ts`, `column/index.ts`, `column/controllers/{create,update}-column.ts`.
 - **Board-API:** `task/response.ts` (`boardColumnSchema`), `task/controllers/get-tasks.ts`.
 - **Sperre:** `apps/api/src/column-lock/` mit drei Dateien:

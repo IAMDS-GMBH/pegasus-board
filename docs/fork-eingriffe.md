@@ -236,7 +236,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - **Felder im Body, die eine zweite Karten-Aktion auslösen** (Bearbeiter beim Anlegen, `taskId` beim Label-Anlegen): `requireHubPermissionWhen(...)` ergänzen und in `hub-permissions-side-routes.test.ts` absichern.
 - Neue In-Handler-Prüfungen `hasWorkspacePermission(c, { task: [...] })` auf `hasLeadPermission` umstellen.
 - Neue Upstream-Capabilities für Karten-Aktionen in `capabilityHubPermission` eintragen.
-- Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0068, PEGA-170).
+- Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0069, PEGA-170; 0068 ist die Fork-Migration aus PR #20).
 
 ### PEGA-143 — Bearbeiter: zurückgeben und Mitgliedschaft aus dem Hub
 
@@ -272,7 +272,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - Board-Skript: `board.json` mit 14 Spalten, `phase`, `isLocked`, `fixedName` (Eingang, Rückgabe an Pegasus) und `retiredColumns`. `planColumns` benennt nur `fixedName`-Spalten zurück, setzt Phase und Sperre nur bei Spalten ohne Phase und entfernt entfallene Spalten, solange sie leer sind.
 
 **Dateien:**
-- Migration `apps/api/drizzle/0068_column_phase_lock.sql` (idempotent), `meta/0068_snapshot.json`, `_journal.json`; `apps/api/src/database/schema.ts` (`columnTable.phase`, `isLocked`)
+- Migration `apps/api/drizzle/0069_column_phase_lock.sql` (idempotent), `meta/0069_snapshot.json`, `_journal.json`; `apps/api/src/database/schema.ts` (`columnTable.phase`, `isLocked`)
 - API Spalten: `column/{schema,response,index}.ts`, `column/controllers/{create,update}-column.ts`
 - API Board: `task/response.ts` (`boardColumnSchema`), `task/controllers/get-tasks.ts` (Mapping)
 - API Sperre: `column-lock/{assert-columns-unlocked,column-change,is-column-lock-exempt}.ts` (neu), `task/controllers/require-column-unlocked.ts` (neu), `task/controllers/move-task.ts` (`resolveDestinationStatus` exportiert), `task/index.ts` (Middleware in acht Routen, 403-Beschreibungen); `apps/docs/openapi.json`
@@ -282,7 +282,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 
 **Beim Sync beachten:**
 - `phase`, `isLocked` und `COLUMN_LOCKED` sind Vertrag mit dem Hub, ebenso die Namen „Eingang“ und „Rückgabe an Pegasus“.
-- Migration hinter die letzte Upstream-Migration nummerieren; Upstream ist bereits bei 0073 (Stand 15.11.2026), der Fork bei 0068.
+- Migration hinter die letzte Upstream-Migration nummerieren; Upstream ist bereits bei 0073 (Stand 15.11.2026), der Fork bei 0069.
 - Neue Upstream-Routen, die `task.status` oder `task.columnId` setzen, brauchen eine Middleware aus `require-column-unlocked.ts`; `column-lock.test.ts` um den Pfad ergänzen. Integrationen (GitHub, GitLab, Gitea, Sync, Workflow-Regeln) verschieben über eigene Pfade ohne Sperre; im Bewerber-Pool sind sie nicht verbunden.
 - Ändert Upstream `boardColumnSchema`, das Mapping in `get-tasks.ts`, die Spaltenzeile der Einstellungen, `option-menu.tsx` oder `statusMenuOptions`, die Fork-Felder bzw. `disabled` erhalten.
 - Konfliktpotenzial mittel: `task/index.ts` (Middleware-Ketten) und `kanban-board/index.tsx` (Spaltenschleife jetzt in `PhaseGroup`) sind upstream oft geändert.

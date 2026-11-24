@@ -40,9 +40,9 @@ Return to **API Keys** to remove a credential you no longer use. To rotate one, 
 
 ## Rate limits
 
-Each API key can make 100 requests per 60 seconds by default. Requests made with a browser session or a device access token do not count against it.
+Each API key can make 1000 requests per 60 seconds by default. Self-hosted instances can change this for newly created keys with the `API_KEY_RATE_LIMIT_MAX` environment variable. Requests made with a browser session or a device access token do not count against it.
 
-The window follows the key's most recent successful request. Every successful request starts the 60 seconds again, and the count resets only after a full window passes without a successful request. A steady stream of requests, even one per second, keeps the window open, so the key is limited after 100 requests until it has been idle for 60 seconds.
+The window follows the key's most recent successful request. Every successful request starts the 60 seconds again, and the count resets only after a full window passes without a successful request. A steady stream of requests, even one per second, keeps the window open, so the key is limited after 1000 requests until it has been idle for 60 seconds.
 
 Successful requests made with an API key include these headers:
 
