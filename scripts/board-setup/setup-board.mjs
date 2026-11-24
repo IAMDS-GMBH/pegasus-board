@@ -121,7 +121,7 @@ async function main() {
       );
     }
     console.log("\nSpalten");
-    const columnPlan = planColumns(spec.columns, columns);
+    const columnPlan = planColumns(spec.columns, columns, spec.retiredColumns);
     report({
       ...columnPlan,
       actions: [
@@ -167,7 +167,11 @@ async function main() {
 
   // Columns are read again: a new project starts with Kaneo's default columns.
   console.log("\nSpalten");
-  const columnPlan = planColumns(spec.columns, await getColumns(projectId));
+  const columnPlan = planColumns(
+    spec.columns,
+    await getColumns(projectId),
+    spec.retiredColumns,
+  );
   await apply(columnPlan.actions, context);
   report({ warnings: columnPlan.warnings });
   const columnsNow = await getColumns(projectId);
@@ -213,12 +217,16 @@ async function main() {
     const ids = {
       workspaceId,
       projectId,
-      columns: finalColumns.map(({ id, name, slug, isFinal }) => ({
-        id,
-        name,
-        slug,
-        isFinal,
-      })),
+      columns: finalColumns.map(
+        ({ id, name, slug, isFinal, phase, isLocked }) => ({
+          id,
+          name,
+          slug,
+          isFinal,
+          phase,
+          isLocked,
+        }),
+      ),
       labels: finalLabels.map(({ id, name }) => ({ id, name })),
       fields: finalFields.map(({ id, name, type }) => ({ id, name, type })),
     };

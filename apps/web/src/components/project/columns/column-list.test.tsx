@@ -43,6 +43,8 @@ vi.mock("@/hooks/queries/column/use-get-columns", () => ({
         slug: "to-do",
         icon: null,
         isFinal: false,
+        phase: "Eingang und Datenprüfung",
+        isLocked: false,
         position: 0,
       },
       {
@@ -51,7 +53,19 @@ vi.mock("@/hooks/queries/column/use-get-columns", () => ({
         slug: "done",
         icon: null,
         isFinal: true,
+        phase: null,
+        isLocked: false,
         position: 1,
+      },
+      {
+        id: "c3",
+        name: "Absage",
+        slug: "absage",
+        icon: null,
+        isFinal: true,
+        phase: "Eingang und Datenprüfung",
+        isLocked: false,
+        position: 2,
       },
     ],
   }),
@@ -174,6 +188,99 @@ describe("ColumnList", () => {
     await waitFor(() => expect(input).toHaveValue(""));
   });
 
+  // Pegasus fork (PEGA-170): phase and lock are column settings.
+  it("saves a phase typed into a column row and clears it when blank", async () => {
+    render(<ColumnList projectId="p1" />);
+    const [todo, done] = screen.getAllByRole("combobox", {
+      name: "settings:columnEditor.phaseAria",
+    }) as HTMLInputElement[];
+    expect(todo.value).toBe("Eingang und Datenprüfung");
+
+    fireEvent.change(done, { target: { value: "  Abschluss " } });
+    fireEvent.keyDown(done, { key: "Enter" });
+    fireEvent.blur(done);
+    await waitFor(() =>
+      expect(m.updateColumn).toHaveBeenCalledWith({
+        id: "c2",
+        projectId: "p1",
+        data: { phase: "Abschluss" },
+      }),
+    );
+
+    fireEvent.change(todo, { target: { value: "  " } });
+    fireEvent.blur(todo);
+    await waitFor(() =>
+      expect(m.updateColumn).toHaveBeenCalledWith({
+        id: "c1",
+        projectId: "p1",
+        data: { phase: null },
+      }),
+    );
+  });
+
+  it("offers the project's existing phases as suggestions", () => {
+    const { container } = render(<ColumnList projectId="p1" />);
+    const [input] = screen.getAllByRole("combobox", {
+      name: "settings:columnEditor.phaseAria",
+    });
+    const list = container.querySelector(
+      `datalist#${input.getAttribute("list")}`,
+    );
+
+    expect(
+      [...(list?.querySelectorAll("option") ?? [])].map((o) => o.value),
+    ).toEqual(["Eingang und Datenprüfung"]);
+  });
+
+  it("toggles the locked column", async () => {
+    render(<ColumnList projectId="p1" />);
+    const [todoLock] = screen.getAllByRole("switch", {
+      name: "settings:columnEditor.markLockedAria",
+    });
+    fireEvent.click(todoLock);
+    await waitFor(() =>
+      expect(m.updateColumn).toHaveBeenCalledWith({
+        id: "c1",
+        projectId: "p1",
+        data: { isLocked: true },
+      }),
+    );
+  });
+
+  it("adds a column with a phase and the lock", async () => {
+    render(<ColumnList projectId="p1" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "settings:columnEditor.addColumn" }),
+    );
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "settings:columnEditor.newColumnPhaseAria",
+      }),
+      { target: { value: " Eingang und Datenprüfung " } },
+    );
+    fireEvent.click(
+      screen.getByRole("switch", {
+        name: "settings:columnEditor.newColumnLockedAria",
+      }),
+    );
+    const input = screen.getByRole("textbox", {
+      name: "settings:columnEditor.newColumnPlaceholder",
+    });
+    fireEvent.change(input, { target: { value: "Pegasus-Pool" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() =>
+      expect(m.createColumn).toHaveBeenCalledWith({
+        projectId: "p1",
+        data: {
+          name: "Pegasus-Pool",
+          icon: "Circle",
+          phase: "Eingang und Datenprüfung",
+          isLocked: true,
+        },
+      }),
+    );
+  });
+
   it("is read-only without permission to manage projects", () => {
     m.canManage = false;
     render(<ColumnList projectId="p1" />);
@@ -190,6 +297,12 @@ describe("ColumnList", () => {
     ).toBeNull();
     for (const toggle of screen.getAllByRole("switch")) {
       expect(toggle).toHaveAttribute("aria-disabled", "true");
+    }
+    expect(screen.getAllByRole("switch")).toHaveLength(6);
+    for (const phase of screen.getAllByRole("combobox", {
+      name: "settings:columnEditor.phaseAria",
+    })) {
+      expect(phase).toHaveAttribute("readonly");
     }
   });
 });

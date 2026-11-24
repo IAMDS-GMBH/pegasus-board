@@ -1236,7 +1236,14 @@
 			"deleteTitle": "要刪除「{{name}}」嗎？",
 			"doneHeader": "完成",
 			"dragAria": "重新排序 {{name}}",
-			"reorderError": "無法重新排序欄位"
+			"reorderError": "無法重新排序欄位",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3103,7 +3110,8 @@
 		},
 		"kanban": {
 			"addTask": "新增任務",
-			"automaticallySortedHint": "依{{sort}}自動排序"
+			"automaticallySortedHint": "依{{sort}}自動排序",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "已合併",

@@ -521,6 +521,8 @@ async function getTasksPage(
     position: column.position,
     icon: column.icon,
     isFinal: column.isFinal,
+    phase: column.phase,
+    isLocked: column.isLocked,
     tasks: paginatedTasks
       .filter((task) => task.status === column.slug)
       .map((task) => ({

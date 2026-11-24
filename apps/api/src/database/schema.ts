@@ -463,6 +463,10 @@ export const columnTable = pgTable(
     icon: text("icon"),
     color: text("color"),
     isFinal: boolean("is_final").default(false).notNull(),
+    // Pegasus fork (PEGA-170): the phase the board groups the column under, and
+    // a technical column members may not move cards into or out of.
+    phase: text("phase"),
+    isLocked: boolean("is_locked").default(false).notNull(),
     createdAt: timestamp("created_at", { mode: "date" })
       .default(utcNow)
       .notNull(),

@@ -169,6 +169,17 @@
           "isFinal": {
             "type": "boolean"
           },
+          "phase": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pegasus fork: phase the board groups the column under."
+          },
+          "isLocked": {
+            "type": "boolean",
+            "description": "Pegasus fork: members may not move cards into or out of the column."
+          },
           "position": {
             "type": "number"
           },
@@ -185,6 +196,8 @@
           "name",
           "icon",
           "isFinal",
+          "phase",
+          "isLocked",
           "tasks"
         ]
       },
@@ -1568,6 +1581,17 @@
             "type": "boolean",
             "description": "Marks the column as a done state, which stops overdue reminders for tasks in it."
           },
+          "phase": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phase the board shows the column under; null means no phase."
+          },
+          "isLocked": {
+            "type": "boolean",
+            "description": "Technical column: members may not move cards into or out of it (403 COLUMN_LOCKED); owners, instance admins and the Hub's system account may."
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -1586,6 +1610,8 @@
           "icon",
           "color",
           "isFinal",
+          "phase",
+          "isLocked",
           "createdAt",
           "updatedAt"
         ]
@@ -10855,7 +10881,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing the permission the operation needs",
+            "description": "No access to the project, or missing the permission the operation needs. updateStatus: COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
             "content": {
               "application/json": {
                 "schema": {
@@ -11270,7 +11296,7 @@
             }
           },
           "403": {
-            "description": "Missing task:update permission",
+            "description": "Missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
             "content": {
               "application/json": {
                 "schema": {
@@ -11428,7 +11454,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId)",
+            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId), or COLUMN_LOCKED when status names a locked column",
             "content": {
               "application/json": {
                 "schema": {
@@ -11518,7 +11544,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing task:create, or missing task:update when copying parent links",
+            "description": "No access to the project, missing task:create, missing task:update when copying parent links, or COLUMN_LOCKED when the original sits in a locked column",
             "content": {
               "application/json": {
                 "schema": {
@@ -11856,7 +11882,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing task:update or task:assign permission",
+            "description": "No access to the project, missing task:update or task:assign permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
             "content": {
               "application/json": {
                 "schema": {
@@ -12026,7 +12052,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing task:update permission",
+            "description": "No access to the project, missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
             "content": {
               "application/json": {
                 "schema": {
@@ -12235,7 +12261,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee)",
+            "description": "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee), or COLUMN_LOCKED when a task names a locked column",
             "content": {
               "application/json": {
                 "schema": {
@@ -12328,7 +12354,7 @@
             }
           },
           "403": {
-            "description": "No access to the project, or missing task:update permission",
+            "description": "No access to the project, missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
             "content": {
               "application/json": {
                 "schema": {
@@ -13228,6 +13254,18 @@
                   },
                   "isFinal": {
                     "type": "boolean"
+                  },
+                  "phase": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 100,
+                    "description": "Phase the board shows the column under; neighbouring columns of one phase share a heading. Null or blank text means no phase."
+                  },
+                  "isLocked": {
+                    "type": "boolean",
+                    "description": "Technical column: only owners, instance admins and the Hub's system account move cards into or out of it. Fields stay editable."
                   }
                 },
                 "required": [
@@ -13458,6 +13496,18 @@
                   },
                   "isFinal": {
                     "type": "boolean"
+                  },
+                  "phase": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 100,
+                    "description": "Phase the board shows the column under; neighbouring columns of one phase share a heading. Null or blank text means no phase."
+                  },
+                  "isLocked": {
+                    "type": "boolean",
+                    "description": "Technical column: only owners, instance admins and the Hub's system account move cards into or out of it. Fields stay editable."
                   }
                 }
               }

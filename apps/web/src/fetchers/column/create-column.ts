@@ -2,10 +2,16 @@ import { client } from "@kaneo/libs";
 
 import { HttpError } from "@/lib/http-error";
 
-async function createColumn(
-  projectId: string,
-  data: { name: string; icon?: string; color?: string; isFinal?: boolean },
-) {
+export type CreateColumnData = {
+  name: string;
+  icon?: string;
+  color?: string;
+  isFinal?: boolean;
+  phase?: string | null;
+  isLocked?: boolean;
+};
+
+async function createColumn(projectId: string, data: CreateColumnData) {
   const response = await client.column[":projectId"].$post({
     param: { projectId },
     json: data,

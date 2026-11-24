@@ -1073,7 +1073,14 @@
 			"deleteTitle": "„{{name}}“ löschen?",
 			"doneHeader": "Erledigt",
 			"dragAria": "{{name}} verschieben",
-			"reorderError": "Spalten konnten nicht neu angeordnet werden"
+			"reorderError": "Spalten konnten nicht neu angeordnet werden",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "Keine Phase",
+			"phaseAria": "Phase der Spalte {{name}}",
+			"lockedHeader": "Gesperrt",
+			"markLockedAria": "{{name}} sperren (technisch gesteuert)",
+			"newColumnPhaseAria": "Phase der neuen Spalte",
+			"newColumnLockedAria": "Neue Spalte sperren (technisch gesteuert)"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3141,7 +3148,8 @@
 		},
 		"kanban": {
 			"addTask": "Aufgabe hinzufügen",
-			"automaticallySortedHint": "Automatisch nach {{sort}} sortiert"
+			"automaticallySortedHint": "Automatisch nach {{sort}} sortiert",
+			"lockedHint": "Technisch gesteuert: Karten lassen sich nicht in diese Spalte hinein oder aus ihr heraus verschieben"
 		},
 		"pr": {
 			"merged": "Zusammengeführt",

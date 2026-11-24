@@ -35,7 +35,7 @@ export function OptionMenu({
     if (query || !/^[1-9]$/.test(key)) return false;
     const option = filtered[Number(key) - 1];
     if (!option) return false;
-    onSelect(option.value);
+    if (!option.disabled) onSelect(option.value);
     return true;
   };
 
@@ -102,8 +102,11 @@ export function OptionMenu({
                   key={option.value}
                   value={option}
                   aria-current={option.selected || undefined}
-                  onClick={() => onSelect(option.value)}
-                  className="flex h-8 cursor-default select-none items-center gap-2 rounded-md px-2 text-[13px] text-foreground outline-none data-highlighted:bg-accent [&_svg]:size-3.5"
+                  disabled={option.disabled}
+                  onClick={() => {
+                    if (!option.disabled) onSelect(option.value);
+                  }}
+                  className="flex h-8 cursor-default select-none items-center gap-2 rounded-md px-2 text-[13px] text-foreground outline-none data-highlighted:bg-accent data-disabled:opacity-48 [&_svg]:size-3.5"
                 >
                   {option.icon && (
                     <span className="inline-flex size-4 shrink-0 items-center justify-center">

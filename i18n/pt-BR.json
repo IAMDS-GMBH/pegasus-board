@@ -1255,7 +1255,14 @@
 			"deleteTitle": "Excluir “{{name}}”?",
 			"doneHeader": "Concluído",
 			"dragAria": "Reordenar {{name}}",
-			"reorderError": "Falha ao reordenar as colunas"
+			"reorderError": "Falha ao reordenar as colunas",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3184,7 +3191,8 @@
 		},
 		"kanban": {
 			"addTask": "Adicionar tarefa",
-			"automaticallySortedHint": "Ordenado automaticamente por {{sort}}"
+			"automaticallySortedHint": "Ordenado automaticamente por {{sort}}",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "Mesclado",

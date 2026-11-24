@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AddColumnRow } from "@/components/project/columns/add-column-row";
+import {
+  AddColumnRow,
+  type NewColumn,
+} from "@/components/project/columns/add-column-row";
 import { ColumnListHeader } from "@/components/project/columns/column-list-header";
 import { ColumnListSkeleton } from "@/components/project/columns/column-list-skeleton";
 import { ColumnRow } from "@/components/project/columns/column-row";
@@ -11,6 +14,7 @@ import { SortableList } from "@/components/project/sortable/sortable-list";
 import { useSortableOrder } from "@/components/project/sortable/use-sortable-order";
 import { ConfirmDialog } from "@/components/settings/confirm-dialog";
 import { SettingsCard } from "@/components/settings/settings-card";
+import type { UpdateColumnData } from "@/fetchers/column/update-column";
 import { useCreateColumn } from "@/hooks/mutations/column/use-create-column";
 import { useDeleteColumn } from "@/hooks/mutations/column/use-delete-column";
 import { useReorderColumns } from "@/hooks/mutations/column/use-reorder-columns";
@@ -37,6 +41,9 @@ export function ColumnList({ projectId }: ColumnListProps) {
   const [pendingDelete, setPendingDelete] = useState<ProjectColumn | null>(
     null,
   );
+  // Pegasus fork (PEGA-170): the project's phases, suggested in every phase input.
+  const phaseSuggestionsId = useId();
+  const phases = [...new Set(columns.flatMap((column) => column.phase ?? []))];
 
   const { ordered, move } = useSortableOrder(columns, async (next) => {
     try {
@@ -48,7 +55,7 @@ export function ColumnList({ projectId }: ColumnListProps) {
 
   const update = async (
     id: string,
-    data: { name?: string; icon?: string; isFinal?: boolean },
+    data: UpdateColumnData,
     fallbackKey: string,
   ) => {
     try {
@@ -60,7 +67,7 @@ export function ColumnList({ projectId }: ColumnListProps) {
     }
   };
 
-  const create = async (data: { name: string; icon: string }) => {
+  const create = async (data: NewColumn) => {
     try {
       await createColumn({ projectId, data });
       return true;
@@ -117,11 +124,36 @@ export function ColumnList({ projectId }: ColumnListProps) {
                   "settings:columnEditor.toastUpdateError",
                 );
               }}
+              phaseSuggestionsId={phaseSuggestionsId}
+              onChangePhase={(phase) =>
+                update(
+                  column.id,
+                  { phase },
+                  "settings:columnEditor.toastUpdateError",
+                )
+              }
+              onToggleLocked={async (isLocked) => {
+                await update(
+                  column.id,
+                  { isLocked },
+                  "settings:columnEditor.toastUpdateError",
+                );
+              }}
               onDelete={() => setPendingDelete(column)}
             />
           ))}
         </SortableList>
-        {canEdit ? <AddColumnRow onCreate={create} /> : null}
+        {canEdit ? (
+          <AddColumnRow
+            phaseSuggestionsId={phaseSuggestionsId}
+            onCreate={create}
+          />
+        ) : null}
+        <datalist id={phaseSuggestionsId}>
+          {phases.map((phase) => (
+            <option key={phase} value={phase} />
+          ))}
+        </datalist>
       </SettingsCard>
       <ConfirmDialog
         open={pendingDelete !== null}

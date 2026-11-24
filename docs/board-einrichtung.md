@@ -43,24 +43,33 @@ Im Repository geht auch `pnpm board:setup --workspace …`.
 
 **Projekt:** „Bewerber-Pool“, Kürzel `BEW`, die Karten heißen also `BEW-1`, `BEW-2` und so weiter. Das Skript erkennt das Projekt am Kürzel.
 
-**Spalten**, in dieser Reihenfolge (Feinkonzept Kap. 5 und 7):
+**Spalten** in dieser Reihenfolge (PEGA-170). Grundlage ist das Fachkonzept von Alexander Sitzmann vom 23.11.2026, beschlossen im Stakeholder-Sync am 24.11.2026. Es ersetzt den Spaltensatz aus 18052 und weicht bewusst von Feinkonzept Kap. 7 ab ([Review PEGA-170](review/2026-11-spalten-phasen.md)). Die Nummer ist die des Fachkonzepts; im Board stehen die Namen ohne Nummer.
 
-| # | Spalte | Slug | Erledigt |
-|---|---|---|---|
-| 1 | Eingang | `eingang` | |
-| 2 | Pegasus-Pool | `pegasus-pool` | |
-| 3 | Telefonqualifizierung | `telefonqualifizierung` | |
-| 4 | Zugeordnet | `zugeordnet` | |
-| 5 | Kontaktiert | `kontaktiert` | |
-| 6 | Termin vereinbart | `termin-vereinbart` | |
-| 7 | Wiedervorlage | `wiedervorlage` | |
-| 8 | Einstellungsbereit / Übergabe BSI | `einstellungsbereit-übergabe-bsi` | ja |
-| 9 | Rückgabe an Pegasus | `rückgabe-an-pegasus` | |
-| 10 | Ablage | `ablage` | ja |
+| Phase | # | Spalte | Slug | Gesperrt | Erledigt |
+|---|---|---|---|---|---|
+| Eingang und Datenprüfung | 01 | Eingang | `eingang` | ja | |
+| | 02 | Pegasus-Pool | `pegasus-pool` | ja | |
+| | 03 | Unbearbeitet | `unbearbeitet` | | |
+| Kontaktaufnahme und Qualifizierung | 04 | Nicht erreicht | `nicht-erreicht` | | |
+| | 05 | Mehrfach nicht erreicht | `mehrfach-nicht-erreicht` | | |
+| | 06 | Falsche Nummer | `falsche-nummer` | | |
+| | 07 | In Kontakt | `in-kontakt` | | |
+| Termine und Bewerbungsprozess | 08 | Terminiert | `terminiert` | | |
+| | 09 | Vorstellungsgespräch | `vorstellungsgespräch` | | |
+| | 10 | Vertragsangebot liegt vor | `vertragsangebot-liegt-vor` | | |
+| Wiedervorlage, Rückgabe und Abschluss | 11 | Wiedervorlage | `wiedervorlage` | | |
+| | 12 | Rückgabe an Pegasus | `rückgabe-an-pegasus` | | |
+| | 13 | Absage | `absage` | | ja |
+| | 14 | Einstellung | `einstellung` | | ja |
 
-- Der Slug steht an jeder Karte als Status. Der Hub verwendet ihn oder die Spalten-ID.
+- Der Slug steht an jeder Karte als Status. Der Hub verwendet ihn oder die Spalten-ID. Ein Umbenennen ändert den Slug nicht.
+- Der Hub legt jede neue Karte in „Eingang“ an und liest Spalten über ihren Namen. „Eingang“ und „Rückgabe an Pegasus“ tragen in `board.json` deshalb `"fixedName": true`; ihr Name darf sich nicht ändern.
+- **Phase:** Das Board zeigt benachbarte Spalten derselben Phase unter einer gemeinsamen Überschrift, in der Listenansicht als Zwischenüberschrift.
+- **Gesperrt:** Eingang und Pegasus-Pool steuert die Technik. Karten lassen sich dort nicht von Hand hinein- oder herausschieben; Felder, Titel, Beschreibung, Kommentare, Labels, Zuweisung und Anhänge bleiben bearbeitbar (Abschnitt „Phasen und Sperre ändern“).
 - Eine Spalte mit „Erledigt“ beendet die Fälligkeitserinnerungen für ihre Karten.
-- Kaneos Standardspalten (To Do, In Progress, In Review, Done) entfernt das Skript, solange sie leer sind.
+- Die Übergabe an BSI ist ein technischer Vorgang ohne Spalte. Abgeschlossene Leads verwaltet das Board über Archivierung und Filter (18072).
+- Der Name „Unbearbeitet“ ist noch offen (18083). Eine Umbenennung geht ohne Code über die Spalteneinstellungen; das Skript setzt sie nicht zurück.
+- Kaneos Standardspalten (To Do, In Progress, In Review, Done) entfernt das Skript, solange sie leer sind. Ebenso die entfallenen Spalten aus 18052 (`retiredColumns` in `board.json`: Telefonqualifizierung, Zugeordnet, Kontaktiert, Termin vereinbart, Einstellungsbereit / Übergabe BSI, Ablage). Hält eine davon noch Karten, meldet das Skript sie mit `!` und lässt sie stehen; der Lauf läuft weiter. Karten zieht es nicht um.
 
 **Labels** gelten im ganzen Workspace. Sie tragen ein Gruppenpräfix, damit sie im Filter eindeutig sind:
 
@@ -92,14 +101,16 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 ## 4. Regeln des Abgleichs
 
 **Was das Skript tut:**
-- **Spalten** findet es am Slug, ersatzweise am Namen. Wurde eine Spalte in der Oberfläche umbenannt, setzt das Skript den Namen aus der Vorgabe zurück. Symbol, „Erledigt“ und Reihenfolge stellt es ebenfalls wieder her.
+- **Spalten** findet es am Slug, ersatzweise am Namen. Symbol, „Erledigt“ und Reihenfolge stellt es wieder her. Fehlende Spalten legt es mit Phase und Sperre an.
+  - **Name:** Ein in der Oberfläche geänderter Name bleibt (PEGA-170). Nur Spalten mit `"fixedName": true` (Eingang, Rückgabe an Pegasus) benennt es zurück, weil der Hub sie über den Namen findet.
+  - **Phase und Sperre:** setzt es nur bei Spalten, die noch keine Phase haben, also nach dem Wechsel auf den neuen Spaltensatz. Eine im Board geänderte Phase oder Sperre bleibt.
 - **Labels** findet es am Namen. Die Farbe stellt es wieder her.
 - **Felder** findet es am Namen. Wieder hergestellt werden „Pflichtfeld aus“, „Auf Karte“, fehlende Auswahlwerte und die Reihenfolge.
 
 **Was das Skript nie tut:**
 - Es löscht kein Label und kein Feld.
 - Es entfernt keinen Auswahlwert. Zusätzliche Werte meldet es nur.
-- Es löscht keine Spalte, die nicht zu Kaneos Standardspalten gehört, und keine Spalte mit Karten. Zusätzliche Spalten rücken ans Ende des Boards.
+- Es löscht keine Spalte, die weder zu Kaneos Standardspalten noch zu den entfallenen Spalten (`retiredColumns`) gehört, und keine Spalte mit Karten. Zusätzliche Spalten rücken ans Ende des Boards.
 - Es ändert keinen Feldtyp, außer zwischen Auswahl und Mehrfachauswahl sowie zwischen Text, E-Mail und Telefon. Weicht der Typ anders ab, bricht der Lauf mit einer Meldung ab, bevor etwas geschrieben wird. Ein Wechsel von Text zu E-Mail oder Telefon scheitert, solange eine Karte einen Wert hat, der nicht passt. Die API nennt dann `CUSTOM_FIELD_TASKS_HAVE_INVALID_VALUES`; die Werte müssen erst korrigiert oder geleert werden.
 - Ein archiviertes Projekt `BEW` stellt es nicht wieder her. Der Lauf bricht ab.
 
@@ -116,10 +127,20 @@ Workspaces, die vor PEGA-142 eingerichtet wurden, haben noch das Feld „Vertrie
 
 Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten liegen. Eine Löschung per Skript gibt es bewusst nicht, weil das Skript nie Daten löscht.
 
+### Phasen und Sperre ändern
+
+Phase und Sperre sind Eigenschaften der Spalte. Sie lassen sich ohne Code ändern: Projekteinstellungen → „Bewerber-Pool“ → Workflow, je Spalte die Felder „Phase“ und „Gesperrt“.
+
+- **Wer darf:** wer heute Spalten bearbeiten darf, also Workspace-Owner und Administratoren (`project:update`). Alle anderen sehen beides nur.
+- **Phase:** Freitext; die Eingabe schlägt die schon vorhandenen Phasen des Projekts vor. Leer heißt keine Phase. Wer Spalten umsortiert, sieht dieselbe Phase gegebenenfalls zweimal, weil das Board nur benachbarte Spalten zusammenfasst.
+- **Gesperrt (technisch gesteuert):** Kein Mitglied kann eine Karte in diese Spalte hinein oder aus ihr heraus verschieben, auch nicht beim Anlegen, Importieren, Duplizieren oder Verschieben in ein anderes Projekt. Die API antwortet mit 403 `COLUMN_LOCKED` und nennt die Spalte. Umsortieren innerhalb der Spalte, Archivieren und Löschen sind kein Verschieben und folgen ihren eigenen Rechten. Im Board ist die Karte nicht greifbar, die Spalte kein Ablageziel, und die Statusauswahl bietet sie nicht an; ein Schloss am Spaltenkopf zeigt „Technisch gesteuert“.
+- **Ausgenommen** sind dieselben Konten wie bei den Rechten aus dem Hub: Workspace-Owner, Instanz-Admins und das Systemkonto aus `PEGASUS_HUB_USER_ID`. Über sie gibt Pegasus Karten von Hand frei, bis die Pool-Prüfung des Hubs das selbst tut. Anders als die Rechte aus dem Hub gilt die Sperre in jedem Workspace, nicht nur in Workspaces, die der Hub verwaltet; auch ein Workspace-Administrator ist nicht ausgenommen.
+- Welche Phasen eine Führungskraft sieht (Phase 1 nur für Admin und Pegasus), steuert das Servicepaket: eigene Story.
+
 ## 5. Nicht Teil des Skripts
 
 - **Rollen (PEGA-142):** Was ein Mitglied bei Leads sieht und tun darf, kommt aus dem Pegasus-Hub, nicht aus der Kaneo-Rolle. Im Board gibt es deshalb nur zwei Rollen:
-  - **Administrator** für Plattform-Admins, Key-Account-Admins und das Systemkonto „Pegasus-Hub“. Die Rolle regelt das Board-Eigene: Labels, Spalten, Felder, Workspace-Einstellungen. Das Systemkonto braucht sie, weil die Übertragung `workspace:manage_settings` verlangt.
+  - **Administrator** für Plattform-Admins, Key-Account-Admins und das Systemkonto „Pegasus-Hub“. Die Rolle regelt das Board-Eigene: Labels, Spalten (mit Phase und Sperre), Felder, Workspace-Einstellungen. Das Systemkonto braucht sie, weil die Übertragung `workspace:manage_settings` verlangt.
   - **Pegasus** für alle übrigen, mit Lesen von Projekten, Aufgaben, Labels und Workspace. Mehr ist nicht nötig: Anlegen, Bearbeiten, Verschieben, Zuweisen, Löschen, Export und Statistik entscheidet der Hub je Person.
 
   Das Projekt „Bewerber-Pool“ darf nicht öffentlich geschaltet werden.

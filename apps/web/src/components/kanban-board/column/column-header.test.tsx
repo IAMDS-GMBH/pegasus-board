@@ -18,6 +18,10 @@ const m = vi.hoisted(() => ({
   mutate: vi.fn(),
   setProject: vi.fn(),
   canMoveTasks: vi.fn(() => true),
+  canMoveLocked: vi.fn(() => false),
+}));
+vi.mock("@/hooks/use-can-move-locked-columns", () => ({
+  useCanMoveLockedColumns: () => m.canMoveLocked(),
 }));
 // Pegasus fork (PEGA-142): archiving goes through the status route, which
 // needs only LEAD_MOVE_STAGE, not the full update and its LEAD_EDIT.
@@ -95,4 +99,47 @@ it("offers no archive-all without canMoveTasks", () => {
   render(<ColumnHeader column={column} />);
 
   expect(screen.queryByTitle(/archiveAllTooltip/)).toBeNull();
+});
+
+// Pegasus fork (PEGA-170): a locked column says it is technical and offers no
+// new card to users the API would refuse.
+it("shows the lock hint and offers no new card in a locked column", () => {
+  const column = {
+    id: "eingang",
+    name: "Eingang",
+    slug: "eingang",
+    isFinal: false,
+    isLocked: true,
+    tasks: [],
+  } as unknown as ProjectWithTasks["columns"][number];
+  m.project = { id: "p", columns: [column] } as ProjectWithTasks;
+
+  const { rerender } = render(<ColumnHeader column={column} />);
+  expect(
+    screen.getByRole("img", { name: "tasks:kanban.lockedHint" }),
+  ).toBeInTheDocument();
+  expect(screen.queryByTitle("tasks:kanban.addTask")).toBeNull();
+
+  m.canMoveLocked.mockReturnValue(true);
+  rerender(<ColumnHeader column={column} />);
+  expect(screen.getByTitle("tasks:kanban.addTask")).toBeInTheDocument();
+  m.canMoveLocked.mockReturnValue(false);
+});
+
+it("shows no lock hint on an unlocked column", () => {
+  const column = {
+    id: "unbearbeitet",
+    name: "Unbearbeitet",
+    slug: "unbearbeitet",
+    isFinal: false,
+    isLocked: false,
+    tasks: [],
+  } as unknown as ProjectWithTasks["columns"][number];
+  m.project = { id: "p", columns: [column] } as ProjectWithTasks;
+
+  render(<ColumnHeader column={column} />);
+
+  expect(
+    screen.queryByRole("img", { name: "tasks:kanban.lockedHint" }),
+  ).toBeNull();
 });

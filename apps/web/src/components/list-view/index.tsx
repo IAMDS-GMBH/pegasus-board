@@ -14,13 +14,14 @@ import {
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import { produce } from "immer";
 import { Flag, ArchiveIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { priorityColorsTaskCard } from "@/constants/priority-colors";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-status";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useCollapsedSections } from "@/hooks/use-collapsed-sections";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
@@ -29,6 +30,8 @@ import useBulkSelectionStore from "@/store/bulk-selection";
 import useProjectStore from "@/store/project";
 import type { ProjectWithTasks } from "@/types/project";
 import BulkToolbar from "../bulk-selection/bulk-toolbar";
+import { groupColumnsByPhase } from "../kanban-board/group-columns-by-phase";
+import { isLockedMove } from "../kanban-board/is-locked-move";
 import { ArchiveTasksModal } from "../shared/modals/archive-tasks-modal";
 import CreateTaskModal from "../shared/modals/create-task-modal";
 import ListColumnSection from "./list-column-section";
@@ -50,6 +53,8 @@ function ListView({
   const { canMoveTasks, canUpdateTasks } = useWorkspacePermission();
   const disableDragDrop = viewDisablesDragDrop || !canUpdateTasks();
   const canChangeColumn = canMoveTasks();
+  // Pegasus fork (PEGA-170): no drops into or out of a locked column.
+  const canMoveLocked = useCanMoveLockedColumns();
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const { setProject } = useProjectStore();
@@ -109,7 +114,8 @@ function ListView({
     );
 
   const isMoveAllowed = (activeTaskId: string, overId: string) =>
-    canChangeColumn || columnOf(activeTaskId)?.id === columnOf(overId)?.id;
+    (canChangeColumn || columnOf(activeTaskId)?.id === columnOf(overId)?.id) &&
+    !isLockedMove(columnOf(activeTaskId), columnOf(overId), canMoveLocked);
 
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event;
@@ -297,20 +303,29 @@ function ListView({
     >
       <div className="w-full h-full overflow-auto bg-muted/20">
         <div className="divide-y divide-border/50">
-          {project.columns.map((column) => (
-            <ListColumnSection
-              key={column.id}
-              column={column}
-              projectSlug={project.slug ?? ""}
-              isExpanded={isExpanded(column.id)}
-              showDropIndicator={
-                Boolean(activeId) && overColumnId === column.id
-              }
-              disableCollectionActions={disableCollectionActions}
-              onToggle={toggleSection}
-              onAddTask={handleAddTask}
-              onArchive={handleArchiveClick}
-            />
+          {groupColumnsByPhase(project.columns).map((group) => (
+            <Fragment key={`${group.phase ?? ""}:${group.columns[0]?.id}`}>
+              {group.phase ? (
+                <h2 className="bg-muted/40 px-4 py-1.5 text-xs font-medium text-muted-foreground">
+                  {group.phase}
+                </h2>
+              ) : null}
+              {group.columns.map((column) => (
+                <ListColumnSection
+                  key={column.id}
+                  column={column}
+                  projectSlug={project.slug ?? ""}
+                  isExpanded={isExpanded(column.id)}
+                  showDropIndicator={
+                    Boolean(activeId) && overColumnId === column.id
+                  }
+                  disableCollectionActions={disableCollectionActions}
+                  onToggle={toggleSection}
+                  onAddTask={handleAddTask}
+                  onArchive={handleArchiveClick}
+                />
+              ))}
+            </Fragment>
           ))}
         </div>
       </div>

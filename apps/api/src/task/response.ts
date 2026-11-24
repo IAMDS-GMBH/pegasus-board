@@ -134,6 +134,13 @@ export const boardColumnSchema = z
     name: z.string(),
     icon: z.string().nullable(),
     isFinal: z.boolean(),
+    phase: z.string().nullable().openapi({
+      description: "Pegasus fork: phase the board groups the column under.",
+    }),
+    isLocked: z.boolean().openapi({
+      description:
+        "Pegasus fork: members may not move cards into or out of the column.",
+    }),
     position: z.number().optional(),
     tasks: z.array(boardTaskSchema),
   })

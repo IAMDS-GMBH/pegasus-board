@@ -1246,7 +1246,14 @@
 			"deleteTitle": "“{{name}}” silinsin?",
 			"doneHeader": "Tamamlanıb",
 			"dragAria": "{{name}} sütununun sırasını dəyiş",
-			"reorderError": "Sütunların sırasını dəyişmək alınmadı"
+			"reorderError": "Sütunların sırasını dəyişmək alınmadı",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3146,7 +3153,8 @@
 		},
 		"kanban": {
 			"addTask": "Tapşırıq əlavə et",
-			"automaticallySortedHint": "Avtomatik olaraq {{sort}} üzrə sıralanıb"
+			"automaticallySortedHint": "Avtomatik olaraq {{sort}} üzrə sıralanıb",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "Birləşdirilib",

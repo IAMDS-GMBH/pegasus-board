@@ -10,6 +10,7 @@ import {
 import icons from "@/constants/project-icons";
 import getColumns from "@/fetchers/column/get-columns";
 import { useMoveTask } from "@/hooks/mutations/task/use-move-task";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
 import useGetProjects from "@/hooks/queries/project/use-get-projects";
@@ -42,6 +43,8 @@ export default function TaskMovePopover({
   const { mutateAsync: moveTask } = useMoveTask();
   // Pegasus fork (PEGA-142): LEAD_MOVE_STAGE where the Hub governs.
   const { canMoveTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-170): locked columns are no status target.
+  const canMoveLocked = useCanMoveLockedColumns();
 
   const destinations = projects.filter(
     (project) => project.id !== task.projectId,
@@ -115,7 +118,7 @@ export default function TaskMovePopover({
             key="statuses"
             label={t("tasks:move.statusLabel")}
             placeholder={t("tasks:move.statusLabel")}
-            options={statusMenuOptions(columns, null)}
+            options={statusMenuOptions(columns, null, canMoveLocked)}
             onSelect={(status) => void moveTo(projectId, status)}
             status={
               isLoading ? (

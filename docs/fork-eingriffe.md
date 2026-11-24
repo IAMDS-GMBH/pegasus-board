@@ -28,6 +28,7 @@ Pfadangaben beziehen sich auf die Repo-Wurzel. Fork-Stellen im Code sind mit „
 | PEGA-141 | Sichtbereich nach Einheiten aus dem Hub (Tabellen `pegasus_*`, Push-API; Rollenschalter `hub_scoped` seit PEGA-142 entfallen); ein gemeinsames Sicht-Prädikat für „Sicht aus dem Hub“ und „Nur zugewiesene“, schließt die Lücken des PEGA-6-Reviews | Datenmodell, API, API-Scope, Benachrichtigungen, Web, i18n | `tests/api-integration/{task-view-hub-scope,notification-hub-scope,pegasus-visibility-api}.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, weiterhin `task-view-assigned-only.test.ts`, `workspace-role-assigned-only.test.ts`; Web `roles.test.tsx`, `packages/permissions/src/index.test.ts` |
 | PEGA-142 | Rechte je Nutzer aus dem Hub (`pegasus_user_scope.permissions`, `pegasus_workspace`): ab dem ersten Push gelten Sicht und Lead-Rechte des Hubs für jedes Mitglied; ersetzen auf Karten-Routen die Kaneo-Rolle; Capabilities fürs Web | Datenmodell, API, Web, i18n, Doku | `tests/api-integration/hub-permissions.test.ts`, `pegasus-visibility-api.test.ts`, `task-view-hub-scope.test.ts`, `tests/api/task-scope/compose-task-scope.test.ts`, `packages/permissions/src/hub-permissions.test.ts`; Web `bulk-bar`, `filtered-drag`, `list-view`, `column-header`, `task-card-context-menu-content`, `task-status-popover`, `task-move-popover`, `task-labels-popover`, `task-activity`, `comment-card`, `export-tasks-row`, `project-progress`, `task-shortcuts`, `use-task-action-shortcuts`, `use-workspace-permission`, `roles` |
 | PEGA-143 | Bearbeiter: Karte „An Einheit zurückgeben“ (`PUT /task/return/{id}`, Recht `LEAD_RETURN_OR_REPORT`, Capability `returnTasks`); Mitgliedschaft aus dem Hub-Stand ohne Einladung | API, Auth-Hooks, Web, i18n, Doku | `tests/api-integration/{hub-return-task,hub-membership}.test.ts`, `hub-permissions.test.ts` (Capabilities), `packages/permissions/src/hub-permissions.test.ts`; Web `task-return-button.test.tsx` |
+| PEGA-170 | Spalten nach Fachkonzept (14 Stufen in 4 Phasen); Spalte mit Phase und Sperre (`column.phase`, `column.is_locked`); Phasenüberschriften im Board; gesperrte Spalten (403 `COLUMN_LOCKED`) außer für Owner, Instanz-Admins und Systemkonto | Datenmodell, API, Web, i18n, Board-Skript, Doku | `tests/api-integration/{column-lock,column-phase-lock}.test.ts`, `scripts/board-setup/plan-columns.test.mjs`; Web `group-columns-by-phase`, `is-locked-move`, `filtered-drag`, `list-view`, `column-header`, `column-list`, `option-menu`, `status-menu-options`, `task-card-context-menu-content` |
 
 ---
 
@@ -140,7 +141,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 
 ### PEGA-84 — Board per Skript einrichten
 
-**Zweck:** Das Board „Bewerber-Pool“ ist auf jeder Umgebung gleich und lässt sich reproduzierbar aufbauen: zehn Prozessspalten, Workspace-Labels für Quelle, Paket und Prüfung sowie die Grundfelder ([Review](review/2026-10-board-einrichtung.md), [Betriebshandbuch](board-einrichtung.md)). Das ist Konfiguration über die REST-API; der Code der Anwendung ändert sich nicht. Den Vertriebsweg bildet seit PEGA-142 der Workspace des Key Accounts ab, nicht ein Feld oder Label.
+**Zweck:** Das Board „Bewerber-Pool“ ist auf jeder Umgebung gleich und lässt sich reproduzierbar aufbauen: die Prozessspalten (seit PEGA-170 vierzehn in vier Phasen), Workspace-Labels für Quelle, Paket und Prüfung sowie die Grundfelder ([Review](review/2026-10-board-einrichtung.md), [Betriebshandbuch](board-einrichtung.md)). Das ist Konfiguration über die REST-API; der Code der Anwendung ändert sich nicht. Den Vertriebsweg bildet seit PEGA-142 der Workspace des Key Accounts ab, nicht ein Feld oder Label.
 
 **Dateien:** `scripts/board-setup/` (neu; Vorgabe `board.json`, Einstieg `setup-board.mjs`, Planer und Tests), Kommando `board:setup` in `package.json`
 
@@ -235,7 +236,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - **Felder im Body, die eine zweite Karten-Aktion auslösen** (Bearbeiter beim Anlegen, `taskId` beim Label-Anlegen): `requireHubPermissionWhen(...)` ergänzen und in `hub-permissions-side-routes.test.ts` absichern.
 - Neue In-Handler-Prüfungen `hasWorkspacePermission(c, { task: [...] })` auf `hasLeadPermission` umstellen.
 - Neue Upstream-Capabilities für Karten-Aktionen in `capabilityHubPermission` eintragen.
-- Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0067).
+- Migration hinter die letzte Upstream-Migration nummerieren (zuletzt 0068, PEGA-170).
 
 ### PEGA-143 — Bearbeiter: zurückgeben und Mitgliedschaft aus dem Hub
 
@@ -258,6 +259,39 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 - Ändert Upstream die `databaseHooks` in `auth.ts`, die beiden Aufrufe von `joinHubWorkspaces` erhalten; `hub-membership.test.ts` schlägt sonst fehl.
 - `workspace_member` hat keinen Unique-Index auf `(workspace_id, user_id)`; doppelte Mitgliedschaften verhindert die Workspace-Sperre (`admin/lock-workspace.ts`). Neue Upstream-Pfade, die Mitglieder anlegen, sollten sie ebenfalls nehmen.
 
+### PEGA-170 — Spalten und Phasen nach Fachkonzept
+
+**Zweck:** Der Stand eines Bewerbers ist an der Spalte ablesbar ([Review](review/2026-11-spalten-phasen.md), [Betriebshandbuch](board-einrichtung.md)). Grundlage ist das Fachkonzept von Alexander Sitzmann vom 23.11.2026; es ersetzt den Spaltensatz aus 18052 und weicht bewusst von Feinkonzept Kap. 7 ab. Gegenstück im Hub: Branch `PEGA-170` (`bewerber-pool.template.ts`).
+
+**Regel:**
+- Jede Spalte hat `phase` (Text oder `null`) und `isLocked` (Standard `false`). `POST /column/{projectId}` und `PUT /column/{id}` nehmen beide optional an (leerer Text = keine Phase), `GET /column/{projectId}`, jede Spaltenantwort und die Board-Spalten (`GET /task/tasks/{projectId}`) geben beide zurück. Bestehende Spalten bleiben ohne Phase und ungesperrt; das Board-Skript setzt sie.
+- Board und Liste fassen benachbarte Spalten derselben Phase unter einer Überschrift zusammen. Phase und Sperre ändert, wer Spalten bearbeiten darf (`project:update`), in den Spalteneinstellungen.
+- Gesperrt: Kein Mitglied verschiebt eine Karte in eine gesperrte Spalte hinein oder aus ihr heraus (403 `COLUMN_LOCKED`, Meldung nennt die Spalte). Geprüft auf `PUT /task/status/{id}`, `PUT /task/{id}`, `POST /task/reorder` (nur Spaltenwechsel), Bulk `updateStatus`, `PUT /task/move/{id}` (Quelle oder Ziel), `POST /task/{projectId}`, `POST /task/import/{projectId}` und `POST /task/duplicate/{id}`, jeweils nach der bestehenden Rechteprüfung. Archivieren und „Geplant“ (virtuelle Status) sind kein Verschieben.
+- Ausgenommen sind Workspace-Owner, Instanz-Admins und das Systemkonto aus `PEGASUS_HUB_USER_ID`, in **jedem** Workspace (eigene Prüfung `isColumnLockExempt`, nicht `resolveMemberAccess`, das Mitglieder nicht Hub-verwalteter Workspaces ebenfalls als ungeregelt meldet). Webhooks bleiben unverändert: ein Spaltenwechsel durch das Systemkonto geht wie bisher als `task.status_changed` hinaus.
+- Die Oberfläche spart nur den Fehlversuch: Karte in gesperrter Spalte nicht greifbar, gesperrte Spalte kein Ablageziel, Statusauswahl und Kontextmenü bieten sie nicht an, kein „+“ in gesperrten Spalten, Schloss am Spaltenkopf. Ausnahme im Web: Owner und Instanz-Admins (`useCanMoveLockedColumns`).
+- Board-Skript: `board.json` mit 14 Spalten, `phase`, `isLocked`, `fixedName` (Eingang, Rückgabe an Pegasus) und `retiredColumns`. `planColumns` benennt nur `fixedName`-Spalten zurück, setzt Phase und Sperre nur bei Spalten ohne Phase und entfernt entfallene Spalten, solange sie leer sind.
+
+**Dateien:**
+- Migration `apps/api/drizzle/0068_column_phase_lock.sql` (idempotent), `meta/0068_snapshot.json`, `_journal.json`; `apps/api/src/database/schema.ts` (`columnTable.phase`, `isLocked`)
+- API Spalten: `column/{schema,response,index}.ts`, `column/controllers/{create,update}-column.ts`
+- API Board: `task/response.ts` (`boardColumnSchema`), `task/controllers/get-tasks.ts` (Mapping)
+- API Sperre: `column-lock/{assert-columns-unlocked,column-change,is-column-lock-exempt}.ts` (neu), `task/controllers/require-column-unlocked.ts` (neu), `task/controllers/move-task.ts` (`resolveDestinationStatus` exportiert), `task/index.ts` (Middleware in acht Routen, 403-Beschreibungen); `apps/docs/openapi.json`
+- Web: `types/project/index.ts` (`phase`/`isLocked` optional für alte Caches), `hooks/use-can-move-locked-columns.ts` (neu), `kanban-board/{group-columns-by-phase,is-locked-move,phase-group}.ts(x)` (neu), `kanban-board/index.tsx`, `kanban-board/column/{column-header,column-lock-hint}.tsx`, `list-view/{index,list-column-section}.tsx`, `common/option-menu/{option-menu,option-menu-item}.ts(x)` (`disabled`), `task/menus/status-menu-options.ts`, `task/{task-status-popover,subtask-status-popover,task-move-popover}.tsx`, `task-card-context-menu/task-card-context-menu-content.tsx`, `project/columns/{column-list,column-row,add-column-row,column-list-header,column-phase-input}.tsx`, `fetchers/column/{create,update}-column.ts`, `hooks/mutations/column/use-{create,update}-column.ts`
+- i18n `settings.columnEditor.{phaseHeader,phasePlaceholder,phaseAria,lockedHeader,markLockedAria,newColumnPhaseAria,newColumnLockedAria}`, `tasks.kanban.lockedHint` (en-US, de-DE; übrige Locales englisch), `i18n/schema.json` von Hand
+- Board-Skript `scripts/board-setup/{board.json,plan-columns.mjs,setup-board.mjs}`; Doku `docs/board-einrichtung.md`
+
+**Beim Sync beachten:**
+- `phase`, `isLocked` und `COLUMN_LOCKED` sind Vertrag mit dem Hub, ebenso die Namen „Eingang“ und „Rückgabe an Pegasus“.
+- Migration hinter die letzte Upstream-Migration nummerieren; Upstream ist bereits bei 0073 (Stand 15.11.2026), der Fork bei 0068.
+- Neue Upstream-Routen, die `task.status` oder `task.columnId` setzen, brauchen eine Middleware aus `require-column-unlocked.ts`; `column-lock.test.ts` um den Pfad ergänzen. Integrationen (GitHub, GitLab, Gitea, Sync, Workflow-Regeln) verschieben über eigene Pfade ohne Sperre; im Bewerber-Pool sind sie nicht verbunden.
+- Ändert Upstream `boardColumnSchema`, das Mapping in `get-tasks.ts`, die Spaltenzeile der Einstellungen, `option-menu.tsx` oder `statusMenuOptions`, die Fork-Felder bzw. `disabled` erhalten.
+- Konfliktpotenzial mittel: `task/index.ts` (Middleware-Ketten) und `kanban-board/index.tsx` (Spaltenschleife jetzt in `PhaseGroup`) sind upstream oft geändert.
+
+**Folgearbeit:**
+- Bulk-Leiste: Statuswechsel bietet gesperrte Spalten weiter an; die API lehnt ab, die Leiste zeigt den Fehler.
+- Mobile-App: kennt Phase und Sperre nicht; Verschieben aus gesperrten Spalten scheitert mit der Meldung der API.
+- Listenansicht: Zeilen in gesperrten Spalten bleiben greifbar, der Ablageversuch wird verworfen.
+
 ---
 
 ## 3. Ablauf eines Upstream-Syncs
@@ -267,7 +301,7 @@ Fehler der Feldverwaltung tragen stabile Codes (`ApiError`, englische `message` 
 3. Fork-Migration umnummerieren (Abschnitt PEGA-6) und gegen eine Datenbank auf altem Fork-Stand prüfen (`pnpm --filter @kaneo/api db:migrate`).
 4. `pnpm i18n:check` (Fork-Schlüssel in allen Locales), `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:integration`. Bleibt die lokale Testdatenbank auf einem alten Migrationsstand hängen (Fehler „relation … does not exist“), `kaneo_test` verwerfen; die Tests legen sie neu an.
 5. Neue Upstream-Lesepfade gegen `taskVisibleCondition` prüfen und Lücken in `task-view-hub-scope.test.ts` bzw. `task-view-assigned-only.test.ts` absichern.
-6. Neue Upstream-Schreibpfade auf Karten gegen `requireLeadPermission` prüfen und in `hub-permissions.test.ts` absichern (PEGA-142).
+6. Neue Upstream-Schreibpfade auf Karten gegen `requireLeadPermission` prüfen und in `hub-permissions.test.ts` absichern (PEGA-142); setzen sie den Status, auch gegen die Spaltensperre (`require-column-unlocked.ts`, `column-lock.test.ts`, PEGA-170).
 7. Merge-Commit „Merge upstream usekaneo/kaneo main (vX.Y.Z+N) into pegasus-board“ mit Konfliktbericht, Nacharbeit als eigener Commit; dieses Register aktualisieren.
 
 ---

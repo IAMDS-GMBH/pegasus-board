@@ -988,7 +988,14 @@
 			"deleteTitle": "Hapus “{{name}}”?",
 			"doneHeader": "Selesai",
 			"dragAria": "Ubah urutan {{name}}",
-			"reorderError": "Gagal mengubah urutan kolom"
+			"reorderError": "Gagal mengubah urutan kolom",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3088,7 +3095,8 @@
 		},
 		"kanban": {
 			"addTask": "Tambah tugas",
-			"automaticallySortedHint": "Diurutkan otomatis berdasarkan {{sort}}"
+			"automaticallySortedHint": "Diurutkan otomatis berdasarkan {{sort}}",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "Digabung",

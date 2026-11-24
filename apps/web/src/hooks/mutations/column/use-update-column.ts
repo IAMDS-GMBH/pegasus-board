@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import updateColumn from "@/fetchers/column/update-column";
+import updateColumn, {
+  type UpdateColumnData,
+} from "@/fetchers/column/update-column";
 
 export function useUpdateColumn() {
   const queryClient = useQueryClient();
@@ -11,12 +13,7 @@ export function useUpdateColumn() {
     }: {
       id: string;
       projectId: string;
-      data: {
-        name?: string;
-        icon?: string | null;
-        color?: string | null;
-        isFinal?: boolean;
-      };
+      data: UpdateColumnData;
     }) => updateColumn(id, data),
     onSuccess: async (_, variables) => {
       await Promise.all([

@@ -56,7 +56,36 @@ test("a new project gets every column and loses Kaneo's defaults", () => {
   assert.deepEqual(warnings, []);
 });
 
-test("a column renamed in the UI is found by its slug and renamed back", () => {
+// Pegasus fork (PEGA-170): a name or phase changed in the board's column
+// settings stays; only the names the Hub reads columns by are fixed.
+test("a name changed in the board stays", () => {
+  const columns = [
+    {
+      id: "u",
+      name: "Neu",
+      slug: "unbearbeitet",
+      position: 0,
+      icon: "Circle",
+      isFinal: false,
+      phase: "Eingang und Datenprüfung",
+      isLocked: false,
+    },
+  ];
+  const { actions } = planColumns(
+    [
+      {
+        name: "Unbearbeitet",
+        icon: "Circle",
+        phase: "Eingang und Datenprüfung",
+      },
+    ],
+    columns,
+  );
+
+  assert.deepEqual(actions, []);
+});
+
+test("a column with a fixed name is found by its slug and renamed back", () => {
   const columns = [
     {
       id: "x",
@@ -65,10 +94,20 @@ test("a column renamed in the UI is found by its slug and renamed back", () => {
       position: 0,
       icon: "CircleDashed",
       isFinal: false,
+      phase: "Eingang und Datenprüfung",
+      isLocked: true,
     },
   ];
   const { actions } = planColumns(
-    [{ name: "Eingang", icon: "CircleDashed" }],
+    [
+      {
+        name: "Eingang",
+        icon: "CircleDashed",
+        phase: "Eingang und Datenprüfung",
+        isLocked: true,
+        fixedName: true,
+      },
+    ],
     columns,
   );
 
@@ -82,19 +121,160 @@ test("a column renamed in the UI is found by its slug and renamed back", () => {
   ]);
 });
 
-test("icon and done flag are corrected", () => {
+test("a new column is created with phase and lock, without the fixedName flag", () => {
+  const { actions } = planColumns(
+    [
+      {
+        name: "Eingang",
+        icon: "CircleDashed",
+        phase: "Eingang und Datenprüfung",
+        isLocked: true,
+        fixedName: true,
+      },
+    ],
+    [],
+  );
+
+  assert.deepEqual(actions, [
+    {
+      type: "create-column",
+      column: {
+        name: "Eingang",
+        icon: "CircleDashed",
+        phase: "Eingang und Datenprüfung",
+        isLocked: true,
+      },
+    },
+  ]);
+});
+
+test("an existing column without a phase gets phase and lock", () => {
+  const columns = [
+    {
+      id: "p",
+      name: "Pegasus-Pool",
+      slug: "pegasus-pool",
+      position: 0,
+      icon: "Layers",
+      isFinal: false,
+      phase: null,
+      isLocked: false,
+    },
+  ];
+  const { actions } = planColumns(
+    [
+      {
+        name: "Pegasus-Pool",
+        icon: "Layers",
+        phase: "Eingang und Datenprüfung",
+        isLocked: true,
+      },
+    ],
+    columns,
+  );
+
+  assert.deepEqual(actions[0].changes, {
+    phase: "Eingang und Datenprüfung",
+    isLocked: true,
+  });
+});
+
+test("a phase and lock changed in the board stay", () => {
+  const columns = [
+    {
+      id: "w",
+      name: "Wiedervorlage",
+      slug: "wiedervorlage",
+      position: 0,
+      icon: "Clock",
+      isFinal: false,
+      phase: "Ruhend",
+      isLocked: true,
+    },
+  ];
+  const { actions } = planColumns(
+    [
+      {
+        name: "Wiedervorlage",
+        icon: "Clock",
+        phase: "Wiedervorlage, Rückgabe und Abschluss",
+      },
+    ],
+    columns,
+  );
+
+  assert.deepEqual(actions, []);
+});
+
+test("retired columns are removed, other extra columns stay", () => {
   const columns = [
     {
       id: "a",
       name: "Ablage",
       slug: "ablage",
       position: 0,
+      icon: "Archive",
+      isFinal: true,
+      phase: null,
+      isLocked: false,
+    },
+    {
+      id: "z",
+      name: "Sonderfälle",
+      slug: "sonderfälle",
+      position: 1,
       icon: null,
       isFinal: false,
+      phase: null,
+      isLocked: false,
+    },
+  ];
+  const { actions, warnings } = planColumns([], columns, ["Ablage"]);
+
+  assert.deepEqual(actions, [
+    { type: "delete-column", id: "a", name: "Ablage" },
+  ]);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /Sonderfälle/);
+});
+
+test("board.json retires the columns of 18052", () => {
+  assert.deepEqual(spec.retiredColumns, [
+    "Telefonqualifizierung",
+    "Zugeordnet",
+    "Kontaktiert",
+    "Termin vereinbart",
+    "Einstellungsbereit / Übergabe BSI",
+    "Ablage",
+  ]);
+  assert.deepEqual(
+    spec.columns.filter((c) => c.fixedName).map((c) => c.name),
+    ["Eingang", "Rückgabe an Pegasus"],
+  );
+});
+
+test("icon and done flag are corrected", () => {
+  const columns = [
+    {
+      id: "a",
+      name: "Absage",
+      slug: "absage",
+      position: 0,
+      icon: null,
+      isFinal: false,
+      phase: "Wiedervorlage, Rückgabe und Abschluss",
+      isLocked: false,
     },
   ];
   const { actions } = planColumns(
-    [{ name: "Ablage", icon: "Archive", isFinal: true }],
+    [
+      {
+        name: "Absage",
+        icon: "Archive",
+        isFinal: true,
+        phase: "Wiedervorlage, Rückgabe und Abschluss",
+      },
+    ],
     columns,
   );
 
@@ -138,6 +318,8 @@ test("a board that matches the spec needs nothing", () => {
     position,
     icon: c.icon,
     isFinal: c.isFinal ?? false,
+    phase: c.phase ?? null,
+    isLocked: c.isLocked ?? false,
   }));
 
   assert.deepEqual(planColumns(spec.columns, columns), {

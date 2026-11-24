@@ -2,15 +2,16 @@ import { client } from "@kaneo/libs";
 
 import { HttpError } from "@/lib/http-error";
 
-async function updateColumn(
-  id: string,
-  data: {
-    name?: string;
-    icon?: string | null;
-    color?: string | null;
-    isFinal?: boolean;
-  },
-) {
+export type UpdateColumnData = {
+  name?: string;
+  icon?: string | null;
+  color?: string | null;
+  isFinal?: boolean;
+  phase?: string | null;
+  isLocked?: boolean;
+};
+
+async function updateColumn(id: string, data: UpdateColumnData) {
   const response = await client.column[":id"].$put({
     param: { id },
     json: data,

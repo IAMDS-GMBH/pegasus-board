@@ -13,12 +13,16 @@ async function createColumn({
   icon,
   color,
   isFinal,
+  phase,
+  isLocked,
 }: {
   projectId: string;
   name: string;
   icon?: string;
   color?: string;
   isFinal?: boolean;
+  phase?: string | null;
+  isLocked?: boolean;
 }) {
   const slug = toSlug(name);
 
@@ -56,6 +60,8 @@ async function createColumn({
         icon: icon || null,
         color: color || null,
         isFinal: isFinal ?? false,
+        phase: phase ?? null,
+        isLocked: isLocked ?? false,
       })
       .returning();
     return row;

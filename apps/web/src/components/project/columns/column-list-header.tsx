@@ -11,6 +11,12 @@ export function ColumnListHeader() {
       <span className="flex-1 pl-6">
         {t("settings:columnEditor.columnHeader")}
       </span>
+      <span className="w-32 shrink-0 px-2 sm:w-64">
+        {t("settings:columnEditor.phaseHeader")}
+      </span>
+      <span className="w-13 shrink-0 text-center">
+        {t("settings:columnEditor.lockedHeader")}
+      </span>
       <span className="w-13 shrink-0 text-center">
         {t("settings:columnEditor.doneHeader")}
       </span>
