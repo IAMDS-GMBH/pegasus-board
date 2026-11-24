@@ -30,6 +30,8 @@ import { useUpdateTaskTitle } from "@/hooks/mutations/task/use-update-task-title
 import type getProjects from "@/fetchers/project/get-projects";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
 import useGetProjectMembers from "@/hooks/queries/workspace-users/use-get-project-members";
+import { statusMenuOptions } from "@/components/task/menus/status-menu-options";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { generateLink } from "@/lib/generate-link";
@@ -71,12 +73,14 @@ export default function TaskCardContextMenuContent({
           name: col.name,
           icon: col.icon,
           isFinal: col.isFinal,
+          isLocked: col.isLocked,
         }))
       : columnsData.map((col) => ({
           slug: col.slug,
           name: col.name,
           icon: col.icon,
           isFinal: col.isFinal,
+          isLocked: col.isLocked,
         }));
   const { data: projectMembers } = useGetProjectMembers({
     workspaceId: taskCardContext.worskpaceId,
@@ -96,7 +100,18 @@ export default function TaskCardContextMenuContent({
     canDeleteTasks,
     canAssignTasks,
   } = useWorkspacePermission();
-  const canCreate = canCreateTasks();
+  // Pegasus fork (PEGA-170): no status into or out of a locked column, and no
+  // copy into one, unless the user may move through locked columns.
+  const canMoveLocked = useCanMoveLockedColumns();
+  const lockedStatuses = new Set(
+    statusMenuOptions(columns, task.status, canMoveLocked)
+      .filter((option) => option.disabled)
+      .map((option) => option.value),
+  );
+  const inLockedColumn = columns.some(
+    (col) => col.slug === task.status && col.isLocked,
+  );
+  const canCreate = canCreateTasks() && (!inLockedColumn || canMoveLocked);
   const canEdit = canUpdateTasks();
   // Pegasus fork (PEGA-142): status, archive and planned move the card.
   const canMove = canMoveTasks();
@@ -227,6 +242,7 @@ export default function TaskCardContextMenuContent({
               <ContextMenuCheckboxItem
                 key={col.slug}
                 checked={task.status === col.slug}
+                disabled={lockedStatuses.has(col.slug)}
                 onCheckedChange={() => handleChange("status", col.slug)}
                 closeOnClick
                 className="[&_svg]:text-muted-foreground"

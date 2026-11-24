@@ -7,11 +7,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Archive, ChevronRight, Plus } from "lucide-react";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
 import { EASE_OUT } from "@/lib/motion";
 import type { ProjectWithTasks } from "@/types/project";
+import { ColumnLockHint } from "../kanban-board/column/column-lock-hint";
 import TaskRow from "./task-row";
 
 type Column = ProjectWithTasks["columns"][number];
@@ -40,6 +42,9 @@ const ListColumnSection = memo(function ListColumnSection({
   const { t } = useTranslation();
   // Pegasus fork (PEGA-142): archiving all moves the cards out of the column.
   const { canCreateTasks, canMoveTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-170): creating a card in a locked column moves it in.
+  const canMoveLocked = useCanMoveLockedColumns();
+  const canCreate = canCreateTasks() && (!column.isLocked || canMoveLocked);
   const [animateExpand, setAnimateExpand] = useState(false);
   const { setNodeRef } = useDroppable({
     id: column.id,
@@ -76,12 +81,13 @@ const ListColumnSection = memo(function ListColumnSection({
               <span className="text-xs text-muted-foreground mt-0.5">
                 {column.tasks.length}
               </span>
+              {column.isLocked ? <ColumnLockHint /> : null}
             </div>
           </div>
         </button>
 
         <div className="flex items-center gap-1 pointer-coarse:gap-6">
-          {canCreateTasks() && (
+          {canCreate && (
             <button
               type="button"
               onClick={() => onAddTask(column.id)}

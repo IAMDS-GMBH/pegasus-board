@@ -7,4 +7,6 @@ export type OptionMenuItem = {
   selected?: boolean;
   hint?: string;
   pinned?: boolean;
+  // Pegasus fork (PEGA-170): shown but not selectable (a locked column).
+  disabled?: boolean;
 };

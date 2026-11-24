@@ -1733,7 +1733,14 @@
 			"deleteTitle": "Delete “{{name}}”?",
 			"deleteDescription": "Columns that still have tasks can't be deleted. Move those tasks first.",
 			"deleteConfirm": "Delete column",
-			"reorderError": "Failed to reorder columns"
+			"reorderError": "Failed to reorder columns",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase",
+			"phaseAria": "Phase of the {{name}} column",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"newColumnLockedAria": "Lock the new column (technically controlled)"
 		},
 		"customFields": {
 			"namePlaceholder": "Field name",
@@ -3157,7 +3164,8 @@
 		},
 		"kanban": {
 			"addTask": "Add task",
-			"automaticallySortedHint": "Automatically sorted by {{sort}}"
+			"automaticallySortedHint": "Automatically sorted by {{sort}}",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "Merged",

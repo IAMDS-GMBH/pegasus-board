@@ -874,7 +874,14 @@
 			"deleteTitle": "\"{{name}}\" verwijderen?",
 			"doneHeader": "Gereed",
 			"dragAria": "{{name}} herschikken",
-			"reorderError": "Herschikken van kolommen mislukt"
+			"reorderError": "Herschikken van kolommen mislukt",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3125,7 +3132,8 @@
 		},
 		"kanban": {
 			"addTask": "Taak toevoegen",
-			"automaticallySortedHint": "Automatisch gesorteerd op {{sort}}"
+			"automaticallySortedHint": "Automatisch gesorteerd op {{sort}}",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "Samengevoegd",

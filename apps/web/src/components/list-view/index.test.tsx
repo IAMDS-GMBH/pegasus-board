@@ -35,6 +35,10 @@ const m = vi.hoisted(() => ({
   canMoveTasks: vi.fn(() => true),
   canUpdateTasks: vi.fn(() => true),
   canCreateTasks: vi.fn(() => true),
+  canMoveLocked: vi.fn(() => false),
+}));
+vi.mock("@/hooks/use-can-move-locked-columns", () => ({
+  useCanMoveLockedColumns: () => m.canMoveLocked(),
 }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
@@ -297,4 +301,115 @@ it("offers neither add nor archive-all without the rights", () => {
   ).toBeNull();
   m.canMoveTasks.mockReturnValue(true);
   m.canCreateTasks.mockReturnValue(true);
+});
+
+// Pegasus fork (PEGA-170): phases as subheadings; members may not move cards
+// into or out of a locked column.
+const phasedProject = (locked: { todo?: boolean; done?: boolean } = {}) =>
+  ({
+    id: "p",
+    workspaceId: "w",
+    columns: [
+      {
+        id: "todo",
+        slug: "todo",
+        name: "Eingang",
+        phase: "Eingang und Datenprüfung",
+        isLocked: locked.todo ?? false,
+        tasks: [
+          { id: "a", position: 0, status: "todo" },
+          { id: "b", position: 1, status: "todo" },
+        ],
+      },
+      {
+        id: "pool",
+        slug: "pool",
+        name: "Pegasus-Pool",
+        phase: "Eingang und Datenprüfung",
+        isLocked: false,
+        tasks: [],
+      },
+      {
+        id: "done",
+        slug: "done",
+        name: "Nicht erreicht",
+        phase: "Kontaktaufnahme und Qualifizierung",
+        isLocked: locked.done ?? false,
+        tasks: [],
+      },
+      {
+        id: "extra",
+        slug: "extra",
+        name: "Sonderfälle",
+        phase: null,
+        isLocked: false,
+        tasks: [],
+      },
+    ],
+    plannedTasks: [],
+    archivedTasks: [],
+  }) as unknown as ProjectWithTasks;
+
+it("shows a phase subheading before the first column of each phase", () => {
+  render(<ListView project={phasedProject()} />, { wrapper: Providers });
+
+  expect(
+    screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent),
+  ).toEqual(["Eingang und Datenprüfung", "Kontaktaufnahme und Qualifizierung"]);
+  const [intake] = screen.getAllByRole("heading", { level: 2 });
+  expect(
+    intake.compareDocumentPosition(screen.getByText("Eingang")) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+});
+
+it.each([
+  ["into", { done: true }, "done"],
+  ["out of", { todo: true }, "done"],
+] as const)(
+  "refuses a drop %s a locked column",
+  (_direction, locked, overId) => {
+    render(<ListView project={phasedProject(locked)} />, {
+      wrapper: Providers,
+    });
+
+    act(() =>
+      m.props.onDragEnd?.({
+        active: { id: "a" },
+        over: { id: overId },
+      } as DragEndEvent),
+    );
+
+    expect(m.mutate).not.toHaveBeenCalled();
+  },
+);
+
+it("lets owners and instance admins drop out of a locked column", () => {
+  m.canMoveLocked.mockReturnValue(true);
+  render(<ListView project={phasedProject({ todo: true })} />, {
+    wrapper: Providers,
+  });
+
+  act(() =>
+    m.props.onDragEnd?.({
+      active: { id: "a" },
+      over: { id: "done" },
+    } as DragEndEvent),
+  );
+
+  expect(m.mutate).toHaveBeenCalled();
+  m.canMoveLocked.mockReturnValue(false);
+});
+
+it("marks a locked column and offers no new card in it", () => {
+  render(<ListView project={phasedProject({ todo: true })} />, {
+    wrapper: Providers,
+  });
+
+  expect(
+    screen.getAllByRole("img", { name: "tasks:kanban.lockedHint" }),
+  ).toHaveLength(1);
+  expect(
+    screen.getAllByRole("button", { name: "tasks:listView.addTask" }),
+  ).toHaveLength(3);
 });

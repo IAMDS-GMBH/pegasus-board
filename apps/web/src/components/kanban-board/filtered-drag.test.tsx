@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import {
   afterEach,
   beforeEach,
@@ -15,6 +15,7 @@ import KanbanBoard from "./index";
 const mocks = vi.hoisted(() => ({
   canMoveTasks: vi.fn(() => true),
   canUpdateTasks: vi.fn(() => true),
+  canMoveLocked: vi.fn(() => false),
   project: null as unknown,
   setProject: vi.fn(),
   reorder: vi.fn(),
@@ -66,18 +67,24 @@ vi.mock("@/hooks/use-workspace-permission", () => ({
     canUpdateTasks: mocks.canUpdateTasks,
   }),
 }));
+vi.mock("@/hooks/use-can-move-locked-columns", () => ({
+  useCanMoveLockedColumns: () => mocks.canMoveLocked(),
+}));
 vi.mock("./column", () => ({
   default: ({
     column,
     sortHint,
+    disableDragDrop,
   }: {
     column: { id: string; tasks: { id: string }[] };
     sortHint?: string;
+    disableDragDrop?: boolean;
   }) => (
     <div
       data-testid={`column-${column.id}`}
       data-task-ids={column.tasks.map((task) => task.id).join(",")}
       data-sort-hint={sortHint}
+      data-drag-disabled={disableDragDrop ? "true" : "false"}
     />
   ),
 }));
@@ -136,6 +143,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.canMoveTasks.mockReturnValue(true);
   mocks.canUpdateTasks.mockReturnValue(true);
+  mocks.canMoveLocked.mockReturnValue(false);
 });
 afterEach(cleanup);
 describe("filtered board dragging", () => {
@@ -574,6 +582,112 @@ describe("dragging with partial rights", () => {
     fireEvent.click(view.getByText("drop-c"));
 
     expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
+  });
+});
+
+// Pegasus fork (PEGA-170): phases group the columns; members may not move cards
+// into or out of a locked column (owners and instance admins may).
+describe("phases and locked columns", () => {
+  const board = (locked: { todo?: boolean; doing?: boolean } = {}) =>
+    ({
+      id: "p",
+      columns: [
+        {
+          id: "todo",
+          slug: "todo",
+          phase: "Eingang und Datenprüfung",
+          isLocked: locked.todo ?? false,
+          tasks: [
+            { id: "a", status: "todo", position: 0 },
+            { id: "b", status: "todo", position: 1 },
+          ],
+        },
+        {
+          id: "doing",
+          slug: "doing",
+          phase: "Eingang und Datenprüfung",
+          isLocked: locked.doing ?? false,
+          tasks: [{ id: "c", status: "doing", position: 0 }],
+        },
+        {
+          id: "call",
+          slug: "call",
+          phase: "Kontaktaufnahme und Qualifizierung",
+          isLocked: false,
+          tasks: [],
+        },
+        { id: "extra", slug: "extra", phase: null, isLocked: false, tasks: [] },
+      ],
+      plannedTasks: [],
+      archivedTasks: [],
+    }) as unknown as ProjectWithTasks;
+
+  it("shows each phase heading above its columns", () => {
+    const project = board();
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    const intake = view.getByRole("group", {
+      name: "Eingang und Datenprüfung",
+    });
+    expect(within(intake).getByTestId("column-todo")).toBeInTheDocument();
+    expect(within(intake).getByTestId("column-doing")).toBeInTheDocument();
+    expect(within(intake).queryByTestId("column-call")).toBeNull();
+    const contact = view.getByRole("group", {
+      name: "Kontaktaufnahme und Qualifizierung",
+    });
+    expect(within(contact).getByTestId("column-call")).toBeInTheDocument();
+    expect(view.getByTestId("column-extra").closest("[role=group]")).toBeNull();
+    view.unmount();
+  });
+
+  it("neither previews nor drops a card into a locked column", () => {
+    const project = board({ doing: true });
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    fireEvent.click(view.getByText("start"));
+    fireEvent.click(view.getByText("over-c"));
+    expect(shownIds(view, "doing")).toBe("c");
+    fireEvent.click(view.getByText("drop-c"));
+
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
+  });
+
+  it("does not move a card out of a locked column and makes its cards not draggable", () => {
+    const project = board({ todo: true });
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    expect(view.getByTestId("column-todo")).toHaveAttribute(
+      "data-drag-disabled",
+      "true",
+    );
+    expect(view.getByTestId("column-doing")).toHaveAttribute(
+      "data-drag-disabled",
+      "false",
+    );
+    fireEvent.click(view.getByText("drop-c"));
+
+    expect(mocks.reorder).not.toHaveBeenCalled();
+    view.unmount();
+  });
+
+  it("lets owners and instance admins move through locked columns", () => {
+    mocks.canMoveLocked.mockReturnValue(true);
+    const project = board({ todo: true });
+    mocks.project = project;
+    const view = render(<KanbanBoard project={project} />);
+
+    expect(view.getByTestId("column-todo")).toHaveAttribute(
+      "data-drag-disabled",
+      "false",
+    );
+    fireEvent.click(view.getByText("drop-c"));
+
+    expect(mocks.reorder).toHaveBeenCalledOnce();
     view.unmount();
   });
 });

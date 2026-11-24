@@ -29,6 +29,7 @@ import { useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTaskViewShortcuts } from "@/components/project/task-view-keys/use-task-view-shortcuts";
 import { useProjectBackground } from "@/hooks/use-project-background";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { EASE_OUT_CSS } from "@/lib/motion";
@@ -38,6 +39,9 @@ import useProjectStore from "@/store/project";
 import type { ProjectWithTasks } from "@/types/project";
 import BulkToolbar from "../bulk-selection/bulk-toolbar";
 import Column from "./column";
+import { groupColumnsByPhase } from "./group-columns-by-phase";
+import { isLockedMove } from "./is-locked-move";
+import { PhaseGroup } from "./phase-group";
 import TaskCard from "./task-card";
 
 type KanbanBoardProps = {
@@ -70,6 +74,9 @@ function KanbanBoard({
   const canReorder = canUpdateTasks() && !appendOnly;
   const disableDragDrop =
     viewDisablesDragDrop || (!canChangeColumn && !canReorder);
+  // Pegasus fork (PEGA-170): locked columns take no cards from, and give none
+  // to, users the API would refuse.
+  const canMoveLocked = useCanMoveLockedColumns();
   const queryClient = useQueryClient();
   const { project: storedProject, setProject } = useProjectStore();
   const setAvailableTasks = useBulkSelectionStore(
@@ -199,7 +206,10 @@ function KanbanBoard({
     if (!appendOnly) {
       const activeColumn = findTaskColumn(project, active.id.toString());
       const overColumn = findTaskColumn(project, over.id.toString());
-      if (canChangeColumn || activeColumn?.id === overColumn?.id)
+      if (
+        (canChangeColumn || activeColumn?.id === overColumn?.id) &&
+        !isLockedMove(activeColumn, overColumn, canMoveLocked)
+      )
         dragPreview.hover(active, over);
       else dragPreview.clear();
       return;
@@ -229,6 +239,14 @@ function KanbanBoard({
         : moveBoardTask(canonical, activeId, overId, false, insertAfterTarget);
     if (!moved || !moved.tasks.length) return;
     if (!canChangeColumn && moved.tasks.some((task) => "status" in task))
+      return;
+    if (
+      isLockedMove(
+        findTaskColumn(canonical, activeId),
+        findTaskColumn(moved.project, activeId),
+        canMoveLocked,
+      )
+    )
       return;
     for (const task of moved.tasks)
       markBoardCacheChanged(queryClient, project.id, task.id);
@@ -345,31 +363,42 @@ function KanbanBoard({
           )}
         >
           <div className="flex h-full min-w-max gap-4 px-4 py-4 md:px-5">
-            {(dragPreview.preview ?? project).columns.map((column) => (
-              <div
-                key={column.id}
-                className="h-full max-w-96 min-w-[min(20rem,calc(100vw-4.5rem))] shrink-0 flex-1 snap-start"
-              >
-                <Column
-                  column={column}
-                  activeTaskId={activeId?.toString() ?? null}
-                  sortHint={
-                    column.id === sortHintColumnId
-                      ? t("tasks:kanban.automaticallySortedHint", {
-                          sort: t(
-                            sortedByNumber
-                              ? "tasks:sort.fields.number"
-                              : "tasks:sort.fields.priority",
-                          ),
-                        })
-                      : undefined
-                  }
-                  disableDragDrop={disableDragDrop}
-                  disableSorting={isAutomaticallySorted}
-                  disableCollectionActions={disableCollectionActions}
-                />
-              </div>
-            ))}
+            {groupColumnsByPhase((dragPreview.preview ?? project).columns).map(
+              (group) => (
+                <PhaseGroup
+                  key={`${group.phase ?? ""}:${group.columns[0]?.id}`}
+                  phase={group.phase}
+                >
+                  {group.columns.map((column) => (
+                    <div
+                      key={column.id}
+                      className="h-full max-w-96 min-w-[min(20rem,calc(100vw-4.5rem))] shrink-0 flex-1 snap-start"
+                    >
+                      <Column
+                        column={column}
+                        activeTaskId={activeId?.toString() ?? null}
+                        sortHint={
+                          column.id === sortHintColumnId
+                            ? t("tasks:kanban.automaticallySortedHint", {
+                                sort: t(
+                                  sortedByNumber
+                                    ? "tasks:sort.fields.number"
+                                    : "tasks:sort.fields.priority",
+                                ),
+                              })
+                            : undefined
+                        }
+                        disableDragDrop={
+                          disableDragDrop || (column.isLocked && !canMoveLocked)
+                        }
+                        disableSorting={isAutomaticallySorted}
+                        disableCollectionActions={disableCollectionActions}
+                      />
+                    </div>
+                  ))}
+                </PhaseGroup>
+              ),
+            )}
           </div>
         </div>
       </div>

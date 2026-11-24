@@ -1325,7 +1325,14 @@
 			"deleteTitle": "Usunąć „{{name}}”?",
 			"doneHeader": "Ukończone",
 			"dragAria": "Zmień kolejność: {{name}}",
-			"reorderError": "Nie udało się zmienić kolejności kolumn"
+			"reorderError": "Nie udało się zmienić kolejności kolumn",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"developer": "Deweloper",
 		"developerPage": {
@@ -3455,7 +3462,8 @@
 		},
 		"kanban": {
 			"addTask": "Dodaj zadanie",
-			"automaticallySortedHint": "Automatyczne sortowanie: {{sort}}"
+			"automaticallySortedHint": "Automatyczne sortowanie: {{sort}}",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"labels": {
 			"empty": "Brak dostępnych etykiet"

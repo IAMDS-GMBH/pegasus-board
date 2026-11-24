@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import createColumn from "@/fetchers/column/create-column";
+import createColumn, {
+  type CreateColumnData,
+} from "@/fetchers/column/create-column";
 import { forgetCollapsedColumn } from "@/lib/collapsed-sections";
 
 export function useCreateColumn() {
@@ -11,7 +13,7 @@ export function useCreateColumn() {
       data,
     }: {
       projectId: string;
-      data: { name: string; icon?: string; color?: string; isFinal?: boolean };
+      data: CreateColumnData;
     }) => createColumn(projectId, data),
     onSuccess: async (column) => {
       forgetCollapsedColumn(column.projectId, column.slug);

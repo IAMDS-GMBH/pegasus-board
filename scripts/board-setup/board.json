@@ -5,49 +5,182 @@
 		"icon": "Users"
 	},
 	"columns": [
-		{ "name": "Eingang", "icon": "CircleDashed" },
-		{ "name": "Pegasus-Pool", "icon": "Layers" },
-		{ "name": "Telefonqualifizierung", "icon": "Phone" },
-		{ "name": "Zugeordnet", "icon": "User" },
-		{ "name": "Kontaktiert", "icon": "MessageSquare" },
-		{ "name": "Termin vereinbart", "icon": "Calendar" },
-		{ "name": "Wiedervorlage", "icon": "Clock" },
 		{
-			"name": "Einstellungsbereit / Übergabe BSI",
-			"icon": "CheckCircle2",
+			"name": "Eingang",
+			"icon": "CircleDashed",
+			"phase": "Eingang und Datenprüfung",
+			"isLocked": true,
+			"fixedName": true
+		},
+		{
+			"name": "Pegasus-Pool",
+			"icon": "Layers",
+			"phase": "Eingang und Datenprüfung",
+			"isLocked": true
+		},
+		{
+			"name": "Unbearbeitet",
+			"icon": "Circle",
+			"phase": "Eingang und Datenprüfung"
+		},
+		{
+			"name": "Nicht erreicht",
+			"icon": "Phone",
+			"phase": "Kontaktaufnahme und Qualifizierung"
+		},
+		{
+			"name": "Mehrfach nicht erreicht",
+			"icon": "Timer",
+			"phase": "Kontaktaufnahme und Qualifizierung"
+		},
+		{
+			"name": "Falsche Nummer",
+			"icon": "Search",
+			"phase": "Kontaktaufnahme und Qualifizierung"
+		},
+		{
+			"name": "In Kontakt",
+			"icon": "MessageSquare",
+			"phase": "Kontaktaufnahme und Qualifizierung"
+		},
+		{
+			"name": "Terminiert",
+			"icon": "Calendar",
+			"phase": "Termine und Bewerbungsprozess"
+		},
+		{
+			"name": "Vorstellungsgespräch",
+			"icon": "Users",
+			"phase": "Termine und Bewerbungsprozess"
+		},
+		{
+			"name": "Vertragsangebot liegt vor",
+			"icon": "FileText",
+			"phase": "Termine und Bewerbungsprozess"
+		},
+		{
+			"name": "Wiedervorlage",
+			"icon": "Clock",
+			"phase": "Wiedervorlage, Rückgabe und Abschluss"
+		},
+		{
+			"name": "Rückgabe an Pegasus",
+			"icon": "Flag",
+			"phase": "Wiedervorlage, Rückgabe und Abschluss",
+			"fixedName": true
+		},
+		{
+			"name": "Absage",
+			"icon": "Archive",
+			"phase": "Wiedervorlage, Rückgabe und Abschluss",
 			"isFinal": true
 		},
-		{ "name": "Rückgabe an Pegasus", "icon": "Flag" },
-		{ "name": "Ablage", "icon": "Archive", "isFinal": true }
+		{
+			"name": "Einstellung",
+			"icon": "CheckCircle2",
+			"phase": "Wiedervorlage, Rückgabe und Abschluss",
+			"isFinal": true
+		}
+	],
+	"retiredColumns": [
+		"Telefonqualifizierung",
+		"Zugeordnet",
+		"Kontaktiert",
+		"Termin vereinbart",
+		"Einstellungsbereit / Übergabe BSI",
+		"Ablage"
 	],
 	"labels": [
-		{ "name": "Quelle: Meta", "color": "teal" },
-		{ "name": "Quelle: LinkedIn", "color": "teal" },
-		{ "name": "Quelle: Formular", "color": "teal" },
-		{ "name": "Quelle: Import", "color": "teal" },
-		{ "name": "Paket 1", "color": "orange" },
-		{ "name": "Paket 2", "color": "orange" },
-		{ "name": "Paket 3", "color": "orange" },
-		{ "name": "Kampagne: ohne Kampagne", "color": "dark-gray" },
-		{ "name": "Dublette?", "color": "yellow" },
-		{ "name": "unvollständig", "color": "yellow" },
-		{ "name": "verwertbar", "color": "green" },
-		{ "name": "Rückläufer", "color": "pink" },
-		{ "name": "keine Zuordnung", "color": "red" }
+		{
+			"name": "Quelle: Meta",
+			"color": "teal"
+		},
+		{
+			"name": "Quelle: LinkedIn",
+			"color": "teal"
+		},
+		{
+			"name": "Quelle: Formular",
+			"color": "teal"
+		},
+		{
+			"name": "Quelle: Import",
+			"color": "teal"
+		},
+		{
+			"name": "Paket 1",
+			"color": "orange"
+		},
+		{
+			"name": "Paket 2",
+			"color": "orange"
+		},
+		{
+			"name": "Paket 3",
+			"color": "orange"
+		},
+		{
+			"name": "Kampagne: ohne Kampagne",
+			"color": "dark-gray"
+		},
+		{
+			"name": "Dublette?",
+			"color": "yellow"
+		},
+		{
+			"name": "unvollständig",
+			"color": "yellow"
+		},
+		{
+			"name": "verwertbar",
+			"color": "green"
+		},
+		{
+			"name": "Rückläufer",
+			"color": "pink"
+		},
+		{
+			"name": "keine Zuordnung",
+			"color": "red"
+		}
 	],
 	"fields": [
-		{ "name": "Telefon", "type": "phone" },
-		{ "name": "E-Mail", "type": "email" },
-		{ "name": "PLZ", "type": "text" },
-		{ "name": "Ort", "type": "text", "showOnCard": true },
-		{ "name": "Geburtsjahr", "type": "number" },
-		{ "name": "Aktuelle Tätigkeit", "type": "text", "showOnCard": true },
+		{
+			"name": "Telefon",
+			"type": "phone"
+		},
+		{
+			"name": "E-Mail",
+			"type": "email"
+		},
+		{
+			"name": "PLZ",
+			"type": "text"
+		},
+		{
+			"name": "Ort",
+			"type": "text",
+			"showOnCard": true
+		},
+		{
+			"name": "Geburtsjahr",
+			"type": "number"
+		},
+		{
+			"name": "Aktuelle Tätigkeit",
+			"type": "text",
+			"showOnCard": true
+		},
 		{
 			"name": "Quelle",
 			"type": "dropdown",
 			"options": ["Meta", "LinkedIn", "Formular", "Import"]
 		},
-		{ "name": "Kampagne", "type": "text", "showOnCard": true },
+		{
+			"name": "Kampagne",
+			"type": "text",
+			"showOnCard": true
+		},
 		{
 			"name": "Paket",
 			"type": "dropdown",

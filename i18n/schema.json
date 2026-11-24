@@ -7080,6 +7080,27 @@
 						},
 						"renameAria": {
 							"type": "string"
+						},
+						"phaseHeader": {
+							"type": "string"
+						},
+						"phasePlaceholder": {
+							"type": "string"
+						},
+						"phaseAria": {
+							"type": "string"
+						},
+						"lockedHeader": {
+							"type": "string"
+						},
+						"markLockedAria": {
+							"type": "string"
+						},
+						"newColumnPhaseAria": {
+							"type": "string"
+						},
+						"newColumnLockedAria": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -7104,7 +7125,14 @@
 						"newColumnPlaceholder",
 						"add",
 						"deleteAria",
-						"renameAria"
+						"renameAria",
+						"phaseHeader",
+						"phasePlaceholder",
+						"phaseAria",
+						"lockedHeader",
+						"markLockedAria",
+						"newColumnPhaseAria",
+						"newColumnLockedAria"
 					]
 				},
 				"customFields": {
@@ -12996,9 +13024,12 @@
 						},
 						"automaticallySortedHint": {
 							"type": "string"
+						},
+						"lockedHint": {
+							"type": "string"
 						}
 					},
-					"required": ["addTask", "automaticallySortedHint"]
+					"required": ["addTask", "automaticallySortedHint", "lockedHint"]
 				},
 				"pr": {
 					"type": "object",

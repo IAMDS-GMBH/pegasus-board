@@ -63,4 +63,31 @@ describe("OptionMenu", () => {
       "aria-current",
     );
   });
+  // Pegasus fork (PEGA-170): locked columns show as disabled statuses.
+  it("ignores a disabled option on click and number key", () => {
+    const onSelect = vi.fn();
+    render(
+      <OptionMenu
+        label="Status"
+        placeholder="Change status"
+        options={[
+          { value: "eingang", label: "Eingang", disabled: true },
+          { value: "unbearbeitet", label: "Unbearbeitet" },
+        ]}
+        onSelect={onSelect}
+      />,
+    );
+    const input = screen.getByPlaceholderText("Change status");
+
+    fireEvent.click(screen.getByRole("option", { name: "Eingang" }));
+    fireEvent.keyDown(input, { key: "1" });
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(screen.getByRole("option", { name: "Eingang" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+
+    fireEvent.keyDown(input, { key: "2" });
+    expect(onSelect).toHaveBeenCalledWith("unbearbeitet");
+  });
 });

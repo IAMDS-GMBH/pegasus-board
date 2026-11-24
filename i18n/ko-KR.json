@@ -988,7 +988,14 @@
 			"deleteTitle": "“{{name}}”을(를) 삭제할까요?",
 			"doneHeader": "완료",
 			"dragAria": "{{name}} 순서 변경",
-			"reorderError": "컬럼 순서를 변경하지 못했습니다"
+			"reorderError": "컬럼 순서를 변경하지 못했습니다",
+			"lockedHeader": "Locked",
+			"markLockedAria": "Lock {{name}} (technically controlled)",
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"newColumnPhaseAria": "Phase of the new column",
+			"phaseAria": "Phase of the {{name}} column",
+			"phaseHeader": "Phase",
+			"phasePlaceholder": "No phase"
 		},
 		"githubIntegration": {
 			"toast": {
@@ -3103,7 +3110,8 @@
 		},
 		"kanban": {
 			"addTask": "작업 추가",
-			"automaticallySortedHint": "{{sort}} 기준으로 자동 정렬됨"
+			"automaticallySortedHint": "{{sort}} 기준으로 자동 정렬됨",
+			"lockedHint": "Technically controlled: cards can't be moved into or out of this column"
 		},
 		"pr": {
 			"merged": "병합됨",

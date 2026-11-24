@@ -23,7 +23,7 @@ function isSameProjectMove(
   return sourceProjectId === destinationProjectId;
 }
 
-async function resolveDestinationStatus(
+export async function resolveDestinationStatus(
   destinationProjectId: string,
   currentStatus: string,
   requestedStatus?: string,

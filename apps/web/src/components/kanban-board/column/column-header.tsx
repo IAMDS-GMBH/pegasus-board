@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CreateTaskModal from "@/components/shared/modals/create-task-modal";
 import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-status";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { toast } from "@/lib/toast";
 import useProjectStore from "@/store/project";
 import type { ProjectWithTasks } from "@/types/project";
 import { ArchiveTasksModal } from "../../shared/modals/archive-tasks-modal";
+import { ColumnLockHint } from "./column-lock-hint";
 
 type ColumnHeaderProps = {
   column: ProjectWithTasks["columns"][number];
@@ -27,7 +29,10 @@ export function ColumnHeader({
   const { mutate: updateTaskStatus } = useUpdateTaskStatus();
   const { canMoveTasks, canCreateTasks } = useWorkspacePermission();
   const canArchive = canMoveTasks();
-  const canCreate = canCreateTasks();
+  // Pegasus fork (PEGA-170): creating a card in a locked column is a move
+  // into it.
+  const canMoveLocked = useCanMoveLockedColumns();
+  const canCreate = canCreateTasks() && (!column.isLocked || canMoveLocked);
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -70,6 +75,7 @@ export function ColumnHeader({
         <span className="text-board-id text-xs tabular-nums">
           {column.tasks.length}
         </span>
+        {column.isLocked ? <ColumnLockHint /> : null}
       </div>
 
       <div className="flex items-center">

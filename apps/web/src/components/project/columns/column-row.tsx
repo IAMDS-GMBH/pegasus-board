@@ -2,6 +2,7 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ColumnIconPicker } from "@/components/project/columns/column-icon-picker";
+import { ColumnPhaseInput } from "@/components/project/columns/column-phase-input";
 import type { ProjectColumn } from "@/components/project/columns/types";
 import { InlineNameInput } from "@/components/project/inline-name-input";
 import { DragHandle } from "@/components/project/sortable/drag-handle";
@@ -18,6 +19,9 @@ type ColumnRowProps = {
   onRename: (name: string) => Promise<boolean>;
   onChangeIcon: (icon: string) => void;
   onToggleFinal: (isFinal: boolean) => Promise<void>;
+  phaseSuggestionsId: string;
+  onChangePhase: (phase: string | null) => Promise<boolean>;
+  onToggleLocked: (isLocked: boolean) => Promise<void>;
   onDelete: () => void;
 };
 
@@ -36,6 +40,9 @@ export function ColumnRow({
   onRename,
   onChangeIcon,
   onToggleFinal,
+  phaseSuggestionsId,
+  onChangePhase,
+  onToggleLocked,
   onDelete,
 }: ColumnRowProps) {
   const { t } = useTranslation();
@@ -45,6 +52,8 @@ export function ColumnRow({
   );
   const [pendingFinal, setPendingFinal] = useState<boolean | null>(null);
   const isFinal = pendingFinal ?? column.isFinal;
+  const [pendingLocked, setPendingLocked] = useState<boolean | null>(null);
+  const isLocked = pendingLocked ?? column.isLocked;
 
   const toggleFinal = async (checked: boolean) => {
     setPendingFinal(checked);
@@ -52,6 +61,15 @@ export function ColumnRow({
       await onToggleFinal(checked);
     } finally {
       setPendingFinal(null);
+    }
+  };
+
+  const toggleLocked = async (checked: boolean) => {
+    setPendingLocked(checked);
+    try {
+      await onToggleLocked(checked);
+    } finally {
+      setPendingLocked(null);
     }
   };
 
@@ -83,6 +101,24 @@ export function ColumnRow({
         readOnly={!canEdit}
         onRename={onRename}
       />
+      <ColumnPhaseInput
+        phase={column.phase}
+        label={t("settings:columnEditor.phaseAria", { name: column.name })}
+        placeholder={t("settings:columnEditor.phasePlaceholder")}
+        suggestionsId={phaseSuggestionsId}
+        readOnly={!canEdit}
+        onChange={onChangePhase}
+      />
+      <div className="flex w-13 shrink-0 justify-center">
+        <Switch
+          checked={isLocked}
+          disabled={!canEdit}
+          onCheckedChange={(checked) => void toggleLocked(checked)}
+          aria-label={t("settings:columnEditor.markLockedAria", {
+            name: column.name,
+          })}
+        />
+      </div>
       <div className="flex w-13 shrink-0 justify-center">
         <Switch
           checked={isFinal}

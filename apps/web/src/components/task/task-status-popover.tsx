@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-status";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
+import { useCanMoveLockedColumns } from "@/hooks/use-can-move-locked-columns";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { toast } from "@/lib/toast";
 import type Task from "@/types/task";
@@ -32,6 +33,8 @@ export default function TaskStatusPopover({
   const { mutateAsync: updateTaskStatus } = useUpdateTaskStatus();
   // Pegasus fork (PEGA-142): a status change moves the card between columns.
   const { canMoveTasks } = useWorkspacePermission();
+  // Pegasus fork (PEGA-170): locked columns are no status target.
+  const canMoveLocked = useCanMoveLockedColumns();
 
   if (!canMoveTasks()) return <>{children}</>;
 
@@ -55,7 +58,7 @@ export default function TaskStatusPopover({
         <OptionMenu
           label={t("tasks:status.label")}
           placeholder={t("tasks:bulk.statusPlaceholder")}
-          options={statusMenuOptions(columns, task.status)}
+          options={statusMenuOptions(columns, task.status, canMoveLocked)}
           onSelect={changeStatus}
           status={
             isLoading ? (

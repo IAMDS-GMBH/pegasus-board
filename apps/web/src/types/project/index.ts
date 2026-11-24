@@ -22,7 +22,14 @@ export type ProjectWithTasks = Omit<
   backgroundVersion?: string | null;
   archivedTasks: Task[];
   columns: Array<
-    Omit<ProjectWithTasksRaw["columns"][number], "tasks"> & {
+    Omit<
+      ProjectWithTasksRaw["columns"][number],
+      "tasks" | "phase" | "isLocked"
+    > & {
+      // Pegasus fork (PEGA-170): persisted query data and fixtures predate
+      // column phases and locks; missing means no phase, unlocked.
+      phase?: string | null;
+      isLocked?: boolean;
       tasks: Task[];
     }
   >;

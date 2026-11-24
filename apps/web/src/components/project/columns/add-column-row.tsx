@@ -2,19 +2,33 @@ import { Plus } from "lucide-react";
 import { type FocusEvent, type KeyboardEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ColumnIconPicker } from "@/components/project/columns/column-icon-picker";
+import { Switch } from "@/components/ui/switch";
 import { getColumnIcon } from "@/lib/column";
 
+export type NewColumn = {
+  name: string;
+  icon: string;
+  phase?: string;
+  isLocked?: boolean;
+};
+
 type AddColumnRowProps = {
-  onCreate: (column: { name: string; icon: string }) => Promise<boolean>;
+  phaseSuggestionsId: string;
+  onCreate: (column: NewColumn) => Promise<boolean>;
 };
 
 const DEFAULT_ICON = "Circle";
 
-export function AddColumnRow({ onCreate }: AddColumnRowProps) {
+export function AddColumnRow({
+  phaseSuggestionsId,
+  onCreate,
+}: AddColumnRowProps) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState("");
   const [icon, setIcon] = useState(DEFAULT_ICON);
+  const [phase, setPhase] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
   const [saving, setSaving] = useState(false);
   const pickerOpen = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,6 +37,8 @@ export function AddColumnRow({ onCreate }: AddColumnRowProps) {
     setEditing(false);
     setName("");
     setIcon(DEFAULT_ICON);
+    setPhase("");
+    setIsLocked(false);
   };
 
   const submit = async () => {
@@ -30,7 +46,13 @@ export function AddColumnRow({ onCreate }: AddColumnRowProps) {
     if (!trimmed || saving) return;
 
     setSaving(true);
-    const created = await onCreate({ name: trimmed, icon });
+    // Pegasus fork (PEGA-170): a phase and the lock only when set.
+    const created = await onCreate({
+      name: trimmed,
+      icon,
+      ...(phase.trim() && { phase: phase.trim() }),
+      ...(isLocked && { isLocked }),
+    });
     setSaving(false);
     if (created) {
       setName("");
@@ -51,7 +73,7 @@ export function AddColumnRow({ onCreate }: AddColumnRowProps) {
   };
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
-    if (pickerOpen.current || name.trim()) return;
+    if (pickerOpen.current || name.trim() || phase.trim()) return;
     if (event.currentTarget.contains(event.relatedTarget)) return;
     close();
   };
@@ -97,6 +119,23 @@ export function AddColumnRow({ onCreate }: AddColumnRowProps) {
         aria-label={t("settings:columnEditor.newColumnPlaceholder")}
         className="-ml-2 h-7.5 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-sm outline-none placeholder:text-muted-foreground/72 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/24 dark:bg-input/32"
       />
+      <input
+        value={phase}
+        list={phaseSuggestionsId}
+        readOnly={saving}
+        onChange={(event) => setPhase(event.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={t("settings:columnEditor.phasePlaceholder")}
+        aria-label={t("settings:columnEditor.newColumnPhaseAria")}
+        className="h-7.5 w-32 min-w-0 shrink-0 rounded-md border border-input bg-background px-2 text-sm outline-none placeholder:text-muted-foreground/72 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/24 sm:w-64 dark:bg-input/32"
+      />
+      <div className="flex w-13 shrink-0 justify-center">
+        <Switch
+          checked={isLocked}
+          onCheckedChange={setIsLocked}
+          aria-label={t("settings:columnEditor.newColumnLockedAria")}
+        />
+      </div>
       <span aria-hidden="true" className="w-13 shrink-0" />
       <span aria-hidden="true" className="w-7 shrink-0" />
     </div>

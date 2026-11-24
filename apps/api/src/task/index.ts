@@ -63,6 +63,14 @@ import {
   requireTaskAssigneePermission,
   requireTaskStatusPermission,
 } from "./controllers/require-task-permission";
+import {
+  requireBulkColumnsUnlocked,
+  requireCreateColumnsUnlocked,
+  requireDuplicateColumnUnlocked,
+  requireMoveColumnsUnlocked,
+  requireReorderColumnsUnlocked,
+  requireTaskColumnUnlocked,
+} from "./controllers/require-column-unlocked";
 import updateTask from "./controllers/update-task";
 import updateTaskAssignee from "./controllers/update-task-assignee";
 import updateTaskDescription from "./controllers/update-task-description";
@@ -167,6 +175,7 @@ const bulkUpdateTasksRoute = createRoute({
   middleware: [
     workspaceAccess.fromTasks(),
     requireBulkTaskPermission,
+    requireBulkColumnsUnlocked,
     requireBulkTaskEntitlement,
   ] as const,
   request: {
@@ -181,7 +190,7 @@ const bulkUpdateTasksRoute = createRoute({
       "Invalid body, or the tasks span more than one workspace",
     ),
     403: errorResponse(
-      "No access to the project, or missing the permission the operation needs",
+      "No access to the project, or missing the permission the operation needs. updateStatus: COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
     ),
     404: errorResponse("No tasks found"),
     409: errorResponse("Tasks changed projects; retry the operation"),
@@ -257,6 +266,7 @@ const reorderTasksRoute = createRoute({
   middleware: [
     workspaceAccess.fromProject("projectId"),
     requireReorderPermission,
+    requireReorderColumnsUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -273,7 +283,9 @@ const reorderTasksRoute = createRoute({
         .array(),
     ),
     400: errorResponse("Invalid positions or column"),
-    403: errorResponse("Missing task:update permission"),
+    403: errorResponse(
+      "Missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
+    ),
     404: errorResponse(
       "Project not found, or tasks do not belong to the project",
     ),
@@ -294,6 +306,7 @@ const createTaskRoute = createRoute({
     workspaceAccess.fromProject("projectId"),
     requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireCreateAssigneePermission,
+    requireCreateColumnsUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -307,7 +320,7 @@ const createTaskRoute = createRoute({
     200: jsonResponse("The created task", taskSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId)",
+      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR with userId), or COLUMN_LOCKED when status names a locked column",
     ),
     404: errorResponse("Project not found"),
   },
@@ -324,6 +337,7 @@ const duplicateTaskRoute = createRoute({
   middleware: [
     workspaceAccess.fromTask(),
     requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
+    requireDuplicateColumnUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -338,7 +352,7 @@ const duplicateTaskRoute = createRoute({
     400: errorResponse("Invalid task fields or request"),
     401: errorResponse("Unauthorized"),
     403: errorResponse(
-      "No access to the project, missing task:create, or missing task:update when copying parent links",
+      "No access to the project, missing task:create, missing task:update when copying parent links, or COLUMN_LOCKED when the original sits in a locked column",
     ),
     404: errorResponse("Task or project not found"),
     409: errorResponse("Task column has reached its capacity"),
@@ -394,6 +408,7 @@ const moveTaskRoute = createRoute({
   middleware: [
     workspaceAccess.fromTask(),
     requireLeadPermission({ task: ["update"] }, "LEAD_MOVE_STAGE"),
+    requireMoveColumnsUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -410,7 +425,7 @@ const moveTaskRoute = createRoute({
     ),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing task:update permission",
+      "No access to the project, missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
     ),
     404: errorResponse("Task or destination project not found"),
     409: errorResponse("Task or project moved concurrently; retry the move"),
@@ -429,6 +444,7 @@ const updateTaskRoute = createRoute({
     workspaceAccess.fromTask(),
     requireLeadPermission({ task: ["update"] }, "LEAD_EDIT"),
     requireTaskStatusPermission,
+    requireTaskColumnUnlocked,
     requireTaskAssigneePermission,
     requireEntitlement,
   ] as const,
@@ -443,7 +459,7 @@ const updateTaskRoute = createRoute({
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing task:update or task:assign permission",
+      "No access to the project, missing task:update or task:assign permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
     ),
     404: errorResponse("Task not found"),
   },
@@ -481,6 +497,7 @@ const importTasksRoute = createRoute({
     workspaceAccess.fromProject("projectId"),
     requireLeadPermission({ task: ["create"] }, "LEAD_CREATE"),
     requireImportAssigneePermission,
+    requireCreateColumnsUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -494,7 +511,7 @@ const importTasksRoute = createRoute({
     200: jsonResponse("Per-task import outcome", taskImportResultSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee)",
+      "No access to the project, missing task:create permission, or, for a member the Pegasus Hub governs, a missing right (LEAD_CREATE, LEAD_ASSIGN_PROCESSOR when a task names an assignee), or COLUMN_LOCKED when a task names a locked column",
     ),
     404: errorResponse("Project not found"),
   },
@@ -533,6 +550,7 @@ const updateTaskStatusRoute = createRoute({
   middleware: [
     workspaceAccess.fromTask(),
     requireLeadPermission({ task: ["update"] }, "LEAD_MOVE_STAGE"),
+    requireTaskColumnUnlocked,
     requireEntitlement,
   ] as const,
   request: {
@@ -546,7 +564,7 @@ const updateTaskStatusRoute = createRoute({
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body"),
     403: errorResponse(
-      "No access to the project, or missing task:update permission",
+      "No access to the project, missing task:update permission, or COLUMN_LOCKED when the card would move into or out of a locked column (owners, instance admins and the Hub's system account excepted)",
     ),
     404: errorResponse("Task not found"),
   },

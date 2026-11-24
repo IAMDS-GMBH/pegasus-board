@@ -6,12 +6,19 @@ import TaskCardContextMenuContent from "./task-card-context-menu-content";
 const duplicateTask = vi.fn();
 const canCreateTasks = vi.fn(() => true);
 const canMoveTasks = vi.fn(() => true);
+const canMoveLocked = vi.fn(() => false);
+let columnsData: unknown[] = [];
+vi.mock("@/hooks/use-can-move-locked-columns", () => ({
+  useCanMoveLockedColumns: () => canMoveLocked(),
+}));
 vi.mock("@/hooks/mutations/task/use-duplicate-task", () => ({
   useDuplicateTask: () => ({ mutate: duplicateTask }),
 }));
 
 afterEach(() => {
   canCreateTasks.mockReturnValue(true);
+  canMoveLocked.mockReturnValue(false);
+  columnsData = [];
   cleanup();
   vi.clearAllMocks();
 });
@@ -51,14 +58,18 @@ vi.mock("@/components/ui/context-menu", () => ({
   }): React.JSX.Element => <div>{children}</div>,
   ContextMenuCheckboxItem: ({
     children,
+    disabled,
   }: {
     children: React.ReactNode;
-  }): React.JSX.Element => <div>{children}</div>,
+    disabled?: boolean;
+  }): React.JSX.Element => (
+    <div data-disabled={disabled ? "true" : undefined}>{children}</div>
+  ),
 }));
 
 vi.mock("@/hooks/queries/column/use-get-columns", () => ({
   useGetColumns: () => ({
-    data: [],
+    data: columnsData,
   }),
 }));
 
@@ -211,4 +222,55 @@ it("hides status, archive and planned without canMoveTasks", () => {
   expect(screen.queryByText("tasks:actions.markAsPlanned")).toBeNull();
   expect(screen.getByText("tasks:priority.label")).toBeInTheDocument();
   canMoveTasks.mockReturnValue(true);
+});
+
+// Pegasus fork (PEGA-170): no status change into or out of a locked column,
+// and no copy into one, for users the API would refuse.
+describe("locked columns", () => {
+  const lockedColumns = [
+    {
+      slug: "eingang",
+      name: "Eingang",
+      icon: null,
+      isFinal: false,
+      isLocked: true,
+    },
+    {
+      slug: "to-do",
+      name: "Unbearbeitet",
+      icon: null,
+      isFinal: false,
+      isLocked: false,
+    },
+  ];
+  const statusItem = (name: string) =>
+    screen.getByText(name).closest("div[data-disabled], div");
+
+  it("disables a locked column as status", () => {
+    columnsData = lockedColumns;
+    render(
+      <TaskCardContextMenuContent
+        task={task}
+        taskCardContext={{ projectId: "project-1", worskpaceId: "ws-1" }}
+        onDeleteClick={vi.fn()}
+      />,
+    );
+
+    expect(statusItem("Eingang")).toHaveAttribute("data-disabled", "true");
+    expect(statusItem("Unbearbeitet")).not.toHaveAttribute("data-disabled");
+  });
+
+  it("offers no other status and no copy for a card in a locked column", () => {
+    columnsData = lockedColumns;
+    render(
+      <TaskCardContextMenuContent
+        task={{ ...task, status: "eingang" }}
+        taskCardContext={{ projectId: "project-1", worskpaceId: "ws-1" }}
+        onDeleteClick={vi.fn()}
+      />,
+    );
+
+    expect(statusItem("Unbearbeitet")).toHaveAttribute("data-disabled", "true");
+    expect(screen.queryByText("tasks:actions.duplicate")).toBeNull();
+  });
 });
