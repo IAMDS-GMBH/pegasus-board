@@ -4,7 +4,7 @@
 |---|---|
 | **Story** | PEGA-170: Das Board bekommt Spalten, die dem beschlossenen Prozess entsprechen, damit der Stand eines Bewerbers an der Spalte ablesbar ist. 14 Stufen in vier Phasen; Eingang und Pegasus-Pool sind technisch gesteuert. Hier: der **Board-Teil** |
 | **Bezug** | Fachkonzept Alexander Sitzmann vom 23.11.2026, Stakeholder-Sync 24.11.2026 (Alexander Sitzmann, Michael Polaczek, Robert Baumann). Ersetzt den Spaltensatz aus 18052, weicht bewusst von Feinkonzept Kap. 7 ab. Hub-Teil: `pegasus-hub` Branch `PEGA-170` (`docs/BOARD.md` „Spalten des Bewerber-Pools“, `bewerber-pool.template.ts`). [Register der Fork-Eingriffe](../fork-eingriffe.md#pega-170--spalten-und-phasen-nach-fachkonzept), [Betriebshandbuch](../board-einrichtung.md) |
-| **Stand** | 2026-11-24, Fork `IAMDS-GMBH/pegasus-board`, Branch `th_PEGA-170` auf Basis `main` @ `16793b37` |
+| **Stand** | 2026-11-24, Fork `IAMDS-GMBH/pegasus-board`, Branch `th_PEGA-170`, mit `main` @ `0d26b996` zusammengeführt (Migration daher 0069) |
 | **Autor** | IAMDS |
 
 Pfadangaben beziehen sich auf die Repo-Wurzel.
