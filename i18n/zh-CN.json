@@ -3014,7 +3014,8 @@
 			"filters": {
 				"dueThisWeek": "本周到期",
 				"dueNextWeek": "下周到期",
-				"noDueDate": "无截止日期"
+				"noDueDate": "无截止日期",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3268,7 +3269,8 @@
 			"today": "今天",
 			"tomorrow": "明天",
 			"inDays_other": "{{count}} 天后",
-			"fullDate": "截止 {{date}}"
+			"fullDate": "截止 {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "设置截止日期…",
@@ -3413,6 +3415,16 @@
 			"week": {
 				"more_other": "还有 {{count}} 个",
 				"truncated": "本周预览只显示前 {{shown}} 个指派给你的任务（共 {{total}} 个）。"
+			},
+			"overdue": {
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {

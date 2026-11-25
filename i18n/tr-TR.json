@@ -3061,7 +3061,8 @@
 			"filters": {
 				"dueThisWeek": "Bu hafta bitiyor",
 				"dueNextWeek": "Önümüzdeki hafta bitiyor",
-				"noDueDate": "Bitiş tarihi yok"
+				"noDueDate": "Bitiş tarihi yok",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3325,7 +3326,8 @@
 			"tomorrow": "Yarın",
 			"inDays_one": "{{count}} gün içinde",
 			"inDays_other": "{{count}} gün içinde",
-			"fullDate": "Son tarih {{date}}"
+			"fullDate": "Son tarih {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Bitiş tarihi belirle…",
@@ -3474,6 +3476,20 @@
 				"more_one": "+{{count}} more",
 				"more_other": "+{{count}} more",
 				"truncated": "The week preview includes only the first {{shown}} of {{total}} assigned tasks."
+			},
+			"overdue": {
+				"since_days_one": "Overdue for {{count}} day",
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_one": "Overdue for {{count}} hour",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_one": "Overdue for {{count}} minute",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_one": "Overdue ({{count}})",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {

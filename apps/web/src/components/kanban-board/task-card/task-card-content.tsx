@@ -24,6 +24,7 @@ import { SubtasksChip } from "@/components/task-chips/subtasks-chip";
 import { taskChipClass } from "@/components/task-chips/task-chip-class";
 import { useTaskCardFields } from "@/components/custom-fields/use-task-card-fields";
 import { useDeleteTask } from "@/hooks/mutations/task/use-delete-task";
+import { useIsTaskOverdue } from "@/hooks/use-is-task-overdue";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { cn } from "@/lib/cn";
@@ -63,6 +64,7 @@ function TaskCardContent({
     (state) =>
       isFinalColumn ?? isTaskCompleted(task.status, state.project?.columns),
   );
+  const isOverdue = useIsTaskOverdue(task, taskIsCompleted);
   const hasPriority = Boolean(task.priority) && task.priority !== "no-priority";
   const { data: workspace } = useActiveWorkspace();
   const workspaceId = workspace?.id ?? "";
@@ -143,6 +145,7 @@ function TaskCardContent({
             onPointerUp={() => setIsPressed(false)}
             onPointerLeave={() => setIsPressed(false)}
             onPointerCancel={() => setIsPressed(false)}
+            data-overdue={isOverdue || undefined}
             className={cn(
               "group relative flex flex-col rounded-[10px] border p-3 transition-[background-color,border-color,box-shadow,scale] duration-150 ease-out",
               isPressed && "scale-[0.98]",
@@ -150,6 +153,9 @@ function TaskCardContent({
               taskIsCompleted
                 ? "border-board-card-done-border bg-board-card-done"
                 : "border-board-card-border bg-board-card shadow-board-card",
+              // Pegasus fork (PEGA-66): the Hub's deadline has passed.
+              isOverdue &&
+                "border-l-[3px] border-l-due-overdue bg-due-overdue-card",
               isDragging
                 ? "border-board-card-border-hover bg-board-card shadow-[0_8px_24px_rgb(0_0_0/0.12)]"
                 : !isTaskFocused && "hover:border-board-card-border-hover",
@@ -158,6 +164,9 @@ function TaskCardContent({
               isTaskFocused && "border-board-card-focus",
             )}
           >
+            {isOverdue && (
+              <span className="sr-only">{t("tasks:due.overdue")}</span>
+            )}
             {showIdRow && (
               <div className="flex h-4.5 items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
@@ -210,7 +219,9 @@ function TaskCardContent({
             {!taskIsCompleted && (
               <div className="mt-2.5 flex flex-wrap items-center gap-1 empty:hidden">
                 {showPriority && hasPriority && <PriorityChip task={task} />}
-                {showDueDates && <DueDateChip task={task} />}
+                {showDueDates && (
+                  <DueDateChip task={task} isCompleted={taskIsCompleted} />
+                )}
                 <SubtasksChip task={task} workspaceId={workspaceId} />
                 {showTaskItemCounts && <ChecklistChip task={task} />}
                 <TaskPullRequests

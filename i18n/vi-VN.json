@@ -3014,7 +3014,8 @@
 			"filters": {
 				"dueThisWeek": "Đến hạn tuần này",
 				"dueNextWeek": "Đến hạn tuần sau",
-				"noDueDate": "Không có ngày đến hạn"
+				"noDueDate": "Không có ngày đến hạn",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3268,7 +3269,8 @@
 			"today": "Hôm nay",
 			"tomorrow": "Ngày mai",
 			"inDays_other": "Còn {{count}} ngày",
-			"fullDate": "Hạn {{date}}"
+			"fullDate": "Hạn {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Đặt hạn chót…",
@@ -3413,6 +3415,16 @@
 			"week": {
 				"more_other": "+{{count}} more",
 				"truncated": "The week preview includes only the first {{shown}} of {{total}} assigned tasks."
+			},
+			"overdue": {
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {

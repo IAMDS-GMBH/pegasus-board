@@ -9,6 +9,8 @@ import {
   type BoardFilters,
   DUE_DATE_FILTER_VALUES,
 } from "@/hooks/use-task-filters";
+import { isTaskCompleted } from "@/lib/due-date-status";
+import { isTaskOverdue } from "@/lib/is-task-overdue";
 import type Task from "@/types/task";
 import { parseMultiselect } from "@/components/custom-fields/parse-multiselect";
 import { customFieldSubjectId } from "./filter-subject-id";
@@ -19,6 +21,9 @@ export type TaskFilterContext = {
   descriptionMatches?: ReadonlySet<string>;
   weekStartsOn: Day;
   today: Date;
+  // Pegasus fork (PEGA-66): whether a status slug is a final column. Without
+  // it the "done"/"archived" slug fallback applies.
+  isFinalStatus?: (status: string) => boolean;
   getCustomFieldValues: (
     taskId: string,
   ) => Array<{ fieldId: string; value: string | null; fieldType?: string }>;
@@ -62,6 +67,11 @@ function matchesDueDate(
   context: TaskFilterContext,
 ) {
   if (dueDateFilter === DUE_DATE_FILTER_VALUES.noDueDate) return !task.dueDate;
+  if (dueDateFilter === DUE_DATE_FILTER_VALUES.overdue) {
+    const isFinal =
+      context.isFinalStatus ?? ((status) => isTaskCompleted(status));
+    return isTaskOverdue(task, isFinal(task.status), context.today);
+  }
   if (!task.dueDate) return false;
 
   const weeksAhead =

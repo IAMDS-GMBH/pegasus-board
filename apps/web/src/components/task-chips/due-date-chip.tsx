@@ -1,6 +1,7 @@
 import { Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TaskDueDatePopover from "@/components/task/task-due-date-popover";
+import { useIsTaskOverdue } from "@/hooks/use-is-task-overdue";
 import { cn } from "@/lib/cn";
 import { formatDateMedium } from "@/lib/format";
 import { getRelativeDueDate } from "@/lib/relative-due-date";
@@ -16,10 +17,11 @@ type DueDateChipProps = {
 
 export function DueDateChip({ task, isCompleted = false }: DueDateChipProps) {
   const { t } = useTranslation();
+  // Fork (PEGA-66): red once the due moment has passed, not the next day.
+  const overdue = useIsTaskOverdue(task, isCompleted);
   if (!task.dueDate) return null;
 
   const relative = getRelativeDueDate(task.dueDate);
-  const overdue = relative.kind === "overdue" && !isCompleted;
 
   return (
     <TaskDueDatePopover task={task}>

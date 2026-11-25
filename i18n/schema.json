@@ -12560,6 +12560,9 @@
 								},
 								"noDueDate": {
 									"type": "string"
+								},
+								"overdue": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -12569,7 +12572,8 @@
 								"label",
 								"dueThisWeek",
 								"dueNextWeek",
-								"noDueDate"
+								"noDueDate",
+								"overdue"
 							]
 						}
 					},
@@ -14145,6 +14149,62 @@
 								"empty",
 								"loadError"
 							]
+						},
+						"overdue": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title_one": {
+									"type": "string"
+								},
+								"title_other": {
+									"type": "string"
+								},
+								"viewAll": {
+									"type": "string"
+								},
+								"viewAllInProject": {
+									"type": "string"
+								},
+								"unassigned": {
+									"type": "string"
+								},
+								"truncated": {
+									"type": "string"
+								},
+								"since_minutes_one": {
+									"type": "string"
+								},
+								"since_minutes_other": {
+									"type": "string"
+								},
+								"since_hours_one": {
+									"type": "string"
+								},
+								"since_hours_other": {
+									"type": "string"
+								},
+								"since_days_one": {
+									"type": "string"
+								},
+								"since_days_other": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"title_one",
+								"title_other",
+								"viewAll",
+								"viewAllInProject",
+								"unassigned",
+								"truncated",
+								"since_minutes_one",
+								"since_minutes_other",
+								"since_hours_one",
+								"since_hours_other",
+								"since_days_one",
+								"since_days_other"
+							]
 						}
 					},
 					"required": [
@@ -14154,7 +14214,8 @@
 						"week",
 						"upNext",
 						"projects",
-						"activity"
+						"activity",
+						"overdue"
 					]
 				},
 				"myWork": {

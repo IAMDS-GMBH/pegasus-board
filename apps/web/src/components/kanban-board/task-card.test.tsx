@@ -221,3 +221,39 @@ it("keeps details in the rendered open column despite a final column sharing its
   expect(screen.queryByText("Regression label")).not.toBeInTheDocument();
   expect(screen.getByText("Open work")).toBeVisible();
 });
+
+// Pegasus fork (PEGA-66): a card whose due moment has passed is marked as a
+// whole, not only its date chip; a finished card never is.
+it("marks an overdue card in an open column", () => {
+  render(
+    <TaskCard
+      task={{ ...task, dueDate: "2020-01-01T00:00:00Z" }}
+      isFinalColumn={false}
+    />,
+    { wrapper },
+  );
+
+  expect(screen.getByText("tasks:due.overdue")).toBeInTheDocument();
+  expect(
+    screen.getByText("Open work").closest("[data-overdue]"),
+  ).not.toBeNull();
+});
+
+it("doesn't mark an overdue card in a final column", () => {
+  render(
+    <TaskCard
+      task={{ ...task, dueDate: "2020-01-01T00:00:00Z" }}
+      isFinalColumn
+    />,
+    { wrapper },
+  );
+
+  expect(screen.queryByText("tasks:due.overdue")).not.toBeInTheDocument();
+  expect(screen.getByText("Open work").closest("[data-overdue]")).toBeNull();
+});
+
+it("doesn't mark a card due in the future", () => {
+  render(<TaskCard task={task} isFinalColumn={false} />, { wrapper });
+
+  expect(screen.queryByText("tasks:due.overdue")).not.toBeInTheDocument();
+});

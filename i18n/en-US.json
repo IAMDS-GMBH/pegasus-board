@@ -3062,7 +3062,8 @@
 			"filters": {
 				"dueThisWeek": "Due this week",
 				"dueNextWeek": "Due next week",
-				"noDueDate": "No due date"
+				"noDueDate": "No due date",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3330,7 +3331,8 @@
 			"tomorrow": "Tomorrow",
 			"inDays_one": "In {{count}} day",
 			"inDays_other": "In {{count}} days",
-			"fullDate": "Due {{date}}"
+			"fullDate": "Due {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Set due date…",
@@ -3474,6 +3476,20 @@
 				"updated": "updated the task",
 				"empty": "Nothing has happened in the last 30 days.",
 				"loadError": "Activity couldn't be loaded."
+			},
+			"overdue": {
+				"title_one": "Overdue ({{count}})",
+				"title_other": "Overdue ({{count}})",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}",
+				"unassigned": "Unassigned",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"since_minutes_one": "Overdue for {{count}} minute",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"since_hours_one": "Overdue for {{count}} hour",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_days_one": "Overdue for {{count}} day",
+				"since_days_other": "Overdue for {{count}} days"
 			}
 		},
 		"myWork": {

@@ -323,3 +323,28 @@ vi.mock(
     default: () => ({ data: [] }),
   }),
 );
+
+// Pegasus fork (PEGA-66): a row whose due moment has passed is marked as a
+// whole, like the card; a finished one never is.
+describe("overdue rows", () => {
+  const overdue = { ...task, dueDate: "2020-01-01T00:00:00.000Z" };
+
+  it.each([
+    ["list", () => <TaskRow task={overdue} projectSlug="kan" />],
+    ["backlog", () => <BacklogTaskRow task={overdue} />],
+  ])("marks an overdue row in the %s view", (_view, row) => {
+    render(<DndContext>{row()}</DndContext>);
+
+    expect(screen.getByText("tasks:due.overdue")).toBeInTheDocument();
+  });
+
+  it("doesn't mark a finished row", () => {
+    render(
+      <DndContext>
+        <TaskRow task={{ ...overdue, status: "done" }} projectSlug="kan" />
+      </DndContext>,
+    );
+
+    expect(screen.queryByText("tasks:due.overdue")).not.toBeInTheDocument();
+  });
+});

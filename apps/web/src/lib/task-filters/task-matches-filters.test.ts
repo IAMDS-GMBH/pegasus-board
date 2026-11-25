@@ -176,3 +176,58 @@ describe("taskMatchesFilters", () => {
     ).toBe(true);
   });
 });
+
+// Pegasus fork (PEGA-66): "Überfällig" keeps cards whose due moment has
+// passed, outside final columns and the archive.
+describe("the overdue filter", () => {
+  const overdueContext: TaskFilterContext = {
+    ...context,
+    today: new Date("2026-10-14T12:00:00.000Z"),
+    isFinalStatus: (status) => status === "done",
+  };
+
+  it.each([
+    [
+      "a due moment earlier today",
+      true,
+      { dueDate: "2026-10-14T09:00:00.000Z" },
+    ],
+    [
+      "a due moment later today",
+      false,
+      { dueDate: "2026-10-14T15:00:00.000Z" },
+    ],
+    ["no due date", false, { dueDate: null }],
+    [
+      "a final column",
+      false,
+      { dueDate: "2026-10-10T09:00:00.000Z", status: "done" },
+    ],
+    [
+      "the archive",
+      false,
+      { dueDate: "2026-10-10T09:00:00.000Z", status: "archived" },
+    ],
+  ] as Array<[string, boolean, Partial<Task>]>)(
+    "treats a card with %s as overdue: %s",
+    (_case, expected, overrides) => {
+      expect(
+        taskMatchesFilters(
+          task(overrides),
+          { ...noFilters, dueDate: ["overdue"] },
+          overdueContext,
+        ),
+      ).toBe(expected);
+    },
+  );
+
+  it("keeps the other cards when negated", () => {
+    expect(
+      taskMatchesFilters(
+        task({ dueDate: "2026-10-14T09:00:00.000Z" }),
+        { ...noFilters, dueDate: ["overdue"], negated: ["dueDate"] },
+        overdueContext,
+      ),
+    ).toBe(false);
+  });
+});
