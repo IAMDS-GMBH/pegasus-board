@@ -3014,7 +3014,8 @@
 			"filters": {
 				"dueThisWeek": "이번 주 마감",
 				"dueNextWeek": "다음 주 마감",
-				"noDueDate": "마감일 없음"
+				"noDueDate": "마감일 없음",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3268,7 +3269,8 @@
 			"today": "오늘",
 			"tomorrow": "내일",
 			"inDays_other": "{{count}}일 후",
-			"fullDate": "마감 {{date}}"
+			"fullDate": "마감 {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "마감일 설정…",
@@ -3413,6 +3415,16 @@
 			"week": {
 				"more_other": "+{{count}} more",
 				"truncated": "The week preview includes only the first {{shown}} of {{total}} assigned tasks."
+			},
+			"overdue": {
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {

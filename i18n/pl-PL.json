@@ -962,6 +962,28 @@
 				"more_one": "+{{count}} more",
 				"more_other": "+{{count}} more",
 				"truncated": "The week preview includes only the first {{shown}} of {{total}} assigned tasks."
+			},
+			"overdue": {
+				"since_days_few": "Overdue for {{count}} days",
+				"since_days_many": "Overdue for {{count}} days",
+				"since_days_one": "Overdue for {{count}} day",
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_few": "Overdue for {{count}} hours",
+				"since_hours_many": "Overdue for {{count}} hours",
+				"since_hours_one": "Overdue for {{count}} hour",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_few": "Overdue for {{count}} minutes",
+				"since_minutes_many": "Overdue for {{count}} minutes",
+				"since_minutes_one": "Overdue for {{count}} minute",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_few": "Overdue ({{count}})",
+				"title_many": "Overdue ({{count}})",
+				"title_one": "Overdue ({{count}})",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {
@@ -3189,7 +3211,8 @@
 			"filters": {
 				"dueNextWeek": "Termin w przyszłym tygodniu",
 				"dueThisWeek": "Termin w tym tygodniu",
-				"noDueDate": "Brak terminu"
+				"noDueDate": "Brak terminu",
+				"overdue": "Overdue"
 			},
 			"moveAll": "Przenieś wszystko",
 			"moveAllConfirm": "Przenieść wszystkie zaplanowane zadania ({{count}}) do „Do zrobienia”?",
@@ -3721,7 +3744,8 @@
 			"inDays_few": "Za {{count}} dni",
 			"inDays_many": "Za {{count}} dni",
 			"inDays_other": "Za {{count}} dnia",
-			"fullDate": "Termin {{date}}"
+			"fullDate": "Termin {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Ustaw termin…",

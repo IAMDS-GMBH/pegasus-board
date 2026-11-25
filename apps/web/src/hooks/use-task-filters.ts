@@ -18,6 +18,8 @@ export const DUE_DATE_FILTER_VALUES = {
   dueNextWeek: "dueNextWeek",
   dueThisWeek: "dueThisWeek",
   noDueDate: "noDueDate",
+  // Pegasus fork (PEGA-66): the Hub's deadline has passed.
+  overdue: "overdue",
 } as const;
 
 const DEFAULT_FILTERS: BoardFilters = {

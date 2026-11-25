@@ -3097,7 +3097,8 @@
 			"filters": {
 				"dueThisWeek": "Para esta semana",
 				"dueNextWeek": "Para la semana que viene",
-				"noDueDate": "Sin fecha de vencimiento"
+				"noDueDate": "Sin fecha de vencimiento",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3382,7 +3383,8 @@
 			"inDays_one": "En {{count}} día",
 			"inDays_many": "En {{count}} días",
 			"inDays_other": "En {{count}} días",
-			"fullDate": "Vence el {{date}}"
+			"fullDate": "Vence el {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Establecer fecha límite…",
@@ -3535,6 +3537,24 @@
 				"more_one": "+{{count}} more",
 				"more_other": "+{{count}} more",
 				"truncated": "The week preview includes only the first {{shown}} of {{total}} assigned tasks."
+			},
+			"overdue": {
+				"since_days_many": "Overdue for {{count}} days",
+				"since_days_one": "Overdue for {{count}} day",
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_many": "Overdue for {{count}} hours",
+				"since_hours_one": "Overdue for {{count}} hour",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_many": "Overdue for {{count}} minutes",
+				"since_minutes_one": "Overdue for {{count}} minute",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_many": "Overdue ({{count}})",
+				"title_one": "Overdue ({{count}})",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myTasks": {

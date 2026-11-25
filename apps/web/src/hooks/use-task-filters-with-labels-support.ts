@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { valuesByTask } from "@/components/custom-fields/card-fields";
 import { countActiveFilters } from "@/lib/task-filters/count-active-filters";
+import { isTaskCompleted } from "@/lib/due-date-status";
 import { filterProjectTasks } from "@/lib/task-filters/filter-project-tasks";
 import { customFieldSubjectId } from "@/lib/task-filters/filter-subject-id";
 import { setSubjectNegated } from "@/lib/task-filters/set-subject-negated";
@@ -111,6 +112,7 @@ export function useTaskFiltersWithLabelsSupport(
     [filters, ignore],
   );
 
+  const columns = project?.columns;
   const createMatcher = useCallback(() => {
     const context = {
       query: textQuery,
@@ -118,11 +120,14 @@ export function useTaskFiltersWithLabelsSupport(
       descriptionMatches,
       weekStartsOn,
       today: new Date(),
+      // Fork (PEGA-66): the overdue filter skips final columns.
+      isFinalStatus: (status: string) => isTaskCompleted(status, columns),
       getCustomFieldValues: getValuesForTask,
     };
     return (task: Task) => taskMatchesFilters(task, effectiveFilters, context);
   }, [
     effectiveFilters,
+    columns,
     project?.slug,
     textQuery,
     weekStartsOn,

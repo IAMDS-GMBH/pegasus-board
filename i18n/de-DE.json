@@ -3061,7 +3061,8 @@
 			"filters": {
 				"dueThisWeek": "Diese Woche fällig",
 				"dueNextWeek": "Nächste Woche fällig",
-				"noDueDate": "Kein Fälligkeitsdatum"
+				"noDueDate": "Kein Fälligkeitsdatum",
+				"overdue": "Überfällig"
 			}
 		},
 		"sort": {
@@ -3330,7 +3331,8 @@
 			"tomorrow": "Morgen",
 			"inDays_one": "In {{count}} Tag",
 			"inDays_other": "In {{count}} Tagen",
-			"fullDate": "Fällig am {{date}}"
+			"fullDate": "Fällig am {{date}}",
+			"overdue": "Überfällig"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "Fälligkeitsdatum festlegen…",
@@ -3474,6 +3476,20 @@
 				"more_one": "+{{count}} weitere",
 				"more_other": "+{{count}} weitere",
 				"truncated": "Die Wochenvorschau enthält nur die ersten {{shown}} von {{total}} zugewiesenen Aufgaben."
+			},
+			"overdue": {
+				"title_one": "Überfällig ({{count}})",
+				"title_other": "Überfällig ({{count}})",
+				"viewAll": "Alle anzeigen",
+				"viewAllInProject": "Alle in {{project}}",
+				"unassigned": "Nicht zugewiesen",
+				"truncated": "Die {{shown}} ältesten von {{total}} überfälligen Aufgaben.",
+				"since_minutes_one": "Seit {{count}} Minute überfällig",
+				"since_minutes_other": "Seit {{count}} Minuten überfällig",
+				"since_hours_one": "Seit {{count}} Stunde überfällig",
+				"since_hours_other": "Seit {{count}} Stunden überfällig",
+				"since_days_one": "Seit {{count}} Tag überfällig",
+				"since_days_other": "Seit {{count}} Tagen überfällig"
 			}
 		},
 		"myTasks": {

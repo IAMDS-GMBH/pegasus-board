@@ -3014,7 +3014,8 @@
 			"filters": {
 				"dueThisWeek": "本週到期",
 				"dueNextWeek": "下週到期",
-				"noDueDate": "無截止日期"
+				"noDueDate": "無截止日期",
+				"overdue": "Overdue"
 			}
 		},
 		"sort": {
@@ -3268,7 +3269,8 @@
 			"today": "今天",
 			"tomorrow": "明天",
 			"inDays_other": "{{count}} 天後",
-			"fullDate": "截止 {{date}}"
+			"fullDate": "截止 {{date}}",
+			"overdue": "Overdue"
 		},
 		"datePicker": {
 			"dueDatePlaceholder": "設定截止日期…",
@@ -3413,6 +3415,16 @@
 				"updated": "更新了任務",
 				"empty": "過去 30 天沒有任何動態。",
 				"loadError": "無法載入動態。"
+			},
+			"overdue": {
+				"since_days_other": "Overdue for {{count}} days",
+				"since_hours_other": "Overdue for {{count}} hours",
+				"since_minutes_other": "Overdue for {{count}} minutes",
+				"title_other": "Overdue ({{count}})",
+				"truncated": "Showing the {{shown}} oldest of {{total}} overdue tasks.",
+				"unassigned": "Unassigned",
+				"viewAll": "View all",
+				"viewAllInProject": "All in {{project}}"
 			}
 		},
 		"myWork": {

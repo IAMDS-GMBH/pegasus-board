@@ -143,6 +143,7 @@ export function useUserWebSocket() {
             for (const queryKey of [
               ["projects", workspaceId],
               ["assigned-tasks", workspaceId],
+              ["overdue-tasks", workspaceId], // Fork (PEGA-66)
               ["search", { workspaceId }],
               ["workspace-activity", workspaceId],
               ["labels", workspaceId],

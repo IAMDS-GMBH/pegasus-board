@@ -7,6 +7,7 @@ import WorkspaceLayout from "@/components/common/workspace-layout";
 import { ActivityFeed } from "@/components/home/activity-feed";
 import { getDayPart } from "@/components/home/day-part";
 import { HomeProjects } from "@/components/home/home-projects";
+import { OverdueBlock } from "@/components/home/overdue-block";
 import { UpNext } from "@/components/home/up-next";
 import { WeekStrip } from "@/components/home/week-strip";
 import PageTitle from "@/components/page-title";
@@ -83,6 +84,9 @@ function RouteComponent() {
                 </Button>
               )}
             </header>
+
+            {/* Pegasus fork (PEGA-66): overdue cards of the Sichtbereich. */}
+            <OverdueBlock workspaceId={workspaceId} />
 
             <WeekStrip
               tasks={assigned?.tasks ?? []}

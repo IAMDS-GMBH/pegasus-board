@@ -16,6 +16,7 @@ import CreateTaskModal from "@/components/shared/modals/create-task-modal";
 import TaskDetailsSheet from "@/components/task/task-details-sheet";
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import { useBoardSort } from "@/hooks/use-board-sort";
+import { useOverdueFilterFromSearch } from "@/hooks/use-overdue-filter-from-search";
 import { cn } from "@/lib/cn";
 import { sortTasks } from "@/lib/sort-tasks";
 import { countColumnTasks } from "@/lib/task-filters/count-tasks";
@@ -26,6 +27,8 @@ import { useUserPreferencesStore } from "@/store/user-preferences";
 
 type BoardSearchParams = {
   taskId?: string;
+  // Pegasus fork (PEGA-66): seeds the overdue filter, then leaves the URL.
+  filter?: "overdue";
 };
 
 export const Route = createFileRoute(
@@ -34,6 +37,7 @@ export const Route = createFileRoute(
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>): BoardSearchParams => ({
     taskId: typeof search.taskId === "string" ? search.taskId : undefined,
+    filter: search.filter === "overdue" ? "overdue" : undefined,
   }),
 });
 
@@ -80,7 +84,7 @@ function BoardSkeleton() {
 function RouteComponent() {
   const { t } = useTranslation();
   const { projectId, workspaceId } = Route.useParams();
-  const { taskId } = Route.useSearch();
+  const { taskId, filter } = Route.useSearch();
   const navigate = useNavigate();
   const { project, setProject } = useProjectStore();
   const view = useProjectTaskView({
@@ -90,6 +94,7 @@ function RouteComponent() {
     scope: "board",
   });
   const { descriptionSearch, filters } = view;
+  useOverdueFilterFromSearch(filter, filters.setFilters);
   // Pegasus fork (PEGA-89): label and field filters run in the database so
   // the board loads only matching cards; the client matcher still applies.
   const serverFilters = useMemo(

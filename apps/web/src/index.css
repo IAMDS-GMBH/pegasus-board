@@ -141,6 +141,8 @@ input:-webkit-autofill:active {
   --color-priority-bar-empty: var(--priority-bar-empty);
   --color-priority-urgent: var(--priority-urgent);
   --color-due-overdue: var(--due-overdue);
+  --color-due-overdue-bg: var(--due-overdue-bg);
+  --color-due-overdue-card: var(--due-overdue-card);
   --color-avatar: var(--avatar);
   --color-avatar-selected: var(--avatar-selected);
   --color-avatar-done: var(--avatar-done);
@@ -266,6 +268,10 @@ input:-webkit-autofill:active {
   --priority-bar-empty: #00000021;
   --priority-urgent: #dc2626;
   --due-overdue: #dc2626;
+  /* Pegasus fork (PEGA-66): overdue rows get a translucent overlay, overdue
+     cards an opaque tint of the card colour. */
+  --due-overdue-bg: rgb(220 38 38 / 0.06);
+  --due-overdue-card: color-mix(in srgb, var(--due-overdue) 6%, var(--board-card));
   --avatar: #e5e5e5;
   --avatar-selected: #e0e0e0;
   --avatar-done: #ededed;
@@ -357,6 +363,8 @@ input:-webkit-autofill:active {
   --priority-bar-empty: #ffffff24;
   --priority-urgent: #e5484d;
   --due-overdue: #ff6467;
+  --due-overdue-bg: rgb(255 100 103 / 0.1);
+  --due-overdue-card: color-mix(in srgb, var(--due-overdue) 10%, var(--board-card));
   --avatar: #2e2e2e;
   --avatar-selected: #383838;
   --avatar-done: #222222;

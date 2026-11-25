@@ -362,4 +362,72 @@ describe("useTaskFiltersWithLabelsSupport", () => {
       expect.objectContaining({ status: ["done"], priority: null }),
     );
   });
+  // Pegasus fork (PEGA-66): a card in a final column is never overdue, also
+  // when the column's slug is not "done".
+  it("keeps only overdue cards of open columns under the overdue filter", async () => {
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ dueDate: ["overdue"] }),
+    );
+    const card = (id: string, status: string, dueDate: string | null) => ({
+      id,
+      title: id,
+      number: 1,
+      description: null,
+      status,
+      priority: null,
+      startDate: null,
+      dueDate,
+      position: 0,
+      createdAt: "2026-04-16T00:00:00.000Z",
+      userId: null,
+      assigneeId: null,
+      assigneeName: null,
+      projectId: "project-1",
+      labels: [],
+    });
+    const column = (slug: string, isFinal: boolean, tasks: unknown[]) => ({
+      id: slug,
+      slug,
+      name: slug,
+      icon: null,
+      isFinal,
+      tasks,
+    });
+    const passed = "2020-01-01T00:00:00.000Z";
+    const project = {
+      id: "project-1",
+      name: "Bewerber-Pool",
+      slug: "BEW",
+      icon: null,
+      description: null,
+      isPublic: false,
+      createdAt: "2026-04-16T00:00:00.000Z",
+      workspaceId: "workspace-1",
+      columns: [
+        column("unbearbeitet", false, [
+          card("late", "unbearbeitet", passed),
+          card("ahead", "unbearbeitet", "2099-01-01T00:00:00.000Z"),
+          card("undated", "unbearbeitet", null),
+        ]),
+        column("angenommen", true, [card("taken", "angenommen", passed)]),
+      ],
+      plannedTasks: [],
+      archivedTasks: [],
+    } as unknown as Parameters<typeof useTaskFiltersWithLabelsSupport>[0];
+
+    const { result } = renderHook(
+      () => useTaskFiltersWithLabelsSupport(project, "project-1"),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.dueDate).toEqual(["overdue"]);
+    });
+    expect(
+      result.current.filteredProject?.columns.flatMap((c) =>
+        c.tasks.map((t) => t.id),
+      ),
+    ).toEqual(["late"]);
+  });
 });

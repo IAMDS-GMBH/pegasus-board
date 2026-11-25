@@ -9,6 +9,7 @@ import { DueDateChip } from "@/components/task-chips/due-date-chip";
 import { LabelChips } from "@/components/task-chips/label-chips";
 import { stopCardEvents } from "@/components/task-chips/stop-card-events";
 import { SubtasksChip } from "@/components/task-chips/subtasks-chip";
+import { useIsTaskOverdue } from "@/hooks/use-is-task-overdue";
 import { cn } from "@/lib/cn";
 import { getPriorityLabel } from "@/lib/i18n/domain";
 import { getPriorityIcon } from "@/lib/priority";
@@ -50,10 +51,20 @@ export function TaskRowBody({
     showTaskItemCounts,
   } = useUserPreferencesStore();
   const cardFields = useTaskCardFields(task.projectId, task.id);
+  const isOverdue = useIsTaskOverdue(task, isCompleted);
   const priorityLabel = `${t("tasks:priority.label")}: ${getPriorityLabel(task.priority ?? "")}`;
 
   return (
     <>
+      {/* Pegasus fork (PEGA-66): the row sits in a `relative` parent. */}
+      {isOverdue && (
+        <span
+          data-overdue
+          className="pointer-events-none absolute inset-0 border-l-[3px] border-l-due-overdue bg-due-overdue-bg"
+        >
+          <span className="sr-only">{t("tasks:due.overdue")}</span>
+        </span>
+      )}
       {showPriority && (
         <TaskPriorityPopover task={task}>
           <button

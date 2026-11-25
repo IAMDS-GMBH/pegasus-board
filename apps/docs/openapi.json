@@ -1114,6 +1114,91 @@
           "labels"
         ]
       },
+      "OverdueTasks": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverdueTask"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "All overdue tasks the caller may see, including any beyond the first 100 returned."
+          }
+        },
+        "required": [
+          "tasks",
+          "total"
+        ]
+      },
+      "OverdueTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "number": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "The slug of the column the task sits in."
+          },
+          "statusName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The column's display name. Null for tasks outside a column, such as planned ones."
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "assigneeId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "assigneeName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "projectSlug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "projectId",
+          "number",
+          "title",
+          "status",
+          "statusName",
+          "dueDate",
+          "assigneeId",
+          "assigneeName",
+          "projectName",
+          "projectSlug"
+        ]
+      },
       "BoardResponse": {
         "type": "object",
         "properties": {
@@ -10568,6 +10653,96 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AssignedTasks"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid workspace ID or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing project:read or task:read permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiKeyRateLimited"
+          }
+        }
+      }
+    },
+    "/task/overdue": {
+      "get": {
+        "operationId": "listOverdueTasks",
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "List overdue tasks",
+        "description": "Get the overdue tasks the caller may see across a workspace's active projects: due date in the past, column not final, task not archived. A member the Pegasus Hub governs sees only the tasks of their scope. Ordered by due date, oldest first. At most 100 tasks are returned; total counts all of them. Set countOnly=true to return just that total.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "workspaceId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "Return only the total, with an empty tasks array, without loading task rows."
+            },
+            "required": false,
+            "description": "Return only the total, with an empty tasks array, without loading task rows.",
+            "name": "countOnly",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overdue tasks the caller may see",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverdueTasks"
                 }
               }
             }

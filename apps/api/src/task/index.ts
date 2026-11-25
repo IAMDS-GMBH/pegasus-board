@@ -43,6 +43,7 @@ import deleteTask from "./controllers/delete-task";
 import duplicateTask from "./controllers/duplicate-task";
 import exportTasks from "./controllers/export-tasks";
 import getAssignedTasks from "./controllers/get-assigned-tasks";
+import getOverdueTasks from "./controllers/get-overdue-tasks";
 import getTaskByTicketId from "./controllers/get-task-by-ticket-id";
 import getTask from "./controllers/get-task";
 import getTasks from "./controllers/get-tasks";
@@ -124,6 +125,7 @@ import {
   updateTaskBody,
   updateTitleBody,
 } from "./schema";
+import { overdueTasksQuery, overdueTasksSchema } from "./overdue-tasks-schema";
 
 const listAssignedTasksRoute = createRoute({
   method: "get",
@@ -140,6 +142,30 @@ const listAssignedTasksRoute = createRoute({
   request: { query: assignedTasksQuery },
   responses: {
     200: jsonResponse("Open tasks assigned to the caller", assignedTasksSchema),
+    400: errorResponse("Invalid workspace ID or query parameters"),
+    403: errorResponse("Missing project:read or task:read permission"),
+    404: errorResponse("Workspace not found"),
+  },
+});
+
+// Pegasus fork (PEGA-66): the overdue cards of the caller's Sichtbereich,
+// for the start page of a Führungskraft. The Hub sets the deadline as the
+// card's due date; the Board only shows it.
+const listOverdueTasksRoute = createRoute({
+  method: "get",
+  operationId: "listOverdueTasks",
+  path: "/overdue",
+  tags: ["Tasks"],
+  summary: "List overdue tasks",
+  description:
+    "Get the overdue tasks the caller may see across a workspace's active projects: due date in the past, column not final, task not archived. A member the Pegasus Hub governs sees only the tasks of their scope. Ordered by due date, oldest first. At most 100 tasks are returned; total counts all of them. Set countOnly=true to return just that total.",
+  middleware: [
+    workspaceAccess.fromQuery(),
+    requireWorkspacePermission({ project: ["read"], task: ["read"] }),
+  ] as const,
+  request: { query: overdueTasksQuery },
+  responses: {
+    200: jsonResponse("Overdue tasks the caller may see", overdueTasksSchema),
     400: errorResponse("Invalid workspace ID or query parameters"),
     403: errorResponse("Missing project:read or task:read permission"),
     404: errorResponse("Workspace not found"),
@@ -871,6 +897,18 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
       await getAssignedTasks(
         workspaceId,
         c.get("userId"),
+        countOnly === "true",
+      ),
+      200,
+    );
+  })
+  .openapi(listOverdueTasksRoute, async (c) => {
+    const { workspaceId, countOnly } = c.req.valid("query");
+    return c.json(
+      await getOverdueTasks(
+        workspaceId,
+        c.get("userId"),
+        await resolveTaskScope(c),
         countOnly === "true",
       ),
       200,
