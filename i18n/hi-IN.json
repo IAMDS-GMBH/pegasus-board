@@ -2391,7 +2391,8 @@
 		},
 		"shared": {
 			"autosave": "बदलाव अपने आप सहेजे जाते हैं"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

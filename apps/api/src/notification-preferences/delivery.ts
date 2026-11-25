@@ -17,6 +17,7 @@ import {
   sendOutboundRequest,
 } from "../utils/outbound-request";
 import { loadTaskScopes } from "../task-scope/load-task-scopes";
+import { getNotificationSettingsUrl } from "../utils/notification-settings-url";
 import { resolveEmailTask } from "./resolve-email-task";
 import { decryptSecret } from "./secrets";
 
@@ -505,7 +506,10 @@ export async function deliverNotification(
             ? `${context.workspaceName} / ${context.projectName}`
             : context.workspaceName,
           task,
-          settingsUrl: `${getClientUrl()}/dashboard/settings/account/notifications`,
+          // Fork (PEGA-80): the Pegasus Hub owns notification settings.
+          settingsUrl:
+            getNotificationSettingsUrl() ??
+            `${getClientUrl()}/dashboard/settings/account/notifications`,
         });
       })(),
     );

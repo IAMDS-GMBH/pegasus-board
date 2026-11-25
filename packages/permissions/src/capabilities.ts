@@ -27,6 +27,10 @@ export const workspaceCapabilities = {
   deleteLabels: { label: ["delete"] },
   manageWorkspace: { workspace: ["update", "manage_settings"] },
   manageSettings: { workspace: ["manage_settings"] },
+  // Pegasus fork (PEGA-80): project integrations. Kaneo's rule for members the
+  // Hub does not govern; withheld from every member it does
+  // (`hubUngovernedCapabilities`).
+  manageIntegrations: { workspace: ["manage_settings"] },
   deleteWorkspace: { workspace: ["delete"] },
   inviteUsers: { invitation: ["create"] },
   manageTeam: { member: ["update", "delete"] },

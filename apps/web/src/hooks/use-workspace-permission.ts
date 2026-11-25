@@ -73,6 +73,8 @@ export function useWorkspacePermission() {
       canDeleteLabels: () => can.deleteLabels,
       canManageWorkspace: () => can.manageWorkspace,
       canManageSettings: () => can.manageSettings,
+      // PEGA-80: false for every member the Pegasus Hub governs.
+      canManageIntegrations: () => can.manageIntegrations,
       canDeleteWorkspace: () => can.deleteWorkspace,
       canInviteUsers: () => can.inviteUsers,
       canManageTeam: () => can.manageTeam,

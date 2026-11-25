@@ -2391,7 +2391,8 @@
 		},
 		"shared": {
 			"autosave": "Промените се зачувуваат автоматски"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

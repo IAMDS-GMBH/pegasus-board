@@ -2391,7 +2391,8 @@
 		},
 		"shared": {
 			"autosave": "Değişiklikler otomatik olarak kaydedilir"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {

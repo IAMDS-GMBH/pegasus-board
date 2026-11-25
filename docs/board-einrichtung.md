@@ -156,7 +156,8 @@ Phase und Sperre sind Eigenschaften der Spalte. Sie lassen sich ohne Code änder
   3. Mitglieder auf die Rolle „Pegasus“ umstellen.
 - **Workspace und Mitglieder:** Den Workspace legt ein Admin über die Oberfläche an. Mitglieder braucht niemand einzuladen (PEGA-143): Wer im Stand des Hubs steht und sich mit bestätigter E-Mail anmeldet (Keycloak), wird beim nächsten Push bzw. bei der Anmeldung Mitglied mit der Rolle „Pegasus“ (gespeichert als `pegasus`). Die Rolle muss im Workspace angelegt sein (siehe oben); fehlt sie, nimmt das Board niemanden auf und schreibt eine Warnung ins Log, statt auf eine Rolle mit mehr Rechten auszuweichen. Bestehende Mitglieder und ihre Rolle ändert der Hub nicht. Einladungen bleiben für Konten ohne Eintrag im Stand.
 - **Bearbeiter (PEGA-143):** sieht nur Karten, die ihm zugewiesen sind (Modus `assigned`), und gibt sie mit „An Einheit zurückgeben“ an die Einheit zurück (Recht `LEAD_RETURN_OR_REPORT`). Zuweisen dürfen nur Mitglieder mit `LEAD_ASSIGN_PROCESSOR`.
-- **Webhooks zum Hub** gehören zur Einrichtung des Hubs.
+- **Webhooks zum Hub** gehören zur Einrichtung des Hubs. Integrationen eines Projekts (Generic Webhook, Chat, GitHub/Gitea/GitLab, Sync-Regeln) ändern in einem Hub-Workspace nur der Owner, Instanz-Admins und das Systemkonto (PEGA-80). Ein Hub-gesteuerter Administrator bekommt 403 `HUB_GOVERNED` und sieht den Bereich „Integrationen“ in den Projekteinstellungen nicht.
+- **Benachrichtigungen (PEGA-80):** Mails zu Karten (zugewiesen, erwähnt, fällig) verschickt der Hub; das Board braucht kein SMTP. `PEGASUS_NOTIFICATION_SETTINGS_URL` (Board-API, je Stage `<ADMIN_URL>/notifications`, derselbe Wert wie `MAIL_SETTINGS_URL` des Hubs) lässt „Benachrichtigungen“ im Kontomenü in einem neuen Tab auf die Einstellungen im Hub zeigen. Ohne die Variable fehlt der Eintrag. Der Posteingang im Board bleibt.
 
 ## 6. Neuen Key Account anbinden
 
@@ -166,7 +167,7 @@ Jeder Key Account ist ein eigener Workspace. Ein API-Schlüssel gehört in Kaneo
 |---|---|
 | Hub, Umgebung (einmal) | `KANEO_API_URL`, `KANEO_API_KEY` (Schlüssel des Systemkontos), `KANEO_WEBHOOK_SECRET` (eines für alle Projekte) |
 | Hub, Datenbank (je Key Account) | Projekt-ID im Board; die Workspace-ID liest der Hub über `GET /api/project/{id}`. Spalten, Felder und Labels findet er zur Laufzeit am Namen. |
-| Board, Umgebung (einmal) | `PEGASUS_HUB_USER_ID` (Nutzer-ID des Systemkontos) |
+| Board, Umgebung (einmal) | `PEGASUS_HUB_USER_ID` (Nutzer-ID des Systemkontos), `PEGASUS_NOTIFICATION_SETTINGS_URL` (`<ADMIN_URL>/notifications`, PEGA-80) |
 
 Keine Projekt- oder Workspace-ID gehört in die Umgebung des Hubs (heute `KANEO_PROJECT_ID`): Jeder weitere Key Account wäre sonst ein neues Deployment.
 

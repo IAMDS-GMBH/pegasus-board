@@ -2475,7 +2475,8 @@
 		},
 		"shared": {
 			"autosave": "Зміни зберігаються автоматично"
-		}
+		},
+		"opensInNewTab": "(opens in a new tab)"
 	},
 	"navigation": {
 		"commandPalette": {
