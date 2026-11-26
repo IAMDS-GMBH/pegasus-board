@@ -4,6 +4,8 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
+import { requireColumnVisible } from "../task-scope/require-column-visible";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import createColumn from "./controllers/create-column";
@@ -106,6 +108,7 @@ const updateColumnRoute = createRoute({
   middleware: [
     workspaceAccess.fromColumn("id"),
     requireWorkspacePermission({ project: ["update"] }),
+    requireColumnVisible, // Pegasus fork (PEGA-170)
   ] as const,
   request: {
     params: columnParam,
@@ -135,6 +138,7 @@ const deleteColumnRoute = createRoute({
   middleware: [
     workspaceAccess.fromColumn("id"),
     requireWorkspacePermission({ project: ["update"] }),
+    requireColumnVisible, // Pegasus fork (PEGA-170)
   ] as const,
   request: { params: columnParam },
   responses: {
@@ -149,11 +153,18 @@ const deleteColumnRoute = createRoute({
 
 const column = apiRouter()
   .openapi(getColumnsRoute, async (c) =>
-    c.json(await getColumns(c.req.valid("param").projectId), 200),
+    c.json(
+      await getColumns(
+        c.req.valid("param").projectId,
+        await resolveTaskScope(c), // Pegasus fork (PEGA-170)
+      ),
+      200,
+    ),
   )
   .openapi(createColumnRoute, async (c) => {
     const { projectId } = c.req.valid("param");
-    const { name, icon, color, isFinal, phase, isLocked } = c.req.valid("json");
+    const { name, icon, color, isFinal, phase, isLocked, isRestricted } =
+      c.req.valid("json");
     return c.json(
       await createColumn({
         projectId,
@@ -163,6 +174,7 @@ const column = apiRouter()
         isFinal,
         phase,
         isLocked,
+        isRestricted,
       }),
       200,
     );

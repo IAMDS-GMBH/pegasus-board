@@ -1,8 +1,9 @@
-import { and, eq, type SQLWrapper, sql } from "drizzle-orm";
+import { and, eq, exists, type SQLWrapper, sql } from "drizzle-orm";
 import db from "../database";
-import { userTable } from "../database/schema";
+import { projectTable, taskTable, userTable } from "../database/schema";
 import { projectAccessCondition } from "../project-access/project-access-condition";
 import { loadTaskScopes } from "../task-scope/load-task-scopes";
+import { statusChangesVisibleCondition } from "../task-scope/status-change-visible-condition";
 import type { TaskScopes } from "../task-scope/task-scope";
 import { tasksVisibleCondition } from "../task-scope/task-visible-condition";
 
@@ -21,7 +22,9 @@ export function notificationResourceAccess(
   const taskVisible =
     tasksVisibleCondition(taskScopes, {
       id: sql`notification_task.id`,
-      assigneeId: sql`notification_task.user_id`,
+      assigneeId: sql`notification_task.assignee_id`,
+      projectId: sql`notification_task.project_id`,
+      status: sql`notification_task.status`,
       workspaceId: sql`notification_project.workspace_id`,
     }) ?? sql`true`;
   return sql<boolean>`(
@@ -46,7 +49,19 @@ export async function canReceiveResourceNotification(
   resourceId?: string | null,
   resourceType?: string | null,
   database: Pick<typeof db, "select"> = db,
+  // Pegasus fork (PEGA-170): a status change naming a restricted column does
+  // not reach a recipient who does not see restricted columns.
+  eventData?: unknown,
 ) {
+  const taskScopes = await loadTaskScopes(userId);
+  const statusVisible =
+    resourceId && resourceType === "task" && eventData
+      ? statusChangesVisibleCondition(taskScopes, {
+          eventData: sql`${JSON.stringify(eventData)}::jsonb`,
+          projectIds: [taskTable.projectId],
+          workspaceId: projectTable.workspaceId,
+        })
+      : undefined;
   const [user] = await database
     .select({ id: userTable.id })
     .from(userTable)
@@ -57,8 +72,16 @@ export async function canReceiveResourceNotification(
           userId,
           resourceId ?? null,
           resourceType ?? null,
-          await loadTaskScopes(userId),
+          taskScopes,
         ),
+        statusVisible &&
+          exists(
+            database
+              .select({ one: sql`1` })
+              .from(taskTable)
+              .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))
+              .where(and(eq(taskTable.id, resourceId ?? ""), statusVisible)),
+          ),
       ),
     )
     .limit(1);

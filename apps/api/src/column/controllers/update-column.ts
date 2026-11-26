@@ -14,6 +14,7 @@ async function updateColumn(
     isFinal?: boolean;
     phase?: string | null;
     isLocked?: boolean;
+    isRestricted?: boolean;
   },
 ) {
   const existing = await db.query.columnTable.findFirst({
@@ -33,6 +34,9 @@ async function updateColumn(
       ...(data.isFinal !== undefined && { isFinal: data.isFinal }),
       ...(data.phase !== undefined && { phase: data.phase }),
       ...(data.isLocked !== undefined && { isLocked: data.isLocked }),
+      ...(data.isRestricted !== undefined && {
+        isRestricted: data.isRestricted,
+      }),
     })
     .where(eq(columnTable.id, id))
     .returning();

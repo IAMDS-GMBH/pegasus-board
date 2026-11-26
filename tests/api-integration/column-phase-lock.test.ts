@@ -134,4 +134,47 @@ describe("column phase and lock API", () => {
       isLocked: false,
     });
   });
+
+  // Nachtrag 26.11.2026: the restriction is set like the lock.
+  it("creates, defaults, updates and keeps isRestricted, and returns it on board columns", async () => {
+    const { project, columns, send } = await setup();
+
+    const created = await send("POST", `/api/column/${project.id}`, {
+      name: "Pegasus-Pool",
+      isRestricted: true,
+    });
+    expect(await created.json()).toMatchObject({
+      isLocked: false,
+      isRestricted: true,
+    });
+    const plain = await send("POST", `/api/column/${project.id}`, {
+      name: "Qualifizierung",
+    });
+    expect(await plain.json()).toMatchObject({ isRestricted: false });
+
+    const updated = await send("PUT", `/api/column/${columns.todo.id}`, {
+      isRestricted: true,
+    });
+    expect(await updated.json()).toMatchObject({ isRestricted: true });
+    const renamed = await send("PUT", `/api/column/${columns.todo.id}`, {
+      name: "Neu",
+    });
+    expect(await renamed.json()).toMatchObject({ isRestricted: true });
+
+    const board = await send("GET", `/api/task/tasks/${project.id}`);
+    const { data } = (await board.json()) as {
+      data: { columns: { slug: string; isRestricted: boolean }[] };
+    };
+    expect(data.columns.find((c) => c.slug === "to-do")).toMatchObject({
+      isRestricted: true,
+    });
+    expect(data.columns.find((c) => c.slug === "done")).toMatchObject({
+      isRestricted: false,
+    });
+
+    const lifted = await send("PUT", `/api/column/${columns.todo.id}`, {
+      isRestricted: false,
+    });
+    expect(await lifted.json()).toMatchObject({ isRestricted: false });
+  });
 });

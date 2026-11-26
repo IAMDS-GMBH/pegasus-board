@@ -8,10 +8,12 @@ import {
 } from "../../database/schema";
 
 import { loadTaskScopes } from "../../task-scope/load-task-scopes";
+import { statusChangesVisibleCondition } from "../../task-scope/status-change-visible-condition";
 import { notificationResourceAccess } from "../resource-access";
 import { notificationWorkspaceFilter } from "../workspace-filter";
 
 async function getNotifications(userId: string, workspaceId?: string) {
+  const taskScopes = await loadTaskScopes(userId);
   const rows = await db
     .select({
       notification: notificationTable,
@@ -36,8 +38,14 @@ async function getNotifications(userId: string, workspaceId?: string) {
           userId,
           notificationTable.resourceId,
           notificationTable.resourceType,
-          await loadTaskScopes(userId),
+          taskScopes,
         ),
+        // Pegasus fork (PEGA-170): also rows from before the restriction.
+        statusChangesVisibleCondition(taskScopes, {
+          eventData: notificationTable.eventData,
+          projectIds: [taskTable.projectId],
+          workspaceId: projectTable.workspaceId,
+        }),
       ),
     )
     .orderBy(desc(notificationTable.createdAt))

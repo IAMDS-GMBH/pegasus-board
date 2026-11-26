@@ -141,6 +141,10 @@ export const boardColumnSchema = z
       description:
         "Pegasus fork: members may not move cards into or out of the column.",
     }),
+    isRestricted: z.boolean().openapi({
+      description:
+        "Pegasus fork: only members with LEAD_READ_INTAKE see the column and its cards.",
+    }),
     position: z.number().optional(),
     tasks: z.array(boardTaskSchema),
   })

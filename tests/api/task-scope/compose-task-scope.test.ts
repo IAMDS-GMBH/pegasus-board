@@ -16,6 +16,7 @@ describe("composeTaskScope", () => {
         assignedOnly: false,
         managed: false,
         hub: { mode: "units", unitIds: ["U3"] },
+        readsIntake: false,
       }),
     ).toBeNull();
   });
@@ -27,8 +28,14 @@ describe("composeTaskScope", () => {
         assignedOnly: true,
         managed: false,
         hub: null,
+        readsIntake: false,
       }),
-    ).toEqual({ userId, assignedOnly: true, unitIds: null });
+    ).toEqual({
+      userId,
+      assignedOnly: true,
+      unitIds: null,
+      hidesRestrictedColumns: false,
+    });
   });
 
   it.each([
@@ -36,9 +43,23 @@ describe("composeTaskScope", () => {
     [
       "units",
       ["U3", "U6"],
-      { userId, assignedOnly: false, unitIds: ["U3", "U6"] },
+      {
+        userId,
+        assignedOnly: false,
+        unitIds: ["U3", "U6"],
+        hidesRestrictedColumns: false,
+      },
     ],
-    ["assigned", [], { userId, assignedOnly: true, unitIds: null }],
+    [
+      "assigned",
+      [],
+      {
+        userId,
+        assignedOnly: true,
+        unitIds: null,
+        hidesRestrictedColumns: false,
+      },
+    ],
   ] as const)("maps the hub mode %s", (mode, unitIds, expected) => {
     expect(
       composeTaskScope({
@@ -46,6 +67,7 @@ describe("composeTaskScope", () => {
         assignedOnly: false,
         managed: true,
         hub: { mode, unitIds },
+        readsIntake: true,
       }),
     ).toEqual(expected);
   });
@@ -53,15 +75,53 @@ describe("composeTaskScope", () => {
   it("hides everything from a member the Hub did not send, even assigned tasks", () => {
     for (const assignedOnly of [false, true]) {
       expect(
-        composeTaskScope({ userId, assignedOnly, managed: true, hub: null }),
-      ).toEqual({ userId, assignedOnly, unitIds: [] });
+        composeTaskScope({
+          userId,
+          assignedOnly,
+          managed: true,
+          hub: null,
+          readsIntake: false,
+        }),
+      ).toEqual({
+        userId,
+        assignedOnly,
+        unitIds: [],
+        hidesRestrictedColumns: true,
+      });
     }
   });
 
   it.each([
-    ["units", ["U3"], { userId, assignedOnly: true, unitIds: ["U3"] }],
-    ["all", [], { userId, assignedOnly: true, unitIds: null }],
-    ["assigned", [], { userId, assignedOnly: true, unitIds: null }],
+    [
+      "units",
+      ["U3"],
+      {
+        userId,
+        assignedOnly: true,
+        unitIds: ["U3"],
+        hidesRestrictedColumns: false,
+      },
+    ],
+    [
+      "all",
+      [],
+      {
+        userId,
+        assignedOnly: true,
+        unitIds: null,
+        hidesRestrictedColumns: false,
+      },
+    ],
+    [
+      "assigned",
+      [],
+      {
+        userId,
+        assignedOnly: true,
+        unitIds: null,
+        hidesRestrictedColumns: false,
+      },
+    ],
   ] as const)(
     "narrows the hub mode %s further with assigned-only",
     (mode, unitIds, expected) => {
@@ -71,8 +131,53 @@ describe("composeTaskScope", () => {
           assignedOnly: true,
           managed: true,
           hub: { mode, unitIds },
+          readsIntake: true,
         }),
       ).toEqual(expected);
     },
   );
+
+  // Pegasus fork (PEGA-170): restricted columns need LEAD_READ_INTAKE.
+  it("hides restricted columns from a member the Hub sent without LEAD_READ_INTAKE", () => {
+    expect(
+      composeTaskScope({
+        userId,
+        assignedOnly: false,
+        managed: true,
+        hub: { mode: "all", unitIds: [] },
+        readsIntake: false,
+      }),
+    ).toEqual({
+      userId,
+      assignedOnly: false,
+      unitIds: null,
+      hidesRestrictedColumns: true,
+    });
+    expect(
+      composeTaskScope({
+        userId,
+        assignedOnly: false,
+        managed: true,
+        hub: { mode: "units", unitIds: ["U3"] },
+        readsIntake: false,
+      }),
+    ).toEqual({
+      userId,
+      assignedOnly: false,
+      unitIds: ["U3"],
+      hidesRestrictedColumns: true,
+    });
+  });
+
+  it("never hides restricted columns in a workspace the Hub does not manage", () => {
+    expect(
+      composeTaskScope({
+        userId,
+        assignedOnly: false,
+        managed: false,
+        hub: null,
+        readsIntake: false,
+      }),
+    ).toBeNull();
+  });
 });

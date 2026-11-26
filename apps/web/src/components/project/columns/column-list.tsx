@@ -139,6 +139,13 @@ export function ColumnList({ projectId }: ColumnListProps) {
                   "settings:columnEditor.toastUpdateError",
                 );
               }}
+              onToggleRestricted={async (isRestricted) => {
+                await update(
+                  column.id,
+                  { isRestricted },
+                  "settings:columnEditor.toastUpdateError",
+                );
+              }}
               onDelete={() => setPendingDelete(column)}
             />
           ))}

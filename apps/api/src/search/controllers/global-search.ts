@@ -11,6 +11,7 @@ import {
 import { canAccessProject } from "../../project-access/can-access-project";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
 import { loadTaskScopes } from "../../task-scope/load-task-scopes";
+import { statusChangesVisibleCondition } from "../../task-scope/status-change-visible-condition";
 import { tasksVisibleCondition } from "../../task-scope/task-visible-condition";
 import { escapeLikePattern } from "../like-pattern";
 import { TASK_SHORT_ID_PATTERN } from "../task-short-id";
@@ -161,9 +162,8 @@ async function globalSearch(params: SearchParams): Promise<{
   // Pegasus fork (PEGA-6, PEGA-141): task, comment and activity hits from a
   // workspace where the user's role is restricted must be tasks the user
   // sees; rows from other workspaces pass unchanged.
-  const assigneeScope = tasksVisibleCondition(
-    await loadTaskScopes(resolvedUserId),
-  );
+  const taskScopes = await loadTaskScopes(resolvedUserId);
+  const assigneeScope = tasksVisibleCondition(taskScopes);
 
   // Check if query matches short-id pattern (e.g. "DEP-23"). `generateProjectSlug`
   // normalizes to NFKC before it stores a key, so the query is normalized too,
@@ -453,6 +453,15 @@ async function globalSearch(params: SearchParams): Promise<{
         and(
           workspaceFilter,
           assigneeScope,
+          // Pegasus fork (PEGA-170): no moves through restricted columns.
+          statusChangesVisibleCondition(taskScopes, {
+            eventData: activityTable.eventData,
+            projectIds: [
+              taskTable.projectId,
+              sql`${activityTable.eventData}->>'fromProjectId'`,
+            ],
+            workspaceId: projectTable.workspaceId,
+          }),
           projectId ? eq(taskTable.projectId, projectId) : undefined,
           or(
             ilike(searchableActivityText, searchPattern),

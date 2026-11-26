@@ -10,26 +10,31 @@ export const DEFAULT_COLUMN_SLUGS = [
   "done",
 ];
 
+// A column of the spec: by slug (unchanged by a rename in the board), by
+// name, or by the name it had in an earlier spec (`formerName`), like the Hub.
 export function matchColumn(spec, columns) {
-  const slug = toSlug(spec.name);
+  const byName = (name) =>
+    columns.find((c) => c.slug === toSlug(name)) ??
+    columns.find((c) => c.name === name);
   return (
-    columns.find((c) => c.slug === slug) ??
-    columns.find((c) => c.name === spec.name)
+    byName(spec.name) ??
+    (spec.formerName === undefined ? undefined : byName(spec.formerName))
   );
 }
 
-// Pegasus fork (PEGA-170): names, phases and locks are column settings people
-// change in the board. The script renames only columns marked `fixedName`
-// (the Hub reads those by name) and sets phase and lock only on columns that
-// have no phase yet. Retired columns are removed; the API keeps one that still
-// holds cards and apply-action reports it.
+// Pegasus fork (PEGA-170, Nachtrag 26.11.2026): like the Hub, the spec wins
+// whenever the setup runs. A matched column gets the spec's name (a renamed
+// stage keeps its slug and its cards), icon, done flag, phase, lock and
+// restriction; changes made in the board's column settings stay until then.
+// Retired columns are removed; the API keeps one that still holds cards and
+// apply-action reports it. Columns outside the spec stay.
 export function planColumns(specColumns, columns, retiredNames = []) {
   const actions = [];
   const warnings = [];
   const matched = new Set();
 
   for (const spec of specColumns) {
-    const { fixedName, ...wanted } = spec;
+    const { formerName, ...wanted } = spec;
     const column = matchColumn(spec, columns);
     if (!column) {
       actions.push({ type: "create-column", column: wanted });
@@ -37,20 +42,25 @@ export function planColumns(specColumns, columns, retiredNames = []) {
     }
     matched.add(column.id);
 
-    const changes = {};
-    if (fixedName && column.name !== spec.name) changes.name = spec.name;
-    if ((column.icon ?? null) !== (spec.icon ?? null)) {
-      changes.icon = spec.icon ?? null;
-    }
-    if (column.isFinal !== (spec.isFinal ?? false)) {
-      changes.isFinal = spec.isFinal ?? false;
-    }
-    if ((column.phase ?? null) === null && spec.phase) {
-      changes.phase = spec.phase;
-      if ((column.isLocked ?? false) !== (spec.isLocked ?? false)) {
-        changes.isLocked = spec.isLocked ?? false;
-      }
-    }
+    const settings = {
+      name: spec.name,
+      icon: spec.icon ?? null,
+      isFinal: spec.isFinal ?? false,
+      phase: spec.phase ?? null,
+      isLocked: spec.isLocked ?? false,
+      isRestricted: spec.isRestricted ?? false,
+    };
+    const current = {
+      name: column.name,
+      icon: column.icon ?? null,
+      isFinal: column.isFinal ?? false,
+      phase: column.phase ?? null,
+      isLocked: column.isLocked ?? false,
+      isRestricted: column.isRestricted ?? false,
+    };
+    const changes = Object.fromEntries(
+      Object.entries(settings).filter(([key, value]) => current[key] !== value),
+    );
     if (Object.keys(changes).length > 0) {
       actions.push({
         type: "update-column",

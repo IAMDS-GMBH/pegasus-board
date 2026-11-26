@@ -872,6 +872,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
         workspaceId,
         c.get("userId"),
         countOnly === "true",
+        await resolveTaskScope(c), // Fork (PEGA-141, PEGA-170)
       ),
       200,
     );

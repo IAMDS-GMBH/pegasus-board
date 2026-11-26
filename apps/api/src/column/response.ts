@@ -27,6 +27,10 @@ export const columnSchema = z
       description:
         "Technical column: members may not move cards into or out of it (403 COLUMN_LOCKED); owners, instance admins and the Hub's system account may.",
     }),
+    isRestricted: z.boolean().openapi({
+      description:
+        "Technical column: only members whose Hub rights include LEAD_READ_INTAKE (and owners, instance admins, the Hub's system account) see it and its tasks.",
+    }),
     createdAt: responseTimestamp,
     updatedAt: responseTimestamp,
   })

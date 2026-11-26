@@ -9,6 +9,7 @@ export type CreateColumnData = {
   isFinal?: boolean;
   phase?: string | null;
   isLocked?: boolean;
+  isRestricted?: boolean;
 };
 
 async function createColumn(projectId: string, data: CreateColumnData) {

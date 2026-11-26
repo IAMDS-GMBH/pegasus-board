@@ -9,6 +9,7 @@ import { resetTestDatabase } from "./helpers/database";
 import {
   createHubScopeFixture,
   type HubScopeFixture,
+  LEAD_RIGHTS,
   type User,
 } from "./helpers/hub-scope-fixture";
 
@@ -155,5 +156,88 @@ describe("notifications under the hub scope", () => {
         }),
       }),
     );
+  });
+
+  // The assignee clause once named a column the task table does not have.
+  it("lists a Bearbeiter's notifications on the cards assigned to them", async () => {
+    const f = await createHubScopeFixture();
+    for (const name of ["L1", "L2"] as const) {
+      await db.insert(schema.notificationTable).values({
+        userId: f.users.bearbeiter.id,
+        type: "task_comment",
+        resourceType: "task",
+        resourceId: f.tasks[name].id,
+        eventData: { taskTitle: f.tasks[name].title },
+      });
+    }
+
+    const rows = await getNotifications(f.users.bearbeiter.id);
+
+    expect(rows.map((row) => row.resourceId)).toEqual([f.tasks.L2.id]);
+  });
+
+  // Pegasus fork (PEGA-170, Nachtrag 26.11.2026): a status change naming a
+  // restricted column reaches only those who see restricted columns.
+  describe("status changes through restricted columns", () => {
+    async function restrictPool(f: HubScopeFixture) {
+      await db.insert(schema.columnTable).values([
+        {
+          projectId: f.project.id,
+          name: "Pegasus-Pool",
+          slug: "pegasus-pool",
+          position: 10,
+          isRestricted: true,
+        },
+        {
+          projectId: f.project.id,
+          name: "Qualifizierung",
+          slug: "qualifizierung",
+          position: 11,
+        },
+      ]);
+    }
+    const statusChange = (f: HubScopeFixture, user: User, oldStatus: string) =>
+      createNotification({
+        userId: user.id,
+        resourceType: "task",
+        resourceId: f.tasks.L1.id,
+        type: "task_status_changed",
+        eventData: {
+          taskTitle: f.tasks.L1.title,
+          oldStatus,
+          newStatus: "qualifizierung",
+          projectId: f.project.id,
+        },
+      });
+
+    it("creates none for a leader without LEAD_READ_INTAKE, but one for the owner", async () => {
+      const f = await createHubScopeFixture();
+      await restrictPool(f);
+
+      expect(await statusChange(f, f.users.fkBD, "pegasus-pool")).toBeNull();
+      expect(await statusChange(f, f.users.fkBD, "to-do")).not.toBeNull();
+      expect(await statusChange(f, f.owner, "pegasus-pool")).not.toBeNull();
+      await f.pushPermissions("fk-bd@wwk.test", [
+        ...LEAD_RIGHTS,
+        "LEAD_READ_INTAKE",
+      ]);
+      expect(
+        await statusChange(f, f.users.fkBD, "pegasus-pool"),
+      ).not.toBeNull();
+    });
+
+    it("hides older ones from the list and stops delivering them", async () => {
+      const f = await createHubScopeFixture();
+      await enableEmail(f, f.users.fkBD);
+      const notification = await statusChange(f, f.users.fkBD, "pegasus-pool");
+      if (!notification) throw new Error("Expected a notification for fkBD");
+      expect(await getNotifications(f.users.fkBD.id)).toHaveLength(1);
+
+      await restrictPool(f);
+
+      expect(await getNotifications(f.users.fkBD.id)).toEqual([]);
+      await deliverNotification(notification.id);
+      expect(sendEmail).not.toHaveBeenCalled();
+    });
   });
 });

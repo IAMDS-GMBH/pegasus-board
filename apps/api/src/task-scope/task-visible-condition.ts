@@ -8,6 +8,7 @@ import {
   sql,
 } from "drizzle-orm";
 import {
+  columnTable,
   pegasusTaskUnitTable,
   projectTable,
   taskTable,
@@ -17,12 +18,30 @@ import type { TaskScope, TaskScopes } from "./task-scope";
 // Only builds SQL: no database handle, so modules that import it stay usable
 // in unit tests that mock `../database`.
 
-type TaskColumns = { id: SQLWrapper; assigneeId: SQLWrapper };
+type TaskColumns = {
+  id: SQLWrapper;
+  assigneeId: SQLWrapper;
+  projectId: SQLWrapper;
+  status: SQLWrapper;
+};
 
 const taskColumns: TaskColumns = {
   id: taskTable.id,
   assigneeId: taskTable.userId,
+  projectId: taskTable.projectId,
+  status: taskTable.status,
 };
+
+/**
+ * Pegasus fork (PEGA-170): the task does not sit in a restricted column of
+ * its project. Matched by slug like the board, since `column_id` may be null.
+ * The inner table gets its own name so it cannot clash with an outer join.
+ */
+export function outsideRestrictedColumn(
+  task: Pick<TaskColumns, "projectId" | "status"> = taskColumns,
+): SQL {
+  return sql`not exists (select 1 from ${columnTable} as restricted_column where restricted_column.project_id = ${task.projectId} and restricted_column.slug = ${task.status} and restricted_column.is_restricted)`;
+}
 
 /**
  * The single predicate for "this task is visible in the scope". `undefined`
@@ -41,6 +60,7 @@ export function taskVisibleCondition(
     scope.unitIds
       ? sql`exists (select 1 from ${pegasusTaskUnitTable} where ${pegasusTaskUnitTable.taskId} = ${task.id} and ${inArray(pegasusTaskUnitTable.unitId, [...scope.unitIds])})`
       : undefined,
+    scope.hidesRestrictedColumns ? outsideRestrictedColumn(task) : undefined,
   );
 }
 

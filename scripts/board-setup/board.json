@@ -10,18 +10,39 @@
 			"icon": "CircleDashed",
 			"phase": "Eingang und Datenprüfung",
 			"isLocked": true,
-			"fixedName": true
+			"isRestricted": true
+		},
+		{
+			"name": "Plausibilitätsprüfung",
+			"icon": "Shield",
+			"phase": "Eingang und Datenprüfung",
+			"isLocked": true,
+			"isRestricted": true
+		},
+		{
+			"name": "Automatische Anreicherung",
+			"icon": "Wand2",
+			"phase": "Eingang und Datenprüfung",
+			"isLocked": true,
+			"isRestricted": true
+		},
+		{
+			"name": "Manuelle Anreicherung",
+			"icon": "PenTool",
+			"phase": "Eingang und Datenprüfung",
+			"isRestricted": true
 		},
 		{
 			"name": "Pegasus-Pool",
 			"icon": "Layers",
 			"phase": "Eingang und Datenprüfung",
-			"isLocked": true
+			"isRestricted": true
 		},
 		{
-			"name": "Unbearbeitet",
+			"name": "Qualifizierung",
 			"icon": "Circle",
-			"phase": "Eingang und Datenprüfung"
+			"phase": "Kontaktaufnahme und Qualifizierung",
+			"formerName": "Unbearbeitet"
 		},
 		{
 			"name": "Nicht erreicht",
@@ -66,8 +87,7 @@
 		{
 			"name": "Rückgabe an Pegasus",
 			"icon": "Flag",
-			"phase": "Wiedervorlage, Rückgabe und Abschluss",
-			"fixedName": true
+			"phase": "Wiedervorlage, Rückgabe und Abschluss"
 		},
 		{
 			"name": "Absage",

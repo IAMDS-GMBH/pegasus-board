@@ -45,6 +45,7 @@ vi.mock("@/hooks/queries/column/use-get-columns", () => ({
         isFinal: false,
         phase: "Eingang und Datenprüfung",
         isLocked: false,
+        isRestricted: false,
         position: 0,
       },
       {
@@ -55,6 +56,7 @@ vi.mock("@/hooks/queries/column/use-get-columns", () => ({
         isFinal: true,
         phase: null,
         isLocked: false,
+        isRestricted: false,
         position: 1,
       },
       {
@@ -65,6 +67,7 @@ vi.mock("@/hooks/queries/column/use-get-columns", () => ({
         isFinal: true,
         phase: "Eingang und Datenprüfung",
         isLocked: false,
+        isRestricted: false,
         position: 2,
       },
     ],
@@ -247,6 +250,49 @@ describe("ColumnList", () => {
     );
   });
 
+  // Pegasus fork (PEGA-170, Nachtrag 26.11.2026).
+  it("toggles the restricted column", async () => {
+    render(<ColumnList projectId="p1" />);
+    const [todoRestricted] = screen.getAllByRole("switch", {
+      name: "settings:columnEditor.markRestrictedAria",
+    });
+    fireEvent.click(todoRestricted);
+    await waitFor(() =>
+      expect(m.updateColumn).toHaveBeenCalledWith({
+        id: "c1",
+        projectId: "p1",
+        data: { isRestricted: true },
+      }),
+    );
+  });
+
+  it("adds a restricted column", async () => {
+    render(<ColumnList projectId="p1" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "settings:columnEditor.addColumn" }),
+    );
+    fireEvent.click(
+      screen.getByRole("switch", {
+        name: "settings:columnEditor.newColumnRestrictedAria",
+      }),
+    );
+    const input = screen.getByRole("textbox", {
+      name: "settings:columnEditor.newColumnPlaceholder",
+    });
+    fireEvent.change(input, { target: { value: "Manuelle Anreicherung" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() =>
+      expect(m.createColumn).toHaveBeenCalledWith({
+        projectId: "p1",
+        data: {
+          name: "Manuelle Anreicherung",
+          icon: "Circle",
+          isRestricted: true,
+        },
+      }),
+    );
+  });
+
   it("adds a column with a phase and the lock", async () => {
     render(<ColumnList projectId="p1" />);
     fireEvent.click(
@@ -298,7 +344,7 @@ describe("ColumnList", () => {
     for (const toggle of screen.getAllByRole("switch")) {
       expect(toggle).toHaveAttribute("aria-disabled", "true");
     }
-    expect(screen.getAllByRole("switch")).toHaveLength(6);
+    expect(screen.getAllByRole("switch")).toHaveLength(9);
     for (const phase of screen.getAllByRole("combobox", {
       name: "settings:columnEditor.phaseAria",
     })) {

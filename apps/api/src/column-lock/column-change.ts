@@ -1,7 +1,7 @@
 import { VIRTUAL_STATUSES } from "../task/validate-task-fields";
 
-/** A column a request takes a card out of or puts one into. */
-export type TouchedColumn = { projectId: string; slug: string };
+/** A column a request takes a card out of (`into: false`) or puts one into. */
+export type TouchedColumn = { projectId: string; slug: string; into: boolean };
 
 const isVirtual = (status: string) =>
   (VIRTUAL_STATUSES as readonly string[]).includes(status);
@@ -16,7 +16,9 @@ export function columnChange(
 ): TouchedColumn[] {
   if (typeof to !== "string" || to === from || isVirtual(to)) return [];
   return [
-    ...(from === null || isVirtual(from) ? [] : [{ projectId, slug: from }]),
-    { projectId, slug: to },
+    ...(from === null || isVirtual(from)
+      ? []
+      : [{ projectId, slug: from, into: false }]),
+    { projectId, slug: to, into: true },
   ];
 }

@@ -26,6 +26,9 @@ vi.mock("../../../apps/api/src/database", () => ({
     }),
   },
 }));
+vi.mock("../../../apps/api/src/ws/scoped-reorder", () => ({
+  scopedReorderPayloads: async () => new Map(),
+}));
 vi.mock("../../../apps/api/src/redis", () => ({
   isRedisConfigured: () => false,
   closeRedis: vi.fn(),

@@ -3,7 +3,10 @@ import { HTTPException } from "hono/http-exception";
 import { projectTable, taskTable } from "../database/schema";
 import { boundedTaskRead } from "./bounded-read";
 import type { TaskScope } from "../task-scope/task-scope";
-import { taskVisibleCondition } from "../task-scope/task-visible-condition";
+import {
+  outsideRestrictedColumn,
+  taskVisibleCondition,
+} from "../task-scope/task-visible-condition";
 
 export const BOARD_DESCRIPTION_MAX_BYTES = 64 * 1024;
 export const DESCRIPTION_CHUNK_CHARACTERS = 32 * 1024;
@@ -34,6 +37,7 @@ export async function getDescriptionPage(
       conditions.push(
         eq(taskTable.projectId, options.publicProjectId),
         eq(projectTable.isPublic, true),
+        outsideRestrictedColumn(), // Pegasus fork (PEGA-170)
       );
     if (options.version)
       conditions.push(sql`${taskTable}.xmin::text = ${options.version}`);

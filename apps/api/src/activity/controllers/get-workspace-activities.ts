@@ -9,6 +9,7 @@ import {
   userTable,
 } from "../../database/schema";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import { statusChangeVisibleCondition } from "../../task-scope/status-change-visible-condition";
 import type { TaskScope } from "../../task-scope/task-scope";
 import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import { commentExcerpt } from "../comment-excerpt";
@@ -70,6 +71,13 @@ async function getWorkspaceActivities(
         isNull(projectTable.archivedAt),
         gte(activityTable.createdAt, since),
         taskVisibleCondition(scope),
+        statusChangeVisibleCondition(scope, {
+          eventData: activityTable.eventData,
+          projectIds: [
+            taskTable.projectId,
+            sql`${activityTable.eventData}->>'fromProjectId'`,
+          ],
+        }),
       ),
     )
     .orderBy(desc(activityTable.createdAt), desc(activityTable.id))

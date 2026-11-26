@@ -15,6 +15,7 @@ async function createColumn({
   isFinal,
   phase,
   isLocked,
+  isRestricted,
 }: {
   projectId: string;
   name: string;
@@ -23,6 +24,7 @@ async function createColumn({
   isFinal?: boolean;
   phase?: string | null;
   isLocked?: boolean;
+  isRestricted?: boolean;
 }) {
   const slug = toSlug(name);
 
@@ -62,6 +64,7 @@ async function createColumn({
         isFinal: isFinal ?? false,
         phase: phase ?? null,
         isLocked: isLocked ?? false,
+        isRestricted: isRestricted ?? false,
       })
       .returning();
     return row;

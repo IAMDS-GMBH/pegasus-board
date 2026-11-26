@@ -277,6 +277,62 @@ describe("locked columns", () => {
     expect(await statusOf(L1)).toBe("eingang");
   });
 
+  it("lets the same member comment on and label a card in Eingang", async () => {
+    const x = await setup();
+    const [label] = await db
+      .insert(schema.labelTable)
+      .values({
+        name: "Paket 1",
+        color: "orange",
+        workspaceId: x.f.workspace.id,
+      })
+      .returning();
+    const app = asUser(x.f.users.fkBD);
+    const L1 = x.f.tasks.L1.id;
+
+    const comment = await send(app, "POST", `/comment/${L1}`, {
+      content: "Rückruf",
+    });
+    const labelled = await send(app, "PUT", `/label/${label.id}/task`, {
+      taskId: L1,
+    });
+
+    expect(comment.status, await comment.clone().text()).toBe(200);
+    expect(labelled.status, await labelled.clone().text()).toBe(200);
+    expect(await statusOf(L1)).toBe("eingang");
+  });
+
+  it("refuses an import as a whole when one card targets a locked column", async () => {
+    const x = await setup();
+    const before = await db.$count(
+      schema.taskTable,
+      eq(schema.taskTable.projectId, x.f.project.id),
+    );
+
+    const response = await send(
+      asUser(x.f.users.fkBD),
+      "POST",
+      `/task/import/${x.f.project.id}`,
+      {
+        tasks: [
+          { title: "Erlaubt", status: "unbearbeitet" },
+          { title: "Gesperrt", status: "eingang" },
+        ],
+      },
+    );
+
+    expect(response.status).toBe(403);
+    expect(await readErrorBody(response)).toMatchObject({
+      code: "COLUMN_LOCKED",
+    });
+    expect(
+      await db.$count(
+        schema.taskTable,
+        eq(schema.taskTable.projectId, x.f.project.id),
+      ),
+    ).toBe(before);
+  });
+
   it("lets a member reorder within a locked column", async () => {
     const x = await setup();
 

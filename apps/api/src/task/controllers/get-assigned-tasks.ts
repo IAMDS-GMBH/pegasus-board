@@ -17,6 +17,8 @@ import {
   taskTable,
 } from "../../database/schema";
 import { projectAccessCondition } from "../../project-access/project-access-condition";
+import type { TaskScope } from "../../task-scope/task-scope";
+import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
 import { taskIsCompleted } from "../task-is-completed";
 
 // Home and My tasks render this list whole, so it stays one bounded page.
@@ -34,6 +36,9 @@ async function getAssignedTasks(
   workspaceId: string,
   userId: string,
   countOnly = false,
+  // Pegasus fork (PEGA-141, PEGA-170): a scoped member's own cards outside
+  // their units or in a restricted column stay hidden here too.
+  scope: TaskScope | null = null,
 ) {
   const openAndMine = and(
     eq(projectTable.workspaceId, workspaceId),
@@ -46,6 +51,7 @@ async function getAssignedTasks(
         and ${columnTable.projectId} = ${taskTable.projectId}
     ), ${taskIsCompleted})`,
     projectAccessCondition(userId, projectTable.id),
+    taskVisibleCondition(scope),
   );
 
   const totalsQuery = db
