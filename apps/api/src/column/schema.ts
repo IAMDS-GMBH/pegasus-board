@@ -23,6 +23,12 @@ const isLocked = z.boolean().optional().openapi({
     "Technical column: only owners, instance admins and the Hub's system account move cards into or out of it. Fields stay editable.",
 });
 
+// Pegasus fork (PEGA-170, Nachtrag 26.11.2026).
+const isRestricted = z.boolean().optional().openapi({
+  description:
+    "Technical column: only members whose Hub rights include LEAD_READ_INTAKE (and owners, instance admins, the Hub's system account) see it and its tasks.",
+});
+
 export const createColumnBody = z.object({
   name: z.string(),
   icon: z.string().optional(),
@@ -30,6 +36,7 @@ export const createColumnBody = z.object({
   isFinal: z.boolean().optional(),
   phase,
   isLocked,
+  isRestricted,
 });
 
 export const updateColumnBody = z.object({
@@ -39,6 +46,7 @@ export const updateColumnBody = z.object({
   isFinal: z.boolean().optional(),
   phase,
   isLocked,
+  isRestricted,
 });
 
 export const reorderColumnsBody = z.object({

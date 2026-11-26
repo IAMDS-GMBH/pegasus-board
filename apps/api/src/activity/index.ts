@@ -198,6 +198,7 @@ const activity = apiRouter()
         c.req.valid("param").taskId,
         c.get("userId"),
         c.req.valid("query").limit,
+        await resolveTaskScope(c), // Pegasus fork (PEGA-170)
       ),
       200,
     ),

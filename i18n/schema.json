@@ -7101,6 +7101,18 @@
 						},
 						"newColumnLockedAria": {
 							"type": "string"
+						},
+						"restrictedHeader": {
+							"type": "string"
+						},
+						"restrictedHint": {
+							"type": "string"
+						},
+						"markRestrictedAria": {
+							"type": "string"
+						},
+						"newColumnRestrictedAria": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -7132,7 +7144,11 @@
 						"lockedHeader",
 						"markLockedAria",
 						"newColumnPhaseAria",
-						"newColumnLockedAria"
+						"newColumnLockedAria",
+						"restrictedHeader",
+						"restrictedHint",
+						"markRestrictedAria",
+						"newColumnRestrictedAria"
 					]
 				},
 				"customFields": {

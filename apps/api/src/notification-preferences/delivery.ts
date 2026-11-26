@@ -365,6 +365,8 @@ export async function deliverNotification(
       notification.userId,
       notification.resourceId,
       notification.resourceType,
+      undefined,
+      notification.eventData, // Pegasus fork (PEGA-170)
     ))
   ) {
     return;

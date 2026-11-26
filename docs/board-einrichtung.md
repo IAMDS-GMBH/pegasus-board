@@ -43,32 +43,36 @@ Im Repository geht auch `pnpm board:setup --workspace …`.
 
 **Projekt:** „Bewerber-Pool“, Kürzel `BEW`, die Karten heißen also `BEW-1`, `BEW-2` und so weiter. Das Skript erkennt das Projekt am Kürzel.
 
-**Spalten** in dieser Reihenfolge (PEGA-170). Grundlage ist das Fachkonzept von Alexander Sitzmann vom 23.11.2026, beschlossen im Stakeholder-Sync am 24.11.2026. Es ersetzt den Spaltensatz aus 18052 und weicht bewusst von Feinkonzept Kap. 7 ab ([Review PEGA-170](review/2026-11-spalten-phasen.md)). Die Nummer ist die des Fachkonzepts; im Board stehen die Namen ohne Nummer.
+**Spalten** in dieser Reihenfolge (PEGA-170). Grundlage ist das Fachkonzept von Alexander Sitzmann vom 23.11.2026, beschlossen im Stakeholder-Sync am 24.11.2026, mit dem Nachtrag vom 26.11.2026 (vier technische Stufen vor der Qualifizierung, „Unbearbeitet“ heißt jetzt „Qualifizierung“). Es ersetzt den Spaltensatz aus 18052 und weicht bewusst von Feinkonzept Kap. 7 ab ([Review PEGA-170](review/2026-11-spalten-phasen.md)). Die Nummer dient nur der Übersicht; im Board stehen die Namen ohne Nummer.
 
-| Phase | # | Spalte | Slug | Gesperrt | Erledigt |
-|---|---|---|---|---|---|
-| Eingang und Datenprüfung | 01 | Eingang | `eingang` | ja | |
-| | 02 | Pegasus-Pool | `pegasus-pool` | ja | |
-| | 03 | Unbearbeitet | `unbearbeitet` | | |
-| Kontaktaufnahme und Qualifizierung | 04 | Nicht erreicht | `nicht-erreicht` | | |
-| | 05 | Mehrfach nicht erreicht | `mehrfach-nicht-erreicht` | | |
-| | 06 | Falsche Nummer | `falsche-nummer` | | |
-| | 07 | In Kontakt | `in-kontakt` | | |
-| Termine und Bewerbungsprozess | 08 | Terminiert | `terminiert` | | |
-| | 09 | Vorstellungsgespräch | `vorstellungsgespräch` | | |
-| | 10 | Vertragsangebot liegt vor | `vertragsangebot-liegt-vor` | | |
-| Wiedervorlage, Rückgabe und Abschluss | 11 | Wiedervorlage | `wiedervorlage` | | |
-| | 12 | Rückgabe an Pegasus | `rückgabe-an-pegasus` | | |
-| | 13 | Absage | `absage` | | ja |
-| | 14 | Einstellung | `einstellung` | | ja |
+| Phase | # | Spalte | Slug | Gesperrt | Eingeschränkt | Erledigt |
+|---|---|---|---|---|---|---|
+| Eingang und Datenprüfung | 01 | Eingang | `eingang` | ja | ja | |
+| | 02 | Plausibilitätsprüfung | `plausibilitätsprüfung` | ja | ja | |
+| | 03 | Automatische Anreicherung | `automatische-anreicherung` | ja | ja | |
+| | 04 | Manuelle Anreicherung | `manuelle-anreicherung` | | ja | |
+| | 05 | Pegasus-Pool | `pegasus-pool` | | ja | |
+| Kontaktaufnahme und Qualifizierung | 06 | Qualifizierung | `unbearbeitet` (bestehende Boards), `qualifizierung` (neue) | | | |
+| | 07 | Nicht erreicht | `nicht-erreicht` | | | |
+| | 08 | Mehrfach nicht erreicht | `mehrfach-nicht-erreicht` | | | |
+| | 09 | Falsche Nummer | `falsche-nummer` | | | |
+| | 10 | In Kontakt | `in-kontakt` | | | |
+| Termine und Bewerbungsprozess | 11 | Terminiert | `terminiert` | | | |
+| | 12 | Vorstellungsgespräch | `vorstellungsgespräch` | | | |
+| | 13 | Vertragsangebot liegt vor | `vertragsangebot-liegt-vor` | | | |
+| Wiedervorlage, Rückgabe und Abschluss | 14 | Wiedervorlage | `wiedervorlage` | | | |
+| | 15 | Rückgabe an Pegasus | `rückgabe-an-pegasus` | | | |
+| | 16 | Absage | `absage` | | | ja |
+| | 17 | Einstellung | `einstellung` | | | ja |
 
 - Der Slug steht an jeder Karte als Status. Der Hub verwendet ihn oder die Spalten-ID. Ein Umbenennen ändert den Slug nicht.
-- Der Hub legt jede neue Karte in „Eingang“ an und liest Spalten über ihren Namen. „Eingang“ und „Rückgabe an Pegasus“ tragen in `board.json` deshalb `"fixedName": true`; ihr Name darf sich nicht ändern.
+- **„Unbearbeitet“ heißt jetzt „Qualifizierung“** und steht in der Phase „Kontaktaufnahme und Qualifizierung“. Auf bestehenden Boards benennt das Skript die Spalte um (`"formerName": "Unbearbeitet"` in `board.json`); der Slug `unbearbeitet` und die Karten bleiben. Ein neues Board bekommt den Slug `qualifizierung`.
+- Der Hub legt jede neue Karte in „Eingang“ an und findet Spalten wie das Skript am Slug, am Namen oder am früheren Namen.
 - **Phase:** Das Board zeigt benachbarte Spalten derselben Phase unter einer gemeinsamen Überschrift, in der Listenansicht als Zwischenüberschrift.
-- **Gesperrt:** Eingang und Pegasus-Pool steuert die Technik. Karten lassen sich dort nicht von Hand hinein- oder herausschieben; Felder, Titel, Beschreibung, Kommentare, Labels, Zuweisung und Anhänge bleiben bearbeitbar (Abschnitt „Phasen und Sperre ändern“).
+- **Gesperrt:** Eingang, Plausibilitätsprüfung und Automatische Anreicherung steuert die Technik. Karten lassen sich dort nicht von Hand hinein- oder herausschieben; Felder, Titel, Beschreibung, Kommentare, Labels, Zuweisung und Anhänge bleiben bearbeitbar (Abschnitt „Phasen, Sperre und Einschränkung ändern“). Der Pegasus-Pool ist seit dem Nachtrag nicht mehr gesperrt: Dort gibt Pegasus Karten frei.
+- **Eingeschränkt:** Die ganze Phase „Eingang und Datenprüfung“ sehen nur Pegasus und der Key-Account-Admin. Führungskräfte und alle Ebenen darunter sehen weder die Spalten noch ihre Karten (siehe unten).
 - Eine Spalte mit „Erledigt“ beendet die Fälligkeitserinnerungen für ihre Karten.
 - Die Übergabe an BSI ist ein technischer Vorgang ohne Spalte. Abgeschlossene Leads verwaltet das Board über Archivierung und Filter (18072).
-- Der Name „Unbearbeitet“ ist noch offen (18083). Eine Umbenennung geht ohne Code über die Spalteneinstellungen; das Skript setzt sie nicht zurück.
 - Kaneos Standardspalten (To Do, In Progress, In Review, Done) entfernt das Skript, solange sie leer sind. Ebenso die entfallenen Spalten aus 18052 (`retiredColumns` in `board.json`: Telefonqualifizierung, Zugeordnet, Kontaktiert, Termin vereinbart, Einstellungsbereit / Übergabe BSI, Ablage). Hält eine davon noch Karten, meldet das Skript sie mit `!` und lässt sie stehen; der Lauf läuft weiter. Karten zieht es nicht um.
 
 **Labels** gelten im ganzen Workspace. Sie tragen ein Gruppenpräfix, damit sie im Filter eindeutig sind:
@@ -101,9 +105,9 @@ Die Labels „Kampagne: ‹Name›“ legt der Hub beim Anlegen einer Kampagne s
 ## 4. Regeln des Abgleichs
 
 **Was das Skript tut:**
-- **Spalten** findet es am Slug, ersatzweise am Namen. Symbol, „Erledigt“ und Reihenfolge stellt es wieder her. Fehlende Spalten legt es mit Phase und Sperre an.
-  - **Name:** Ein in der Oberfläche geänderter Name bleibt (PEGA-170). Nur Spalten mit `"fixedName": true` (Eingang, Rückgabe an Pegasus) benennt es zurück, weil der Hub sie über den Namen findet.
-  - **Phase und Sperre:** setzt es nur bei Spalten, die noch keine Phase haben, also nach dem Wechsel auf den neuen Spaltensatz. Eine im Board geänderte Phase oder Sperre bleibt.
+- **Spalten** findet es am Slug, ersatzweise am Namen, dann am früheren Namen (`formerName`). Fehlende Spalten legt es mit Phase, Sperre und Einschränkung an.
+  - **Die Vorgabe gewinnt** (Nachtrag PEGA-170, wie der Hub): Bei jedem Lauf setzt es Name, Symbol, „Erledigt“, Phase, Sperre und Einschränkung jeder Spalte der Vorgabe auf die Werte aus `board.json`, ebenso die Reihenfolge. Was jemand in den Spalteneinstellungen ändert, bleibt nur bis zum nächsten Lauf.
+  - Spalten außerhalb der Vorgabe bleiben unverändert.
 - **Labels** findet es am Namen. Die Farbe stellt es wieder her.
 - **Felder** findet es am Namen. Wieder hergestellt werden „Pflichtfeld aus“, „Auf Karte“, fehlende Auswahlwerte und die Reihenfolge.
 
@@ -127,15 +131,22 @@ Workspaces, die vor PEGA-142 eingerichtet wurden, haben noch das Feld „Vertrie
 
 Entwicklung und Test: Die Schritte 2 und 3 genügen, wenn dort nur Testkarten liegen. Eine Löschung per Skript gibt es bewusst nicht, weil das Skript nie Daten löscht.
 
-### Phasen und Sperre ändern
+### Phasen, Sperre und Einschränkung ändern
 
-Phase und Sperre sind Eigenschaften der Spalte. Sie lassen sich ohne Code ändern: Projekteinstellungen → „Bewerber-Pool“ → Workflow, je Spalte die Felder „Phase“ und „Gesperrt“.
+Phase, Sperre und Einschränkung sind Eigenschaften der Spalte. Sie lassen sich ohne Code ändern: Projekteinstellungen → „Bewerber-Pool“ → Workflow, je Spalte die Felder „Phase“, „Gesperrt“ und „Intern“ (Schalter „Nur für Pegasus und Key-Account-Admin sichtbar“). Der nächste Lauf des Skripts oder der Board-Einrichtung im Hub setzt die Spalten der Vorgabe wieder zurück.
 
 - **Wer darf:** wer heute Spalten bearbeiten darf, also Workspace-Owner und Administratoren (`project:update`). Alle anderen sehen beides nur.
 - **Phase:** Freitext; die Eingabe schlägt die schon vorhandenen Phasen des Projekts vor. Leer heißt keine Phase. Wer Spalten umsortiert, sieht dieselbe Phase gegebenenfalls zweimal, weil das Board nur benachbarte Spalten zusammenfasst.
 - **Gesperrt (technisch gesteuert):** Kein Mitglied kann eine Karte in diese Spalte hinein oder aus ihr heraus verschieben, auch nicht beim Anlegen, Importieren, Duplizieren oder Verschieben in ein anderes Projekt. Die API antwortet mit 403 `COLUMN_LOCKED` und nennt die Spalte. Umsortieren innerhalb der Spalte, Archivieren und Löschen sind kein Verschieben und folgen ihren eigenen Rechten. Im Board ist die Karte nicht greifbar, die Spalte kein Ablageziel, und die Statusauswahl bietet sie nicht an; ein Schloss am Spaltenkopf zeigt „Technisch gesteuert“.
-- **Ausgenommen** sind dieselben Konten wie bei den Rechten aus dem Hub: Workspace-Owner, Instanz-Admins und das Systemkonto aus `PEGASUS_HUB_USER_ID`. Über sie gibt Pegasus Karten von Hand frei, bis die Pool-Prüfung des Hubs das selbst tut. Anders als die Rechte aus dem Hub gilt die Sperre in jedem Workspace, nicht nur in Workspaces, die der Hub verwaltet; auch ein Workspace-Administrator ist nicht ausgenommen.
-- Welche Phasen eine Führungskraft sieht (Phase 1 nur für Admin und Pegasus), steuert das Servicepaket: eigene Story.
+- **Ausgenommen** sind dieselben Konten wie bei den Rechten aus dem Hub: Workspace-Owner, Instanz-Admins und das Systemkonto aus `PEGASUS_HUB_USER_ID`. Aus dem Pegasus-Pool, der seit dem Nachtrag nicht mehr gesperrt ist, gibt Pegasus Karten selbst frei. Anders als die Rechte aus dem Hub gilt die Sperre in jedem Workspace, nicht nur in Workspaces, die der Hub verwaltet; auch ein Workspace-Administrator ist nicht ausgenommen.
+- **Sperre und Einschränkung** sind zwei verschiedene Dinge: Die Sperre verhindert das Verschieben von Hand, die Einschränkung das Sehen. Eingang, Plausibilitätsprüfung und Automatische Anreicherung tragen beides, Manuelle Anreicherung und Pegasus-Pool nur die Einschränkung.
+
+**Eingeschränkt (Nur für Pegasus und Key-Account-Admin sichtbar):** Wer die Spalte sehen darf, entscheidet der Hub. Er schickt das Recht `LEAD_READ_INTAKE` mit den übrigen Rechten im Sichtbereich-Snapshot (`PUT /pegasus-visibility/workspace/{workspaceId}/users`, Feld `permissions`); Pegasus und der Key-Account-Admin haben es, Führungskräfte und die Ebenen darunter nicht.
+
+- **Wer alles sieht:** Mitglieder mit `LEAD_READ_INTAKE`, Workspace-Owner, Instanz-Admins und das Systemkonto aus `PEGASUS_HUB_USER_ID` (auch mit dessen API-Key). In einem Workspace, den der Hub nicht verwaltet, gilt die Einschränkung nicht.
+- **Was alle anderen nicht sehen:** die Spalten selbst (Board, Liste, Spaltenliste, Statusauswahl) und ihre Karten überall: Board und Liste samt Zählern, Suche, Projektstatistik, „Meine Aufgaben“ und ihr Zähler, Unteraufgaben-Zähler, Verknüpfungen, Exporte, Feldwerte, Anhänge. Eine Karte in einer eingeschränkten Spalte antwortet per ID oder Link mit 404, wie eine Karte außerhalb des Sichtbereichs. Im Verlauf einer freigegebenen Karte und in Benachrichtigungen fehlen Statuswechsel, die eine eingeschränkte Spalte nennen (etwa „Pegasus-Pool → Qualifizierung“). Ein öffentliches Board zeigt eingeschränkte Spalten nie.
+- **Was alle anderen nicht können:** eine Karte in eine eingeschränkte Spalte legen, weder beim Anlegen, Importieren, Statuswechsel, Umsortieren, Sammeländern noch beim Verschieben in ein anderes Projekt. Die API antwortet wie bei einem unbekannten Status mit 400 `Invalid status`, damit die Spalte unsichtbar bleibt.
+- **Kalender-Feed und Integrations-Sync** stehen Mitgliedern mit eingeschränkter Sicht nicht zur Verfügung (403), also auch Führungskräften ohne `LEAD_READ_INTAKE`, die alle Einheiten sehen. Beide lassen sich nicht auf den Sichtbereich zuschneiden.
 
 ## 5. Nicht Teil des Skripts
 

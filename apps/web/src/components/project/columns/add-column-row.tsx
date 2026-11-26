@@ -10,6 +10,7 @@ export type NewColumn = {
   icon: string;
   phase?: string;
   isLocked?: boolean;
+  isRestricted?: boolean;
 };
 
 type AddColumnRowProps = {
@@ -29,6 +30,7 @@ export function AddColumnRow({
   const [icon, setIcon] = useState(DEFAULT_ICON);
   const [phase, setPhase] = useState("");
   const [isLocked, setIsLocked] = useState(false);
+  const [isRestricted, setIsRestricted] = useState(false);
   const [saving, setSaving] = useState(false);
   const pickerOpen = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +41,7 @@ export function AddColumnRow({
     setIcon(DEFAULT_ICON);
     setPhase("");
     setIsLocked(false);
+    setIsRestricted(false);
   };
 
   const submit = async () => {
@@ -46,12 +49,14 @@ export function AddColumnRow({
     if (!trimmed || saving) return;
 
     setSaving(true);
-    // Pegasus fork (PEGA-170): a phase and the lock only when set.
+    // Pegasus fork (PEGA-170): a phase, the lock and the restriction only
+    // when set.
     const created = await onCreate({
       name: trimmed,
       icon,
       ...(phase.trim() && { phase: phase.trim() }),
       ...(isLocked && { isLocked }),
+      ...(isRestricted && { isRestricted }),
     });
     setSaving(false);
     if (created) {
@@ -134,6 +139,13 @@ export function AddColumnRow({
           checked={isLocked}
           onCheckedChange={setIsLocked}
           aria-label={t("settings:columnEditor.newColumnLockedAria")}
+        />
+      </div>
+      <div className="flex w-13 shrink-0 justify-center">
+        <Switch
+          checked={isRestricted}
+          onCheckedChange={setIsRestricted}
+          aria-label={t("settings:columnEditor.newColumnRestrictedAria")}
         />
       </div>
       <span aria-hidden="true" className="w-13 shrink-0" />

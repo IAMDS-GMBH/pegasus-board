@@ -24,12 +24,14 @@ export type ProjectWithTasks = Omit<
   columns: Array<
     Omit<
       ProjectWithTasksRaw["columns"][number],
-      "tasks" | "phase" | "isLocked"
+      "tasks" | "phase" | "isLocked" | "isRestricted"
     > & {
       // Pegasus fork (PEGA-170): persisted query data and fixtures predate
-      // column phases and locks; missing means no phase, unlocked.
+      // column phases, locks and restrictions; missing means no phase,
+      // unlocked, unrestricted.
       phase?: string | null;
       isLocked?: boolean;
+      isRestricted?: boolean;
       tasks: Task[];
     }
   >;

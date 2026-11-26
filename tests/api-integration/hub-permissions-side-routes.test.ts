@@ -186,9 +186,13 @@ describe("API integration: Hub rights on side routes", () => {
   describe("resuming an integration sync", () => {
     it("needs LEAD_EDIT, whatever the role", async () => {
       const f = await createHubScopeFixture();
-      // Mode `all`: the sync's restricted-visibility guard lets them through.
+      // Mode `all` with LEAD_READ_INTAKE (PEGA-170): the sync's
+      // restricted-visibility guard lets them through.
       await setRole(f.users.all.id, "admin");
-      await f.pushPermissions("all@wwk.test", ["LEAD_READ"]);
+      await f.pushPermissions("all@wwk.test", [
+        "LEAD_READ",
+        "LEAD_READ_INTAKE",
+      ]);
 
       const response = await send(
         asUser(f.users.all),

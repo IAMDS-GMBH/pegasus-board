@@ -30,6 +30,7 @@ import type {
   UserBroadcastMessage,
 } from "./broadcast-adapter";
 import { InMemoryBroadcastAdapter } from "./in-memory-broadcast-adapter";
+import { scopedReorderPayloads } from "./scoped-reorder";
 import { RedisBroadcastAdapter } from "./redis-broadcast-adapter";
 
 const INSTANCE_ID = randomUUID();
@@ -544,6 +545,17 @@ async function deliverToLocalConnections(
   if (!access) return;
   const { workspaceId, members, restricted } = access;
   const payload = JSON.stringify(message);
+  const scopedPayloads = workspaceId
+    ? await scopedReorderPayloads(
+        workspaceId,
+        recipients.map((conn) => conn.userId),
+        message,
+      ).catch((error) => {
+        console.error("Failed to scope reorder broadcast:", error);
+        return null;
+      })
+    : new Map<string, string>();
+  if (!scopedPayloads) return;
   for (const conn of recipients) {
     // A move may have closed these connections while the lookup was in flight.
     if (!projectConnections.get(projectId)?.has(conn)) continue;
@@ -566,7 +578,7 @@ async function deliverToLocalConnections(
     }
     if (excludeInitiatorId && conn.initiatorId === excludeInitiatorId) continue;
     try {
-      conn.ws.send(payload);
+      conn.ws.send(scopedPayloads.get(conn.userId) ?? payload);
     } catch {
       removeConnection(projectId, conn);
     }

@@ -26,3 +26,10 @@ describe("capabilityHubPermission", () => {
     }
   });
 });
+
+// Pegasus fork (PEGA-170): the Hub's own right for the technical columns.
+describe("HUB_PERMISSIONS", () => {
+  it("knows LEAD_READ_INTAKE", () => {
+    expect(HUB_PERMISSIONS).toContain("LEAD_READ_INTAKE");
+  });
+});

@@ -22,6 +22,7 @@ type ColumnRowProps = {
   phaseSuggestionsId: string;
   onChangePhase: (phase: string | null) => Promise<boolean>;
   onToggleLocked: (isLocked: boolean) => Promise<void>;
+  onToggleRestricted: (isRestricted: boolean) => Promise<void>;
   onDelete: () => void;
 };
 
@@ -43,6 +44,7 @@ export function ColumnRow({
   phaseSuggestionsId,
   onChangePhase,
   onToggleLocked,
+  onToggleRestricted,
   onDelete,
 }: ColumnRowProps) {
   const { t } = useTranslation();
@@ -54,6 +56,10 @@ export function ColumnRow({
   const isFinal = pendingFinal ?? column.isFinal;
   const [pendingLocked, setPendingLocked] = useState<boolean | null>(null);
   const isLocked = pendingLocked ?? column.isLocked;
+  const [pendingRestricted, setPendingRestricted] = useState<boolean | null>(
+    null,
+  );
+  const isRestricted = pendingRestricted ?? column.isRestricted;
 
   const toggleFinal = async (checked: boolean) => {
     setPendingFinal(checked);
@@ -70,6 +76,15 @@ export function ColumnRow({
       await onToggleLocked(checked);
     } finally {
       setPendingLocked(null);
+    }
+  };
+
+  const toggleRestricted = async (checked: boolean) => {
+    setPendingRestricted(checked);
+    try {
+      await onToggleRestricted(checked);
+    } finally {
+      setPendingRestricted(null);
     }
   };
 
@@ -115,6 +130,16 @@ export function ColumnRow({
           disabled={!canEdit}
           onCheckedChange={(checked) => void toggleLocked(checked)}
           aria-label={t("settings:columnEditor.markLockedAria", {
+            name: column.name,
+          })}
+        />
+      </div>
+      <div className="flex w-13 shrink-0 justify-center">
+        <Switch
+          checked={isRestricted}
+          disabled={!canEdit}
+          onCheckedChange={(checked) => void toggleRestricted(checked)}
+          aria-label={t("settings:columnEditor.markRestrictedAria", {
             name: column.name,
           })}
         />

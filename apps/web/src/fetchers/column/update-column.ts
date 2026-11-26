@@ -9,6 +9,7 @@ export type UpdateColumnData = {
   isFinal?: boolean;
   phase?: string | null;
   isLocked?: boolean;
+  isRestricted?: boolean;
 };
 
 async function updateColumn(id: string, data: UpdateColumnData) {

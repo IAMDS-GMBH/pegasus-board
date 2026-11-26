@@ -1740,7 +1740,11 @@
 			"lockedHeader": "Locked",
 			"markLockedAria": "Lock {{name}} (technically controlled)",
 			"newColumnPhaseAria": "Phase of the new column",
-			"newColumnLockedAria": "Lock the new column (technically controlled)"
+			"newColumnLockedAria": "Lock the new column (technically controlled)",
+			"restrictedHeader": "Internal",
+			"restrictedHint": "Visible only to Pegasus and the key-account admin",
+			"markRestrictedAria": "{{name}}: visible only to Pegasus and the key-account admin",
+			"newColumnRestrictedAria": "New column: visible only to Pegasus and the key-account admin"
 		},
 		"customFields": {
 			"namePlaceholder": "Field name",

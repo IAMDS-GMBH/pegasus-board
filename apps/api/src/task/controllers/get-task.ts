@@ -71,6 +71,8 @@ async function getTask(
         taskVisibleCondition(scope ?? null, {
           id: parent.id,
           assigneeId: parent.userId,
+          projectId: parent.projectId,
+          status: parent.status,
         }),
       ),
     );

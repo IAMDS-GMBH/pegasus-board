@@ -1,3 +1,4 @@
+import type { HubPermission } from "@kaneo/permissions";
 import { and, eq, inArray } from "drizzle-orm";
 import db, { schema } from "../database";
 import { isOwnerRole } from "../project-access/is-owner-role";
@@ -15,6 +16,9 @@ export type MemberAccess = {
 };
 
 type HubRow = HubScope & { permissions: readonly string[] };
+
+// Pegasus fork (PEGA-170): the Hub right that shows restricted columns.
+const READS_INTAKE: HubPermission = "LEAD_READ_INTAKE";
 
 // Restrictions come from the member's roles and the Hub's snapshot, never
 // from API-key scopes, so a key can neither widen nor create them. Instance
@@ -93,6 +97,7 @@ export async function loadMemberAccess(
       ),
       managed: isManaged,
       hub,
+      readsIntake: hub?.permissions.includes(READS_INTAKE) ?? false,
     });
     const permissions = isManaged ? new Set(hub?.permissions ?? []) : null;
     if (scope || permissions) {

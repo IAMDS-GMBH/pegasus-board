@@ -180,6 +180,10 @@
             "type": "boolean",
             "description": "Pegasus fork: members may not move cards into or out of the column."
           },
+          "isRestricted": {
+            "type": "boolean",
+            "description": "Pegasus fork: only members with LEAD_READ_INTAKE see the column and its cards."
+          },
           "position": {
             "type": "number"
           },
@@ -198,6 +202,7 @@
           "isFinal",
           "phase",
           "isLocked",
+          "isRestricted",
           "tasks"
         ]
       },
@@ -1592,6 +1597,10 @@
             "type": "boolean",
             "description": "Technical column: members may not move cards into or out of it (403 COLUMN_LOCKED); owners, instance admins and the Hub's system account may."
           },
+          "isRestricted": {
+            "type": "boolean",
+            "description": "Technical column: only members whose Hub rights include LEAD_READ_INTAKE (and owners, instance admins, the Hub's system account) see it and its tasks."
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -1612,6 +1621,7 @@
           "isFinal",
           "phase",
           "isLocked",
+          "isRestricted",
           "createdAt",
           "updatedAt"
         ]
@@ -13266,6 +13276,10 @@
                   "isLocked": {
                     "type": "boolean",
                     "description": "Technical column: only owners, instance admins and the Hub's system account move cards into or out of it. Fields stay editable."
+                  },
+                  "isRestricted": {
+                    "type": "boolean",
+                    "description": "Technical column: only members whose Hub rights include LEAD_READ_INTAKE (and owners, instance admins, the Hub's system account) see it and its tasks."
                   }
                 },
                 "required": [
@@ -13508,6 +13522,10 @@
                   "isLocked": {
                     "type": "boolean",
                     "description": "Technical column: only owners, instance admins and the Hub's system account move cards into or out of it. Fields stay editable."
+                  },
+                  "isRestricted": {
+                    "type": "boolean",
+                    "description": "Technical column: only members whose Hub rights include LEAD_READ_INTAKE (and owners, instance admins, the Hub's system account) see it and its tasks."
                   }
                 }
               }

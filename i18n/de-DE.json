@@ -1080,7 +1080,11 @@
 			"lockedHeader": "Gesperrt",
 			"markLockedAria": "{{name}} sperren (technisch gesteuert)",
 			"newColumnPhaseAria": "Phase der neuen Spalte",
-			"newColumnLockedAria": "Neue Spalte sperren (technisch gesteuert)"
+			"newColumnLockedAria": "Neue Spalte sperren (technisch gesteuert)",
+			"restrictedHeader": "Intern",
+			"restrictedHint": "Nur für Pegasus und Key-Account-Admin sichtbar",
+			"markRestrictedAria": "{{name}}: Nur für Pegasus und Key-Account-Admin sichtbar",
+			"newColumnRestrictedAria": "Neue Spalte: Nur für Pegasus und Key-Account-Admin sichtbar"
 		},
 		"githubIntegration": {
 			"toast": {

@@ -218,13 +218,14 @@ async function main() {
       workspaceId,
       projectId,
       columns: finalColumns.map(
-        ({ id, name, slug, isFinal, phase, isLocked }) => ({
+        ({ id, name, slug, isFinal, phase, isLocked, isRestricted }) => ({
           id,
           name,
           slug,
           isFinal,
           phase,
           isLocked,
+          isRestricted,
         }),
       ),
       labels: finalLabels.map(({ id, name }) => ({ id, name })),

@@ -5,7 +5,8 @@ import type { WorkspaceCapability } from "./capabilities.js";
 // Keys are the Hub's, unchanged. The board stores unknown keys too; these are
 // the ones it knows. Only some guard a board action today; the others
 // (archive, reassign, BSI handover, mails, admin) wait for their process
-// stories.
+// stories. LEAD_READ_INTAKE is the Hub's own right (not in the SPEC matrix):
+// it shows restricted columns and their cards (PEGA-170).
 export const HUB_PERMISSIONS = [
   "LEAD_READ",
   "LEAD_EDIT",
@@ -26,6 +27,7 @@ export const HUB_PERMISSIONS = [
   "ADMIN_HIERARCHY",
   "ADMIN_CAMPAIGNS",
   "ADMIN_SYSTEM_SETTINGS",
+  "LEAD_READ_INTAKE",
 ] as const;
 
 export type HubPermission = (typeof HUB_PERMISSIONS)[number];

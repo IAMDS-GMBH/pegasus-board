@@ -881,7 +881,11 @@
 			"newColumnPhaseAria": "Phase of the new column",
 			"phaseAria": "Phase of the {{name}} column",
 			"phaseHeader": "Phase",
-			"phasePlaceholder": "No phase"
+			"phasePlaceholder": "No phase",
+			"markRestrictedAria": "{{name}}: visible only to Pegasus and the key-account admin",
+			"newColumnRestrictedAria": "New column: visible only to Pegasus and the key-account admin",
+			"restrictedHeader": "Internal",
+			"restrictedHint": "Visible only to Pegasus and the key-account admin"
 		},
 		"githubIntegration": {
 			"toast": {

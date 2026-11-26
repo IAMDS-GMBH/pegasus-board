@@ -201,3 +201,45 @@ Mittel. Neu sind `apps/api/src/column-lock/`, `require-column-unlocked.ts` und e
 - `boardColumnSchema` und `get-tasks.ts`.
 
 Die Migration muss beim nächsten Sync hinter die letzte Upstream-Migration rücken; Upstream ist bereits bei 0073. Neue Upstream-Routen, die den Status setzen, brauchen die Sperre; `column-lock.test.ts` ist dafür die Liste. Details: [Register](../fork-eingriffe.md#pega-170--spalten-und-phasen-nach-fachkonzept).
+
+---
+
+## 7. Nachtrag 26.11.2026: technische Stufen nur für Pegasus und Key-Account-Admin
+
+**Anlass:** Die technischen Stufen vor der „Qualifizierung“ sollen für Führungskräfte und alle Ebenen darunter unsichtbar sein, für Pegasus und den Key-Account-Admin sichtbar. Wer sie sehen darf, entscheidet der Hub und schickt es als Recht `LEAD_READ_INTAKE` im bestehenden Sichtbereich-Snapshot (`PUT /pegasus-visibility/workspace/{workspaceId}/users`, Feld `permissions`). Der Snapshot braucht keine Schemaänderung, unbekannte Schlüssel speichert das Board schon. Hub-Teil: `pegasus-hub` Branch `th_PEGA-170`. Stand: Branch `th_PEGA-170` von `main` @ `980ef14`, Migration 0070.
+
+| Anforderung | Befund im Board |
+|---|---|
+| Spalten-Flag „eingeschränkt“ | **Erfüllt.** `column.is_restricted` (Standard `false`, nicht null, Migration 0070 idempotent). `POST /column/{projectId}`, `PUT /column/{id}`, `GET /column/{projectId}` und `BoardColumn` tragen `isRestricted` direkt nach `isLocked`. `apps/docs/openapi.json` ist byte-gleich mit dem Kaneo-Snapshot des Hubs (`diff` leer), der nächste `kaneo:spec:pull` ändert also nichts. Spalteneinstellungen: Schalter „Intern“ neben „Gesperrt“, Tooltip und Screenreader-Text „Nur für Pegasus und Key-Account-Admin sichtbar“. |
+| Ohne `LEAD_READ_INTAKE` weder Spalten noch Karten sichtbar | **Erfüllt** auf Board, Liste, Spaltenliste, Suche (Karten, Kommentare, Aktivitäten), Projektstatistik, „Meine Aufgaben“ samt Zähler, Unteraufgaben-Zähler, Verknüpfungen, Detail per ID und Link (404), Beschreibung, Verlauf, Kommentare, Anhänge, Export, Feldwerte, Workflow-Regeln, Benachrichtigungen. Öffentliche Boards zeigen eingeschränkte Spalten nie. |
+| Kein Ziel für Verschieben oder Anlegen | **Erfüllt.** Statuswechsel, volles Update, Umsortieren, Bulk, Verschieben in ein anderes Projekt, Anlegen und Import antworten 400 `Invalid status`. Eine Karte aus einer eingeschränkten Spalte zu holen scheitert schon an der Sichtbarkeit (404). |
+| Ausnahmen | **Erfüllt.** Owner, Instanz-Admins und das Systemkonto des Hubs (`PEGASUS_HUB_USER_ID`, auch per API-Key) sehen alles, wie bei der Sperre. In Workspaces, die der Hub nicht verwaltet, gilt die Einschränkung nicht (wie die Rechte aus dem Hub). |
+| Ein Filterpfad | **Erfüllt.** Kein zweiter Filter: `TaskScope` aus PEGA-141/142 bekommt `hidesRestrictedColumns`, `taskVisibleCondition` prüft zusätzlich, dass die Karte nicht in einer eingeschränkten Spalte liegt. Jeder Lesepfad, der den Sichtbereich schon nutzte, filtert damit auch die technischen Stufen. |
+| Board-Skript, 17 Spalten | **Erfüllt.** `board.json` mit Eingang, Plausibilitätsprüfung, Automatische Anreicherung (gesperrt, eingeschränkt), Manuelle Anreicherung, Pegasus-Pool (eingeschränkt, nicht mehr gesperrt), Qualifizierung (`formerName: "Unbearbeitet"`, Slug `unbearbeitet` bleibt). Wie im Hub gewinnt die Vorgabe bei jedem Lauf: Name, Phase, Sperre und Einschränkung jeder Vorgabespalte; unbekannte Spalten bleiben. |
+| Sperre: Tests in beide Richtungen | **Erfüllt.** Anlegen, Bulk, Statuswechsel und Import waren schon im `DENIED`-Satz von `column-lock.test.ts` (hinein und, wo es ein Heraus gibt, heraus). Neu: Kommentar und Label an einer Karte in Eingang bleiben erlaubt; ein Import mit einer gesperrten Zielspalte wird als Ganzes abgelehnt. |
+
+**Entscheidung 4: Ziel in einer eingeschränkten Spalte = unbekannter Status (400).** Ein 403 mit eigenem Code würde verraten, dass die Spalte existiert. Die Prüfung läuft vor der Sperre, damit `COLUMN_LOCKED` keine unsichtbare Spalte nennt („Eingang“ ist beides). Alle betroffenen Routen dokumentieren 400 schon; die OpenAPI bleibt unverändert.
+
+**Entscheidung 5: Statuswechsel durch eingeschränkte Spalten fehlen im Verlauf (Abstimmung mit dem Auftraggeber).** Nach der Freigabe sieht die Führungskraft die Karte wieder. Einträge, deren alter oder neuer Status eine eingeschränkte Spalte ist (etwa „Pegasus-Pool → Qualifizierung“), fehlen für sie im Kartenverlauf, im Workspace-Feed, in der Aktivitätssuche und in Benachrichtigungen; neue Statusbenachrichtigungen dieser Art entstehen für sie nicht.
+
+**Entscheidung 6: Die Vorgabe gewinnt.** Wie im Hub setzt jeder Lauf des Skripts Name, Phase, Sperre und Einschränkung zurück; `fixedName` entfällt. Damit gilt Entscheidung 2 nicht mehr: Ein in den Spalteneinstellungen geänderter Name bleibt nur bis zum nächsten Lauf.
+
+**Folgen und Grenzen:**
+- Kalender-Feed und Integrations-Sync (`denyTaskScoped`) sperren jetzt auch Mitglieder, die nur die Einschränkung trifft, etwa eine Führungskraft im Modus „alle Einheiten“ ohne `LEAD_READ_INTAKE`. Beide lassen sich nicht auf den Sichtbereich zuschneiden.
+- Realtime: `TASKS_REORDERED` nennt Status und Position aller bewegten Karten. Wer eine davon nicht sieht, bekommt stattdessen `PROJECT_UPDATED` und lädt das Board neu. Die übrigen Ereignisse tragen nur IDs; ein 404 beim Nachladen lässt das Web das Board neu laden, die Karte verschwindet.
+- Die Fehlermeldung eines sonst ungültigen Status listet weiter alle Slugs des Projekts auf (Upstream-Verhalten), also auch die der eingeschränkten Spalten.
+- Wer Spalten bearbeiten darf (`project:update`), aber kein `LEAD_READ_INTAKE` hat, bekommt auf `PUT`/`DELETE /column/{id}` einer eingeschränkten Spalte 404. Beim Umsortieren aller Spalten sieht er sie nicht; ihre Positionen bleiben.
+- Nebenbei behoben: Die Benachrichtigungsprüfung für „nur zugewiesene“ Rollen nannte die nicht vorhandene Spalte `user_id` und brach mit einem SQL-Fehler ab (Test „lists a Bearbeiter's notifications…“ schlägt ohne die Korrektur fehl).
+
+### Gelaufen (26.11.2026)
+
+| Prüfung | Ergebnis |
+|---|---|
+| `pnpm test:integration` (gesamt) | 171 Dateien, 2018 Tests grün nach Anpassung von `hub-permissions-side-routes.test.ts` (Mitglied im Modus „alle“ braucht jetzt `LEAD_READ_INTAKE`, um am Sichtbereich-Wächter des Syncs vorbeizukommen); die Datei danach einzeln: 11/11 |
+| `column-restricted.test.ts` (neu) | 31 Tests: je Lesepfad ein Test, acht Ablehnungen, vier Ausnahmen, Modus „alle“ ohne Recht, nicht verwalteter Workspace |
+| `column-lock.test.ts`, `column-phase-lock.test.ts`, `notification-hub-scope.test.ts` | grün |
+| API-Unit-Tests mit unerreichbarer `DATABASE_URL` | 130 Dateien, 1025 Tests grün |
+| Web `pnpm exec vp test run` | 333 Dateien, 1786 Tests grün |
+| `packages/permissions` | 15 Tests grün |
+| `node --test "scripts/board-setup/*.test.mjs"` | 39 grün |
+| `pnpm typecheck`, `pnpm lint`, `pnpm i18n:check`, `pnpm openapi:check` | grün; `diff` gegen den Hub-Snapshot leer |

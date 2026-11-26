@@ -1,8 +1,13 @@
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import db from "../../database";
 import { columnTable, workflowRuleTable } from "../../database/schema";
+import type { TaskScope } from "../../task-scope/task-scope";
 
-async function getWorkflowRules(projectId: string) {
+async function getWorkflowRules(
+  projectId: string,
+  // Pegasus fork (PEGA-170): rules into restricted columns stay hidden.
+  scope: TaskScope | null = null,
+) {
   const rules = await db
     .select({
       id: workflowRuleTable.id,
@@ -17,7 +22,14 @@ async function getWorkflowRules(projectId: string) {
     })
     .from(workflowRuleTable)
     .leftJoin(columnTable, eq(workflowRuleTable.columnId, columnTable.id))
-    .where(eq(workflowRuleTable.projectId, projectId));
+    .where(
+      and(
+        eq(workflowRuleTable.projectId, projectId),
+        scope?.hidesRestrictedColumns
+          ? sql`${columnTable.isRestricted} is not true`
+          : undefined,
+      ),
+    );
 
   return rules;
 }

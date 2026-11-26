@@ -36,7 +36,10 @@ import {
 import { taskIsCompleted } from "../task-is-completed";
 import { getSubtaskCounts } from "../get-subtask-counts";
 import type { TaskScope } from "../../task-scope/task-scope";
-import { taskVisibleCondition } from "../../task-scope/task-visible-condition";
+import {
+  outsideRestrictedColumn,
+  taskVisibleCondition,
+} from "../../task-scope/task-visible-condition";
 import type {
   TaskCustomFieldFilter,
   TaskLabelFilter,
@@ -203,6 +206,14 @@ async function getTasksPage(
 
   const visible = taskVisibleCondition(options.scope ?? null);
   if (visible) conditions.push(visible);
+  // Pegasus fork (PEGA-170): restricted columns never show on a public board,
+  // and only to members whose scope admits them.
+  const hidesRestricted =
+    options.publicOnly || options.scope?.hidesRestrictedColumns;
+  if (options.publicOnly) conditions.push(outsideRestrictedColumn());
+  const visibleColumn = hidesRestricted
+    ? eq(columnTable.isRestricted, false)
+    : undefined;
 
   if (options.dueBefore) {
     conditions.push(lte(taskTable.dueDate, new Date(options.dueBefore)));
@@ -384,7 +395,7 @@ async function getTasksPage(
   const projectColumns = await db
     .select()
     .from(columnTable)
-    .where(eq(columnTable.projectId, projectId))
+    .where(and(eq(columnTable.projectId, projectId), visibleColumn))
     .orderBy(asc(columnTable.position), asc(columnTable.id))
     .limit(relatedPageSize)
     .offset(relatedOffset);
@@ -407,6 +418,7 @@ async function getTasksPage(
         and(
           eq(columnTable.projectId, projectId),
           inArray(columnTable.slug, missingStatuses),
+          visibleColumn,
         ),
       )
       .orderBy(
@@ -430,7 +442,7 @@ async function getTasksPage(
       ]),
     })
     .from(columnTable)
-    .where(eq(columnTable.projectId, projectId));
+    .where(and(eq(columnTable.projectId, projectId), visibleColumn));
   let labelCount = 0;
   let linkCount = 0;
   let labelRevision = "0";
@@ -523,6 +535,7 @@ async function getTasksPage(
     isFinal: column.isFinal,
     phase: column.phase,
     isLocked: column.isLocked,
+    isRestricted: column.isRestricted,
     tasks: paginatedTasks
       .filter((task) => task.status === column.slug)
       .map((task) => ({

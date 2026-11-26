@@ -33,6 +33,7 @@ export async function persistNotification(
       resourceId,
       resourceType,
       database,
+      eventData, // Pegasus fork (PEGA-170)
     ))
   ) {
     return null;

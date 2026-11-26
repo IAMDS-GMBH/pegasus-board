@@ -4,6 +4,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
+import { resolveTaskScope } from "../task-scope/resolve-task-scope";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import deleteWorkflowRule from "./controllers/delete-workflow-rule";
@@ -85,7 +86,13 @@ const deleteWorkflowRuleRoute = createRoute({
 
 const workflowRule = apiRouter()
   .openapi(getWorkflowRulesRoute, async (c) =>
-    c.json(await getWorkflowRules(c.req.valid("param").projectId), 200),
+    c.json(
+      await getWorkflowRules(
+        c.req.valid("param").projectId,
+        await resolveTaskScope(c), // Pegasus fork (PEGA-170)
+      ),
+      200,
+    ),
   )
   .openapi(upsertWorkflowRuleRoute, async (c) => {
     const { projectId } = c.req.valid("param");

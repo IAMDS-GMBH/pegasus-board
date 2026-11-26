@@ -17,6 +17,12 @@ export function ColumnListHeader() {
       <span className="w-13 shrink-0 text-center">
         {t("settings:columnEditor.lockedHeader")}
       </span>
+      <span
+        className="w-13 shrink-0 text-center"
+        title={t("settings:columnEditor.restrictedHint")}
+      >
+        {t("settings:columnEditor.restrictedHeader")}
+      </span>
       <span className="w-13 shrink-0 text-center">
         {t("settings:columnEditor.doneHeader")}
       </span>

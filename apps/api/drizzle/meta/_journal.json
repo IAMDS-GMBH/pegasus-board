@@ -491,6 +491,13 @@
       "when": 1795528959873,
       "tag": "0069_column_phase_lock",
       "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1795701963544,
+      "tag": "0070_column_restricted",
+      "breakpoints": true
     }
   ]
 }
